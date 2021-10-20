@@ -1,0 +1,564 @@
+/* ! .article-data container and some of its elements are not responsive for mobile devices. */
+/* ! .author .reaction-buttons-container i & span is not aligned properly */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&family=Open+Sans:wght@300;400;600;700;800&display=swap');
+
+.nav-bar {
+	position: relative;
+}
+
+.article-elements-container {
+	margin-top: 5px;
+	width: 100%;
+	background-color: transparent;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.article-data-container {
+	position: relative;
+	width: 70%;
+	height: 100%;
+	background-color: transparent;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.article-img-and-heading-container {
+	width: 95%;
+	height: 75vh;
+	margin-top: 30px;
+	background-color: #fff;
+	border-radius: 20px;
+	position: relative;
+	overflow: hidden;
+	box-shadow: 0px 16px 72px -5px rgba(0, 0, 0, 0.49);
+	-webkit-box-shadow: 0px 16px 72px -5px rgba(0, 0, 0, 0.49);
+	-moz-box-shadow: 0px 16px 72px -5px rgba(0, 0, 0, 0.49);
+	transition: height 0.35s ease-in-out 0.2s;
+}
+
+.article-img-container {
+	width: 100%;
+	height: 100%;
+	border-radius: 20px;
+}
+
+.article-img-container img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.article-heading-container {
+	width: 100%;
+	padding: 70px 5% 50px 5%;
+	height: fit-content;
+	position: absolute;
+	bottom: 0;
+	left: 40%;
+	transform: translateX(-40%);
+	background: linear-gradient(0deg, var(--highlight-color) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.article-heading::before {
+	content: '';
+	width: 8px;
+	height: 20%;
+	position: absolute;
+	border-radius: 8px;
+	background-color: var(--background-color);
+	top: 80px;
+	left: 20px;
+	right: 0;
+	bottom: 0;
+}
+
+.article-heading-container span[class='article-heading'] {
+	font-size: 2.5rem;
+	font-weight: 500;
+	color: var(--background-color);
+	height: fit-content;
+	margin: 10px 0;
+}
+
+/*? ///////////////////////////////////// Article related styling goes below //////////////////////////////////////// */
+
+.article-data {
+	width: 95%;
+	margin-top: 50px;
+	padding: 50px 0;
+	background-color: #fff;
+}
+
+.article-data :is(p, span, h3, h2, h1, ul, ol) {
+	padding: 15px 50px 10px 60px;
+}
+
+.article-data p,
+.article-data span {
+	font-size: 1.4rem;
+	line-height: 25px;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
+	hyphens: auto;
+	display: block;
+}
+
+.article-data p,
+.article-data span,
+.article-data ol li,
+.article-data ul li {
+	font-family: 'Calibri', serif;
+	font-size: 1.4rem;
+}
+
+.article-data :is(h1, h2, h3) {
+	font-family: 'open sans', sans-serif;
+	letter-spacing: 0px;
+	padding-top: 25px;
+	padding-bottom: 0px;
+}
+
+.article-data span {
+	text-indent: 0;
+}
+
+.article-data h1 {
+	font-size: 2rem;
+}
+
+.article-data h2 {
+	font-size: 1.8rem;
+}
+
+.article-data h3 {
+	font-size: 1.7rem;
+	font-weight: 500;
+}
+
+.article-data ul,
+.article-data ol {
+	padding-top: 0;
+	padding-left: 120px;
+}
+
+.article-data ul li,
+.article-data ol li {
+	padding: 5px 0 8px 0;
+}
+
+.article-data ul li b {
+	font-weight: 450;
+}
+
+.article-data img {
+	max-width: 95%;
+	max-height: 500px;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 10px;
+	padding: 30px;
+	transition: box-shadow 0.5s 0.2s ease-in-out;
+}
+
+.article-data img:hover {
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+}
+
+.article-data-container > .article-data > .end {
+	position: relative;
+	bottom: -10px;
+	left: 60px;
+	width: 12px;
+	height: 12px;
+	background-color: var(--article-text-color);
+	z-index: 12;
+}
+
+.article-data-container > .article-data > .footnotes {
+	position: relative;
+	bottom: -10px;
+	bottom: -20px;
+	left: 60px;
+	font-size: 0.9rem;
+}
+
+/*? //////////////////////////////////////////// End of article styling ///////////////////////////////////////////// */
+
+/*? ////////////////////// Author container and comments section styling goes below //////////////////////////////// */
+
+.author-information-container {
+	min-width: 250px;
+	width: 24%;
+	height: fit-content;
+	height: -moz-fit-content;
+	margin-right: 30px;
+	margin-top: 30px;
+	border-radius: 10px;
+	background-color: #fff;
+	overflow: hidden;
+	box-shadow: 0px 16px 72px -5px rgba(0, 0, 0, 0.49);
+	-webkit-box-shadow: 0px 16px 72px -5px rgba(0, 0, 0, 0.49);
+	-moz-box-shadow: 0px 16px 72px -5px rgba(0, 0, 0, 0.49);
+	display: flex;
+	flex-direction: column;
+}
+
+.author {
+	width: 100%;
+	height: fit-content;
+	background-color: transparent;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.author .author-data-container {
+	width: 100%;
+	margin: 20px 0 10px 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.author .author-data-container img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50px;
+}
+
+.author .author-data-container .name {
+	color: #000;
+	margin: 0 15px;
+}
+
+.author hr {
+	border-top: 1px solid #000;
+	width: 90%;
+}
+
+.author .reaction-buttons-container {
+	position: relative;
+	bottom: 0;
+	padding: 10px 0;
+	width: fit-content;
+	display: flex;
+	justify-content: space-between;
+	user-select: none; /* supported by Chrome and Opera */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.author .reaction-buttons-container :is(.like, .share, .bookmark) {
+	text-align: center;
+	margin: 0 10px;
+	padding: 0 10px;
+	cursor: pointer;
+	border-bottom: 3px solid var(--background-color);
+	transition: border-color 250ms ease-in-out;
+}
+
+.author .reaction-buttons-container .like:hover {
+	border-color: hsl(0, 100%, 55%);
+}
+
+.author .reaction-buttons-container .bookmark:hover {
+	border-color: hsl(271, 76%, 53%);
+}
+
+.author .reaction-buttons-container .share:hover {
+	border-color: hsl(218, 100%, 60%);
+}
+
+.author .reaction-buttons-container :is(.like, .share, .bookmark) i {
+	font-size: 1.5rem;
+	padding: 5px 0 0 0;
+	transition: color 0.3s ease;
+}
+
+.author .reaction-buttons-container :is(.like, .share, .bookmark) span {
+	font-size: 1.2rem;
+	display: block;
+	padding: 5px 0 0 0;
+}
+
+.love-reaction {
+	border-color: hsl(0, 100%, 55%) !important;
+}
+
+.love-reaction > i {
+	color: hsl(0, 100%, 55%);
+	animation: reaction-buttons-animation 0.35s ease;
+}
+
+.share-reaction {
+	border-color: hsl(218, 100%, 60%) !important;
+}
+
+.share-reaction > i {
+	color: hsl(218, 100%, 60%);
+	animation: reaction-buttons-animation 0.35s ease;
+}
+
+.bookmark-reaction {
+	border-color: hsl(271, 76%, 53%) !important;
+}
+
+.bookmark-reaction > i {
+	color: hsl(271, 76%, 53%);
+	animation: reaction-buttons-animation 0.35s ease;
+}
+
+.author-information-container .comments-section {
+	width: 100%;
+	height: 100%;
+	margin-top: 10px;
+	padding-bottom: 5px;
+	flex-grow: 1;
+}
+
+.author-information-container .comments-section .add-comment {
+	position: relative;
+	width: 100%;
+}
+
+.author-information-container .comments-section .add-comment input[name='add-comment'] {
+	width: 90%;
+	height: 40px;
+	margin-top: 10px;
+	padding-left: 5%;
+	padding-right: 12%;
+	border-radius: 20px;
+	font-size: 1rem;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	border: none;
+	outline: none;
+	background-color: hsl(0, 0%, 90%);
+}
+
+.author-information-container .comments-section .add-comment .comment-send-btn {
+	width: 10%;
+	height: 80%;
+	position: absolute;
+	right: 6%;
+	top: 60%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.author-information-container .comments-section .add-comment .comment-send-btn i {
+	font-size: 1.7rem;
+	position: relative;
+	line-height: 20px;
+	align-items: center;
+	color: hsl(0, 0%, 29%);
+	transition: color 150ms ease-in-out;
+}
+
+.author-information-container .comments-section .add-comment .comment-send-btn:hover i {
+	color: hsl(0, 0%, 0%);
+}
+.author-information-container .comments-section .comments {
+	width: 90%;
+	min-height: 250px;
+	height: fit-content;
+	border-radius: 10px;
+	margin: 20px 0 10px 0;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: hsl(0, 0%, 90%);
+}
+
+.author-information-container .comments-section .comments .comment {
+	display: block;
+	padding: 5px 5px 12px 15px;
+	position: relative;
+	word-break: break-word;
+}
+
+.author-information-container .comments-section .comments .comment::after {
+	content: '';
+	position: absolute;
+	top: 12px;
+	left: 5px;
+	bottom: 0;
+	right: 0;
+	width: 5px;
+	height: 5px;
+	background-color: #000;
+	display: block;
+	border-radius: 10px;
+}
+
+.author-information-container .comments-section .comments .comment .date {
+	position: absolute;
+	bottom: 0px;
+	left: 5px;
+	font-size: 0.75rem;
+	color: hsl(0, 0%, 59%);
+}
+
+.author-information-container .comments-section .comments .no-comments {
+	width: 100%;
+	text-align: center;
+	color: hsl(0, 0%, 59%);
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+/*? //////////////////////////////////////////////   @ MEDIA    ///////////////////////////////////////////////////// */
+
+@media screen and (min-width: 1920px) {
+	.author-information-container .comments-section .add-comment input[name='add-comment'] {
+		height: 50px;
+	}
+	.author-information-container .comments-section .add-comment .comment-send-btn i {
+		line-height: 30px;
+	}
+}
+
+@media screen and (max-width: 1920px) {
+	.article-heading-container > span[class='article-heading'] {
+		font-size: 2.5rem;
+	}
+}
+
+@media screen and (max-width: 1050px) {
+	.article-heading-container > .article-heading::before {
+		top: 75px;
+	}
+
+	.article-data p,
+	.article-data span {
+		line-height: 20px;
+	}
+
+	.author .author-data-container img {
+		width: 40px;
+		height: 40px;
+	}
+}
+
+@media screen and (max-width: 900px) {
+	.article-elements-container {
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.article-data-container {
+		width: 95%;
+	}
+
+	.author-information-container {
+		flex-direction: row;
+		width: 90%;
+		margin-right: unset;
+	}
+
+	.author {
+		justify-content: center;
+	}
+
+	.author-information-container .comments-section {
+		margin-top: unset;
+		padding: unset;
+	}
+
+	.author-information-container .comments-section .add-comment {
+		margin-top: 15px;
+	}
+}
+
+@media screen and (max-width: 700px) {
+	.article-data p,
+	.article-data span,
+	.article-data ul,
+	.article-data ol {
+		font-size: 1.25rem;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.article-img-and-heading-container {
+		height: 65vh;
+		width: 100%;
+		border-radius: unset;
+	}
+
+	.article-heading-container {
+		padding-bottom: 30px;
+	}
+
+	.article-data-container .article-heading::before {
+		width: 40%;
+		height: 8px;
+		top: 60px;
+		left: 5%;
+	}
+
+	.article-data-container {
+		width: 100%;
+	}
+
+	.article-data {
+		width: 100%;
+		margin-top: 20px;
+		padding-top: 30px;
+	}
+
+	.article-data :is(p, span, h3, h2, h1, ul, ol) {
+		padding: 20px 25px 10px 25px;
+	}
+
+	.article-data :is(p, span) {
+		font-size: 1.3rem;
+	}
+
+	.article-data :is(ul, ol) {
+		padding-left: 60px;
+	}
+
+	.article-data-container > .article-data > .end {
+		left: 25px;
+	}
+
+	.author-information-container {
+		flex-direction: column;
+	}
+
+	.author-information-container .comments-section {
+		margin-top: 10px;
+	}
+}
+
+/*? ////////////////////////////////////////////    @ KEYFRAMES    ////////////////////////////////////////////////// */
+@keyframes reaction-buttons-animation {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.75);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}

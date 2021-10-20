@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Log in to Zeerum</title>
+		<link rel="icon" href="/images/icon.png" type="image/png" />
+		<link rel="stylesheet" href="/styles/main.css" />
+		<link rel="stylesheet" href="/styles/log-in.css" />
+		<link rel="stylesheet" href="/styles/animations.css" />
+	</head>
+	<body>
+		<div class="nav-bar">
+			<a href="/" class="label-container"><div class="label">zeerum</div></a>
+			<div class="link-list">
+				<ul>
+					<li><a href="/">Home</a></li>
+					<li><a href="/discover">Discover</a></li>
+					<li><a href="/write">Write</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="svg-container">
+			<svg
+				width="1920"
+				height="1078"
+				viewbox="0 0 1920 1078"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M650.285 532.247C195.673 150.07 821.565 0 821.565 0H1924V539V1078H0C0 1078 1104.9 914.424 650.285 532.247Z"
+					fill="#3F93F7"
+				/>
+			</svg>
+		</div>
+
+		<div class="log-in-container">
+			<form action="/data/submit/log-in" class="form" id="form" method="POST" target="_self">
+				<div class="log-in-heading">Log In</div>
+
+				<div class="email-container">
+					<input
+						type="email"
+						name="email"
+						id="email"
+						placeholder="Email"
+						required
+						autofocus
+						aria-label="Enter your email"
+					/>
+				</div>
+				<div class="password-container">
+					<input
+						type="password"
+						name="password"
+						id="password"
+						placeholder="Password"
+						required
+						aria-label="Enter your password"
+					/>
+				</div>
+
+				<input type="submit" id="submit" value="Log In" aria-label="submit the input" />
+
+				<a href="/signin" class="sign-in">You are not still with us? Then Sign in.</a>
+			</form>
+			<div class="sign-in-description">
+				<img src="images/log_in/log-in.svg" alt="" />
+				<div class="description">
+					Log in to your account to access your previous reads, save your current work, share
+					knowledge with others, change your settings etc.
+				</div>
+			</div>
+		</div>
+
+		<!-- ? Below goes the footer -->
+
+		<div class="footer">
+			<div class="footer-label-and-move-to-top-container">
+				<a href="/" class="label-container">
+					<div class="label">zeerum</div>
+				</a>
+				<a href="#" class="move-to-top">Move to top</a>
+			</div>
+
+			<div class="footer-content">
+				<div class="description">
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem in animi ab
+					architecto minima qui asperiores ipsam laudantium consequatur sit, eius voluptates
+					quaerat voluptatem quas voluptatum iste quisquam iusto ullam! Lorem ipsum dolor sit
+					amet consectetur adipisicing elit. Molestiae unde totam praesentium labore veniam
+					assumenda odit velit hic quos provident. Sapiente obcaecati architecto id, doloremque
+					dolorem reprehenderit accusamus eos praesentium!
+				</div>
+				<div class="newsletter-description">
+					<ul>
+						<li>Our daily uploaded articles are now at your fingertips.</li>
+						<li>They are personalized to your reading too.</li>
+						<li>
+							We'll send an email containing popular, trending and personalized articles from
+							the authors right to your inbox.
+						</li>
+					</ul>
+				</div>
+				<div class="main-links">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/discover">Discover</a></li>
+						<li><a href="/write">Write</a></li>
+						<li><a href="/about">About</a></li>
+						<li><a href="/signin">Sign in</a></li>
+						<li><a href="/login">Log in</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="copyright">
+				&copy; All rights reserved. Made with <span style="color: red">❤</span> by Sandakan and
+				Kavishka.
+			</div>
+		</div>
+		<script async type="module" src="/scripts/log-in.js"></script>
+	</body>
+</html>

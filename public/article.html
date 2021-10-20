@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>ZEERUM</title>
+		<link rel="icon" href="/images/icon.png" type="image/png" />
+		<link rel="stylesheet" href="/styles/main.css" />
+		<link rel="stylesheet" href="/styles/article.css" />
+		<link rel="stylesheet" href="/styles/animations.css" />
+		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<div class="nav-bar">
+			<a href="/" class="label-container">
+				<div class="label">zeerum</div>
+			</a>
+			<div class="link-list">
+				<ul>
+					<li><a href="/">Home</a></li>
+					<li><a href="/discover">Discover</a></li>
+					<li><a href="/write">Write</a></li>
+					<li id="get-started"><a href="/signin">Get started</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="article-elements-container">
+			<div class="article-data-container">
+				<div class="article-img-and-heading-container">
+					<div class="article-img-container"></div>
+					<div class="article-heading-container">
+						<span class="article-heading"></span>
+					</div>
+				</div>
+				<div class="article-data"></div>
+			</div>
+
+			<!-- Here goes the information related to the author, comments for the article etc. -->
+			<div class="author-information-container">
+				<div class="author">
+					<div class="author-data-container">
+						<img src="/images/user.png" alt="" />
+						<span class="name"></span>
+					</div>
+
+					<hr />
+
+					<div class="reaction-buttons-container">
+						<div class="like" onclick="this.classList.toggle('love-reaction')">
+							<i class="fas fa-heart"></i><span id="loved-number">0</span>
+						</div>
+						<div class="share" onclick="this.classList.toggle('share-reaction')">
+							<i class="fas fa-share-alt"></i><span id="shared-number">0</span>
+						</div>
+						<div class="bookmark" onclick="this.classList.toggle('bookmark-reaction')">
+							<i class="fas fa-bookmark"></i><span id="bookmarked-number">0</span>
+						</div>
+					</div>
+
+					<hr />
+				</div>
+				<div class="comments-section">
+					<div class="add-comment">
+						<input
+							type="text"
+							name="add-comment"
+							id="add-comment"
+							placeholder="Add a comment"
+							value=""
+						/>
+						<div class="comment-send-btn">
+							<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+						</div>
+					</div>
+					<div class="comments" id="comments">
+						<span class="no-comments">No comments to display.</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="get-started-container">
+			<a href="/login" class="log-in-btn">Log In</a>
+			<span class="or">OR</span>
+			<a href="/signin" class="sign-in-btn">Sign In</a>
+			<span class="heading">
+				Receive articles right to your email when they are in the air.
+			</span>
+			<span class="zeerum-user">
+				zeerum <br />
+				user <br />
+				<i class="fas fa-medal"></i>
+			</span>
+			<span class="description">
+				<ul>
+					<li>Our daily uploaded articles are now at your fingertips.</li>
+					<li>They are personalized to your reading too.</li>
+					<li>
+						We'll send an email containing popular, trending and personalized articles from
+						the authors right to your inbox.
+					</li>
+				</ul>
+			</span>
+			<span class="exit">
+				<i
+					class="far fa-times-circle"
+					onclick="document.querySelector('.get-started-container').style.display = 'none';"
+				></i>
+			</span>
+		</div>
+
+		<!-- ? Below goes the footer -->
+
+		<div class="footer">
+			<div class="footer-label-and-move-to-top-container">
+				<a href="/" class="label-container">
+					<div class="label">zeerum</div>
+				</a>
+				<a href="#" class="move-to-top">Move to top</a>
+			</div>
+
+			<div class="footer-content">
+				<div class="description">
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem in animi ab
+					architecto minima qui asperiores ipsam laudantium consequatur sit, eius voluptates
+					quaerat voluptatem quas voluptatum iste quisquam iusto ullam! Lorem ipsum dolor sit
+					amet consectetur adipisicing elit. Molestiae unde totam praesentium labore veniam
+					assumenda odit velit hic quos provident. Sapiente obcaecati architecto id, doloremque
+					dolorem reprehenderit accusamus eos praesentium!
+				</div>
+				<div class="newsletter-description">
+					<ul>
+						<li>Our daily uploaded articles are now at your fingertips.</li>
+						<li>They are personalized to your reading too.</li>
+						<li>
+							We'll send an email containing popular, trending and personalized articles from
+							the authors right to your inbox.
+						</li>
+					</ul>
+				</div>
+				<div class="main-links">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/discover">Discover</a></li>
+						<li><a href="/write">Write</a></li>
+						<li><a href="/about">About</a></li>
+						<li><a href="/signin">Sign in</a></li>
+						<li><a href="/login">Log in</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="copyright">
+				&copy; All rights reserved. Made with <span style="color: red">❤</span> by Sandakan and
+				Kavishka.
+			</div>
+		</div>
+
+		<script src="/scripts/animations.js"></script>
+		<script type="module" src="/scripts/article.js"></script>
+	</body>
+</html>

@@ -1,0 +1,119 @@
+.svg-container {
+	width: 100%;
+	height: calc(100vh + 20px);
+	overflow: hidden;
+	position: absolute;
+	z-index: 1;
+}
+
+.log-in-container {
+	position: relative;
+	top: 70px;
+	width: 100%;
+	height: calc(100vh - 70px);
+	margin-bottom: 20px;
+	background-color: var(--background-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.sign-in-description {
+	position: relative;
+	width: 550px;
+	height: 550px;
+	margin: 0 100px;
+	z-index: 2;
+}
+.sign-in-description > img {
+	width: 100%;
+	height: 80%;
+}
+
+.sign-in-description > .description {
+	font-size: 1.25rem;
+	position: absolute;
+	bottom: 70px;
+	color: #000;
+}
+
+.form {
+	min-width: 400px;
+	width: 450px;
+	height: 550px;
+	border-radius: 20px;
+	margin: 0 100px;
+	background-color: hsla(0, 0%, 100%, 0.5);
+	backdrop-filter: blur(10px);
+	position: relative;
+	display: grid;
+	grid-template-columns: 50px 1fr 1fr 50px 1fr 1fr 50px;
+	grid-template-rows: 1fr 80px 30px 50px 30px 50px 30px 50px 30px 30px 2fr;
+	box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+	z-index: 2;
+}
+
+.form > .log-in-heading {
+	grid-column: 3/6;
+	grid-row: 2/3;
+	padding-top: 25px;
+	text-align: center;
+	font-size: 2.5rem;
+	color: var(--highlight-color);
+}
+.form > .log-in-heading::after {
+	content: '';
+	position: absolute;
+	width: 10%;
+	left: 50%;
+	transform: translateY(50px) translateX(-50%);
+	height: 4px;
+	border-radius: 20px;
+	background-color: var(--highlight-color);
+}
+
+.form > .email-container {
+	grid-column: 2/7;
+	grid-row: 4/5;
+}
+.form > .password-container {
+	grid-column: 2/7;
+	grid-row: 6/7;
+}
+
+.form :is(.email-container, .password-container) {
+	position: relative;
+}
+
+input {
+	width: 100%;
+	outline: none;
+	padding: 10px;
+	font-size: 1.1rem;
+	border: 2px solid #ccc;
+	background-color: #ccc;
+	border-radius: 20px;
+	transition: border-color 0.2s linear;
+}
+
+input[id='submit'] {
+	grid-column: 3/6;
+	grid-row: 8/9;
+	transition: background-color 0.3s ease-out 0.1s, color 0.3s ease-out 0.1s,
+		border-color 0.3s ease-out 0.1s;
+}
+
+.form > a {
+	text-align: center;
+	grid-column: 2/7;
+	grid-row: 10/11;
+	color: var(--highlight-color-variant);
+	text-decoration: none;
+}
+
+@media screen and (max-width: 1050px) {
+	.sign-in-description {
+		display: none;
+	}
+}

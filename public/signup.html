@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Sign in to Zeerum</title>
+		<link rel="icon" href="/images/icon.png" type="image/png" />
+		<link rel="stylesheet" href="/styles/main.css" />
+		<link rel="stylesheet" href="/styles/sign-in.css" />
+		<link rel="stylesheet" href="/styles/animations.css" />
+		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<div class="nav-bar">
+			<a href="/" class="label-container"><div class="label">zeerum</div></a>
+			<div class="link-list">
+				<ul>
+					<li><a href="/">Home</a></li>
+					<li><a href="/discover">Discover</a></li>
+					<li><a href="/write">Write</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="svg-container">
+			<svg
+				width="1920"
+				height="1080"
+				viewbox="0 0 1920 1080"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+				class="background-blue-cover-1"
+			>
+				<path
+					d="M711 615C1007 -149 -5 15 -5 15V1075H1919V835C1919 835 415 1379 711 615Z"
+					fill="#3F93F7"
+				/>
+			</svg>
+		</div>
+
+		<div class="sign-in-container">
+			<div class="sign-in-description">
+				<img src="images/sign_in/sign-in.svg" alt="" />
+				<div class="description">
+					Sign in with us to receive articles around the world to your inbox. Engage with the
+					ZEERUM community to help each other and to share knowledge.
+				</div>
+			</div>
+			<form
+				action="/data/submit/sign-in"
+				class="form"
+				id="form"
+				method="POST"
+				target="_self"
+				name="signin"
+			>
+				<div class="sign-in-heading">Join with Us</div>
+				<div class="first-name-container">
+					<input
+						type="text"
+						name="firstName"
+						id="first-name"
+						placeholder="First name"
+						required
+						aria-label="Enter your first name"
+					/>
+					<div class="data-error-container">
+						<i class="fas fa-exclamation-circle"></i>
+						<span class="data-error"></span>
+					</div>
+				</div>
+				<div class="last-name-container">
+					<input
+						type="text"
+						name="lastName"
+						id="last-name"
+						placeholder="Last name"
+						required
+						aria-label="Enter your last name"
+					/>
+					<div class="data-error-container">
+						<i class="fas fa-exclamation-circle"></i>
+						<span class="data-error"></span>
+					</div>
+				</div>
+				<div class="birthday-container">
+					<input
+						type="text"
+						name="birthday"
+						id="birthday"
+						onfocusin="(this.type='date')"
+						onfocusout="(this.type='text')"
+						placeholder="Birthday (MM/DD/YYYY)"
+						required
+						aria-label="Enter your birthday"
+					/>
+				</div>
+				<div class="email-container">
+					<input
+						type="email"
+						name="email"
+						id="email"
+						placeholder="Email"
+						required
+						aria-label="Enter your email"
+					/>
+					<div class="data-error-container">
+						<i class="fas fa-exclamation-circle"></i>
+						<span class="data-error"></span>
+					</div>
+				</div>
+				<div class="password-container">
+					<input
+						type="password"
+						name="password"
+						id="password"
+						placeholder="Password"
+						required
+						aria-label="Enter your password"
+					/>
+					<div class="data-error-container">
+						<i class="fas fa-exclamation-circle"></i>
+						<span class="data-error"></span>
+					</div>
+				</div>
+				<div class="retype-password-container">
+					<input
+						type="password"
+						name="retypePassword"
+						id="retype-password"
+						placeholder="Retype Password"
+						required
+						aria-label="Retype your password"
+					/>
+					<div class="data-error-container">
+						<i class="fas fa-exclamation-circle"></i>
+						<span class="data-error"></span>
+					</div>
+				</div>
+				<input type="submit" id="submit" value="Sign In" aria-label="Submit your input" />
+				<a href="login" class="log-in">Are you already with us? Then Log in.</a>
+			</form>
+		</div>
+
+		<!-- ? Below goes the footer -->
+
+		<div class="footer">
+			<div class="footer-label-and-move-to-top-container">
+				<a href="/" class="label-container">
+					<div class="label">zeerum</div>
+				</a>
+				<a href="#" class="move-to-top">Move to top</a>
+			</div>
+
+			<div class="footer-content">
+				<div class="description">
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem in animi ab
+					architecto minima qui asperiores ipsam laudantium consequatur sit, eius voluptates
+					quaerat voluptatem quas voluptatum iste quisquam iusto ullam! Lorem ipsum dolor sit
+					amet consectetur adipisicing elit. Molestiae unde totam praesentium labore veniam
+					assumenda odit velit hic quos provident. Sapiente obcaecati architecto id, doloremque
+					dolorem reprehenderit accusamus eos praesentium!
+				</div>
+				<div class="newsletter-description">
+					<ul>
+						<li>Our daily uploaded articles are now at your fingertips.</li>
+						<li>They are personalized to your reading too.</li>
+						<li>
+							We'll send an email containing popular, trending and personalized articles from
+							the authors right to your inbox.
+						</li>
+					</ul>
+				</div>
+				<div class="main-links">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/discover">Discover</a></li>
+						<li><a href="/write">Write</a></li>
+						<li><a href="/about">About</a></li>
+						<li><a href="/signin">Sign in</a></li>
+						<li><a href="/login">Log in</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="copyright">
+				&copy; All rights reserved. Made with <span style="color: red">❤</span> by Sandakan and
+				Kavishka.
+			</div>
+		</div>
+		<script async type="module" src="/scripts/formValidator.js"></script>
+	</body>
+</html>

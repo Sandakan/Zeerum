@@ -1,0 +1,36 @@
+.nav-bar .link-list ul li:nth-child(3) a {
+	color: var(--highlight-color);
+}
+
+.nav-bar .link-list ul li:nth-child(3) a::after {
+	transform: translateX(-50%) scaleX(0.3);
+}
+
+.banner-container {
+	height: 80vh;
+	margin: 0 0 100px 0;
+}
+
+.banner {
+	height: calc(100vh - 150px);
+	align-items: center;
+}
+
+.banner-img {
+	background-image: url('/images/banners/banner6.jpg') !important;
+}
+
+.banner-elements-container {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.banner-text {
+	text-align: center;
+	font-size: 5rem;
+	position: relative;
+	left: 0;
+}

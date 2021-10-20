@@ -1,0 +1,7 @@
+.nav-bar .link-list ul li:nth-child(1) a{
+    color:var(--highlight-color);
+}
+
+.nav-bar .link-list ul li:nth-child(1) a::after{
+    transform: translateX(-50%) scaleX(0.3);
+}

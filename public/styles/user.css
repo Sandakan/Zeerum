@@ -1,0 +1,114 @@
+.user-container {
+	box-sizing: content-box;
+	padding: 10px 0;
+	width: 100%;
+	min-height: 300px;
+	height: 50vh;
+	background-color: #08aeea;
+	background-image: linear-gradient(30deg, #08aeea 0%, #2af598 100%);
+	position: relative;
+	margin: 80px 0 40px 0;
+	display: flex;
+	flex-direction: row;
+	box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+}
+
+.user-container > .user-img-container {
+	position: relative;
+	margin: 1rem 3rem;
+	/* border: 2px solid hsla(0, 0%, 0%, 0.4); */
+}
+
+.user-container > .user-img-container > img {
+	height: 70%;
+	border-radius: 200px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 30px 90px;
+	background-color: hsla(0, 0%, 100%, 0.6);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+.user-container > .user-img-container > .edit-profile-picture {
+	padding: 10px;
+	position: absolute;
+	right: 12px;
+	top: 12px;
+	background-color: #2c3e50;
+	color: #fff;
+	border-radius: 100px;
+	cursor: pointer;
+	border: 3px solid transparent;
+	opacity: 0;
+	animation: appear 0.4s ease-in-out forwards;
+}
+
+.user-container > .user-data-container {
+	width: fit-content;
+	height: fit-content;
+	position: relative;
+	top: 20%;
+	transform: translateY(-20%);
+	margin-left: 1rem;
+}
+
+.user-container > .user-data-container > span {
+	display: block;
+	width: fit-content;
+	padding: 0 5px;
+	margin-bottom: 5px;
+	font-size: 1.1rem;
+}
+
+/*todo- unstable css styles */
+/* .user-container
+	:is(.user-img-container > img, .user-data-container)
+	:is(.name, .user-type-and-id, .country, .joined-date, .followers-and-followings, .articles-number) {
+	background-color: hsla(0, 0%, 100%, 0.6);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border-radius: 1rem;
+} */
+
+.user-container > .user-data-container > .name {
+	font-size: 3rem;
+	min-width: 100%;
+	width: fit-content;
+}
+
+.user-container > .user-data-container > .user-type-and-id {
+	text-transform: uppercase;
+	font-size: 1.5rem;
+	font-weight: 500;
+	min-width: 50%;
+	width: fit-content;
+	margin-bottom: 10px;
+}
+
+.user-container > .user-data-container > .user-type-and-id > .id {
+	font-size: 1.5rem;
+	margin-left: 1rem;
+	min-width: 50%;
+	width: fit-content;
+}
+
+.other-content {
+	margin-top: 20px;
+}
+
+.other-content > .div-2 {
+	width: 30%;
+	background-color: var(--background-color-1);
+	margin-top: 20px;
+	padding: 20px 20px;
+	border-radius: 20px;
+}
+
+@keyframes appear {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}

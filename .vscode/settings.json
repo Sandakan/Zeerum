@@ -1,0 +1,5 @@
+{
+	"spellright.language": ["en"],
+	"spellright.documentTypes": ["markdown", "latex", "plaintext", "html"],
+	"cSpell.words": ["intelli", "sense", "signin"]
+}

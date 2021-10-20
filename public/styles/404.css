@@ -1,0 +1,22 @@
+.banner-container {
+	height: 95vh !important;
+}
+
+.banner .banner-img {
+	background-image: url('../images/banners/banner4.jpg') !important;
+}
+
+.four-o-four {
+	font-size: 5rem;
+	font-weight: 400;
+}
+
+.not-found {
+	font-weight: 450;
+	font-size: 2rem;
+}
+
+.server-error {
+	display: block;
+	font-size: 1rem;
+}
