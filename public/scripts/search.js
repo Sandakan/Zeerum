@@ -26,13 +26,18 @@ document.querySelector('#search').addEventListener('input', () => {
 					let temp = '';
 					articleData.forEach((x) => {
 						let searchedLettersHighlight = x.title
-							.split('')
-							.map((y) => {
-								if (searchInput.toLowerCase().includes(y.toLowerCase())) {
-									return `<span class="searched-letter-highlight">${y}</span>`;
-								} else return y;
-							})
-							.join('');
+							.toLowerCase()
+							.replaceAll(
+								`${searchInput.toLowerCase()}`,
+								`<span class="searched-letter-highlight">${searchInput}</span>`
+							);
+						// .split('')
+						// .map((y) => {
+						// 	if (searchInput.toLowerCase().includes(y.toLowerCase())) {
+						// 		return `<span class="searched-letter-highlight">${y}</span>`;
+						// 	} else return y;
+						// })
+						// .join('');
 						temp += `<a href="/articles/${x.title}" class="search-result">${searchedLettersHighlight}</a>`;
 					});
 					console.log(temp);
@@ -48,7 +53,7 @@ document.querySelector('#search').addEventListener('input', () => {
 				'.search-results-container'
 			).innerHTML = `<div class="search-anything"><img src="/images/search.png" alt="A magnifying glass">Search for anything from here including articles, tags, authors, hot topics etc.</div>`;
 		}
-	}, 250);
+	}, 300);
 });
 
 document.querySelector('#search').addEventListener('keypress', (event) => {

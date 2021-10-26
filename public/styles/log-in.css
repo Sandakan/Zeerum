@@ -94,7 +94,7 @@ input {
 	border: 2px solid #ccc;
 	background-color: #ccc;
 	border-radius: 20px;
-	transition: border-color 0.2s linear;
+	transition: border-color 0.2s linear, background 0.2s linear;
 }
 
 input[id='submit'] {

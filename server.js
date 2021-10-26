@@ -2,12 +2,14 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const exprssSession = require('express-session');
 // const { MongoClient } = require('mongodb');
 // const { readFile, writeFile } = require('fs');
 // const { body, validationResult } = require('express-validator');
 // const cors = require('cors');
 
 const data = require('./data/data');
+// const home = require('./routes/home.js');
 const app = express();
 
 //? DATABASE CONNECTION ////////////////////////////////////
@@ -58,9 +60,11 @@ app.use(cookieParser());
 
 app.use(express.static('./public'));
 
+// app.use('/', home);
+
 app.get('/', (req, res) => {
 	console.log(req.cookies);
-	res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
+	// res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
 	res.status(200).sendFile(path.resolve(__dirname, './public/index.html'));
 });
 
@@ -79,8 +83,8 @@ app.get('/login', (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/login.html'));
 });
 
-app.get('/signin', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/signin.html'));
+app.get('/signup', (req, res) => {
+	res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
 });
 
 app.get('/user', (req, res) => {
@@ -144,7 +148,7 @@ app.get(
 	'/articles/:articleName',
 	(req, res) => {
 		console.log(req.cookies);
-		res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
+		// res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
 		data.articleData.forEach((x) => {
 			// console.log(
 			// 	x.title
@@ -235,16 +239,21 @@ app.get(
 				});
 			} else next();
 		} else if (req.query.userId) {
-			let userId = parseInt(req.query.userId);
+			let userId = req.query.userId;
 			let articleDataContainer = [];
 			data.articleData.map((x, id) => {
-				if (x.author.id === userId) {
+				if (
+					x.author.id === parseInt(userId) ||
+					x.author.name.replace(/\s/gim, '-').toLowerCase() === userId ||
+					x.author.name.replace(/\s/gim, '').toLowerCase() === userId
+				) {
 					articleDataContainer.push(data.articleData[id]);
 				}
 			});
 			if (articleDataContainer.length !== 0) {
 				res.json({
 					success: true,
+					isError: false,
 					resourceAvailability: true,
 					articleData: articleDataContainer,
 				});
@@ -254,11 +263,13 @@ app.get(
 	(req, res, next) => {
 		res.json({
 			success: true,
+			isError: true,
 			resourceAvailability: false,
 		});
 	}
 );
 app.get('/data/articles/:articleName', (req, res) => {
+	let article = { isAvailable: false, data: null };
 	data.articleData.map((x, id) => {
 		// console.log(x.title, req.params.articleName);
 		if (
@@ -266,38 +277,70 @@ app.get('/data/articles/:articleName', (req, res) => {
 				.replace(/[^a-zA-Z0-9\s]/gm, '')
 				.replace(/\s/gm, '-')
 				.replace(/-$/gm, '')
-				.toLowerCase() === req.params.articleName
+				.toLowerCase() === req.params.articleName ||
+			x.id === parseInt(req.params.articleName)
 		) {
-			res.json([data.articleData[id], data.users[data.articleData[id].author.id]]);
+			article.isAvailable = true;
+			article.data = x;
 		}
 	});
-	// console.log(`Request Article Name: ${req.params.articleName}`);
+	if (article.isAvailable)
+		res.status(200).json([article.data, data.users[article.data.author.id]]);
+	else
+		res.status(404).json({
+			success: true,
+			isError: true,
+			resourceAvailability: false,
+			message: `There is no article named ${req.params.articleName}`,
+		});
 });
 
-app.get('/data/users/:userId', (req, res) => {
+app.get('/data/users/:userId', (req, res, next) => {
+	let user = { isAvailable: false, data: null, userId: null, username: null };
+
 	data.users.map((x, id) => {
-		if (x.id == req.params.userId) {
-			res.json(data.users[id]);
+		if (
+			x.id == parseInt(req.params.userId) ||
+			`${x.firstName} ${x.lastName}`.replace(/\s/gm, '-').replace(/-$/gm, '').toLowerCase() ==
+				req.params.userId.toLowerCase() ||
+			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.userId.toLowerCase()
+		) {
+			user.isAvailable = true;
+			user.data = x;
 		}
 	});
+	if (user.isAvailable) res.status(200).json({ success: true, isError: false, data: user.data });
+	else
+		res.status(404).json({
+			success: true,
+			isError: true,
+			resourceAvailability: false,
+			message: `There is no user with id ${req.params.userId}`,
+		});
 });
 
-app.get('/data/authors/:authorId', (req, res) => {
-	data.authors.map((x, id) => {
-		if (x.id == req.params.authorId) {
-			res.json(data.users.authors[id]);
-		}
-	});
-});
 app.get('/data/tags', (req, res) => {
 	res.json(data.tags);
 });
-app.get('/data/tags/:tagName', (req, res) => {
+app.get('/data/tags/:tag', (req, res) => {
+	let tag = { isAvailable: false, data: null };
 	data.tags.map((x, id) => {
-		if (x.name.toLowerCase() == req.params.tagName) {
-			res.json(data.tags[id]);
+		if (
+			x.name.toLowerCase() == req.params.tag.toLowerCase() ||
+			x.id == parseInt(req.params.tag)
+		) {
+			tag.isAvailable = true;
+			tag.data = x;
 		}
 	});
+	if (tag.isAvailable) res.status(200).json(tag.data);
+	else
+		res.status(404).json({
+			success: true,
+			isError: true,
+			resourceAvailability: false,
+			message: `There is no tag named ${req.params.tag}`,
+		});
 });
 //req.protocol + '://' + req.get('host') + req.originalUrl
 
@@ -330,7 +373,8 @@ app.post(
 
 		// console.log(errObj.errors);
 		//jshint ignore:start
-		errObj.isError ? res.json({ success: true, isError: true, message: errObj }) : next();
+		if (errObj.isError) res.json({ success: true, isError: true, message: errObj });
+		else next();
 		//jshint ignore:end
 	},
 	(req, res, next) => {
@@ -340,17 +384,37 @@ app.post(
 
 app.post('/data/submit/log-in', (req, res, next) => {
 	const { email, password } = req.body;
+	let user = { isAvailable: false, userId: null };
+	// console.log(req.body);
 	data.users.forEach((x) => {
 		if (x.email === email && x.password === password) {
-			res.json({ success: true, isError: false, message: 'Successfully logged in.' });
-		} else res.json({ success: true, isError: true, message: 'Email or password is incorrect.' });
+			// res.json({
+			// 	success: true,
+			// 	isError: false,
+			// 	message: 'Successfully logged in.',
+			// 	isRedirect: true,
+			// 	redirectUrl: `/user/${x.id}`,
+			// });
+			// res.redirect(`/user/${x.id}`);
+			user.userId = x.id;
+			user.isAvailable = true;
+		}
 	});
+	if (user.isAvailable) {
+		res.redirect(`/user/${user.userId}`);
+		// console.log(user.userId);
+	} else
+		res.json({
+			success: true,
+			isError: true,
+			message: `Email or password is incorrect.`,
+		});
 });
 
 // ? ////////////////////////////// Handles unknown requests ////////////////////////////////
 
 app.all('*', (req, res) => {
-	res.sendFile(path.resolve(__dirname, './public/404.html'));
+	res.status(404).sendFile(path.resolve(__dirname, './public/404.html'));
 	// res.json({ success: false });
 	console.log(
 		`Error : File not found. \n\t${req.protocol}\:\/\/${req.get('host') + req.originalUrl}`,

@@ -3,11 +3,11 @@ document.getElementById('form').addEventListener('submit', async (e) => {
 		method: 'POST',
 	});
 	const data = await object.json();
-	console.log(data.isError);
-	alert(data.isError);
+	console.log(data);
+	// alert(data.isError);
 	if (data.isError) {
-		console.log('came here');
-		alert('came here');
+		// console.log('came here');
+		// alert('came here');
 		e.preventDefault();
 	}
 });
