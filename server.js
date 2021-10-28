@@ -2,10 +2,11 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const exprssSession = require('express-session');
+const { check, validationResult } = require('express-validator');
+require('dotenv').config();
+// const exprssSession = require('express-session');
 // const { MongoClient } = require('mongodb');
 // const { readFile, writeFile } = require('fs');
-// const { body, validationResult } = require('express-validator');
 // const cors = require('cors');
 
 const data = require('./data/data');
@@ -14,7 +15,7 @@ const app = express();
 
 //? DATABASE CONNECTION ////////////////////////////////////
 // const client = new MongoClient(
-// 	'mongodb+srv://Admin:20030429@cluster0.vhjef.mongodb.net/Zeerum?retryWrites=true&w=majority'
+// 	`mongodb+srv:\/\/${process.env.DATABASE_USER_NAME}:${process.env.DATABASE_PASSWORD}@cluster0.vhjef.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
 // );
 
 // async function run() {
@@ -103,25 +104,6 @@ app.get('/404', (req, res) => {
 // });
 
 //? //////////////////////////////////////////////////////////////////
-// const sendArticle = (req, res) => {
-// 	data.articleData.map((x) => {
-// 		// console.log(req.params.articleName,x.title)
-// 		if (
-// 			x.title.replace(/\?/g, '') == req.params.articleName ||
-// 			x.title.replace(/\?/g, '') == req.params.articleName.replace(/\-/g, ' ')
-// 		) {
-// 			status(200).sendFile(path.resolve(__dirname, './public/article.html'));
-// 		} else
-// 			json({
-// 				request: {
-// 					success: true,
-// 					reason: 'Not Found',
-// 					status: 404,
-// 					File: req.params.articleName,
-// 				},
-// 			});
-// 	});
-// };
 //? //////////////////////////////////////////////////////////////////
 // app.get(
 // 	'/articles/:articleName',
@@ -144,73 +126,73 @@ app.get('/404', (req, res) => {
 // 	// 	});
 // 	// }
 // );
-app.get(
-	'/articles/:articleName',
-	(req, res) => {
-		console.log(req.cookies);
-		// res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
-		data.articleData.forEach((x) => {
-			// console.log(
-			// 	x.title
-			// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
-			// 		.replace(/\s/gm, '-')
-			// 		.replace(/-$/gm, ''),
-			// 	req.params.articleName
-			// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
-			// 		.replace(/\s/gm, '-')
-			// 		.replace(/-$/gm, ''),
-			// 	x.title
-			// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
-			// 		.replace(/\s/gm, '-')
-			// 		.replace(/-$/gm, '') === req.params.articleName
-			// );
-			// console.log(req.params.articleName, x.title);
-			if (
-				x.title
-					.replace(/[^a-zA-Z0-9\s]/gm, '')
-					.replace(/\s/gm, '-')
-					.replace(/-$/gm, '')
-					.toLowerCase() === req.params.articleName
-			) {
-				res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
-			}
-		});
-		// next();
-	}
-	// (req, res, next) => {
-	// 	res.status(404).json({
-	// 		request: { success: true, reason: 'Not Found', status: 404, File: req.params.articleName },
-	// 	});
-	// 	next();
-	// }
-);
-app.get(
-	'/tags/:tagName',
-	(req, res, next) => {
-		data.tags.forEach((x) => {
-			// console.log(req.params.tagName, x.name.toLowerCase());
-			if (x.name.toLowerCase() == req.params.tagName) {
-				res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
-			}
-		});
-		// next();
-	}
-	// (req, res, next) => {
-	// 	res.status(404).json({
-	// 		request: { success: true, reason: 'Not Found', status: 404, File: req.params.tagName },
-	// 	});
-	// }
-);
+app.get('/articles/:articleName', (req, res, next) => {
+	// console.log(req.cookies);
+	// res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
+	let isResourceAvailable = false;
+	data.articleData.forEach((x) => {
+		// console.log(
+		// 	x.title
+		// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
+		// 		.replace(/\s/gm, '-')
+		// 		.replace(/-$/gm, ''),
+		// 	req.params.articleName
+		// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
+		// 		.replace(/\s/gm, '-')
+		// 		.replace(/-$/gm, ''),
+		// 	x.title
+		// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
+		// 		.replace(/\s/gm, '-')
+		// 		.replace(/-$/gm, '') === req.params.articleName
+		// );
+		if (
+			x.title
+				.replace(/[^a-zA-Z0-9\s]/gm, '')
+				.replace(/\s/gm, '-')
+				.replace(/-$/gm, '')
+				.toLowerCase() === req.params.articleName ||
+			x.id == Number(req.params.articleName)
+		)
+			isResourceAvailable = true;
+	});
+	if (isResourceAvailable)
+		res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
+	else next();
+});
+
+app.get('/tags/:tagName', (req, res, next) => {
+	let isResourceAvailable = false;
+	data.tags.forEach((x) => {
+		// console.log(req.params.tagName, x.name.toLowerCase());
+		if (
+			x.name.toLowerCase() === req.params.tagName.toLowerCase() ||
+			x.id === Number(req.params.tagName)
+		) {
+			isResourceAvailable = true;
+		}
+	});
+	if (isResourceAvailable) res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
+	else next();
+});
 
 app.get('/search/:searchItem', (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
 });
-// app.get('/user/:id', (req, res) => {
-// 	res.sendFile(path.resolve(__dirname, './public/user.html'));
-// });
 
-app.get('/user/:userId', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
+app.get('/user/:userId', (req, res, next) => {
+	let isResourceAvailable = false;
+	data.users.map((x, id) => {
+		if (
+			x.id == parseInt(req.params.userId) ||
+			`${x.firstName} ${x.lastName}`.replace(/\s/gm, '-').replace(/-$/gm, '').toLowerCase() ==
+				req.params.userId.toLowerCase() ||
+			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.userId.toLowerCase()
+		) {
+			isResourceAvailable = true;
+		}
+	});
+	if (isResourceAvailable) res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
+	else next();
 });
 // ? /////////////////////////  Data GET requests  ////////////////////////////////////////
 
@@ -219,7 +201,12 @@ app.get(
 	(req, res, next) => {
 		// console.log(req.query, Object.entries(req.query).length);
 		if (Object.entries(req.query).length === 0) {
-			res.json(data.articleData);
+			res.json({
+				success: true,
+				isError: false,
+				resourceAvailability: true,
+				data: data.articleData,
+			});
 		} else next();
 	},
 	(req, res, next) => {
@@ -300,7 +287,7 @@ app.get('/data/users/:userId', (req, res, next) => {
 
 	data.users.map((x, id) => {
 		if (
-			x.id == parseInt(req.params.userId) ||
+			x.id == Number(req.params.userId) ||
 			`${x.firstName} ${x.lastName}`.replace(/\s/gm, '-').replace(/-$/gm, '').toLowerCase() ==
 				req.params.userId.toLowerCase() ||
 			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.userId.toLowerCase()
@@ -320,7 +307,7 @@ app.get('/data/users/:userId', (req, res, next) => {
 });
 
 app.get('/data/tags', (req, res) => {
-	res.json(data.tags);
+	res.json({ success: true, isError: false, resourceAvailability: true, data: data.tags });
 });
 app.get('/data/tags/:tag', (req, res) => {
 	let tag = { isAvailable: false, data: null };
@@ -346,70 +333,102 @@ app.get('/data/tags/:tag', (req, res) => {
 
 // ? //////////////////////////////  Data POST requests  ////////////////////////////////////
 app.post(
-	'/data/submit/sign-in',
+	'/data/submit/signup',
+	[
+		check('firstName').exists().withMessage('Name cannot be empty').trim().escape(),
+		check('lastName').exists().withMessage('Name cannot be empty').trim().escape(),
+		check('birthday').exists().withMessage('Birthday cannot be empty.'),
+		check('email')
+			.exists()
+			.withMessage('Email cannot be empty')
+			.isEmail()
+			.withMessage('Email is not within the standards.')
+			.normalizeEmail(),
+		check('password')
+			.exists()
+			.withMessage('password cannot be empty')
+			.isLength({ min: 8 })
+			.withMessage('Password should contain at least 15 characters')
+			.isStrongPassword({
+				minLength: 8,
+				minNumbers: 1,
+			})
+			.withMessage(
+				'Password should contain at least 8 characters including letters and numbers.'
+			),
+		check('confirmPassword', 'Passwords do not match').custom(
+			(value, { req }) => value === req.body.password
+		),
+	],
 	(req, res, next) => {
+		const validationErrors = validationResult(req);
 		console.log(req.body);
 		let errObj = { isError: false, errors: [] };
-		data.users.forEach((x) => {
-			if (
-				x.firstName.toLowerCase() == req.body.firstName.toLowerCase() &&
-				x.lastName.toLowerCase() == req.body.lastName.toLowerCase()
-			) {
-				errObj.isError = true;
-				errObj.errors.push(`nameExists`);
-			}
-			if (x.email == req.body.email) {
-				errObj.isError = true;
-				errObj.errors.push('emailExists');
-			}
-			// if (x.email === req.body.email && x.password === req.body.password) {
-			// 	res.json({
-			// 		success: true,
-			// 		message: 'Successfully created the account.',
-			// 		user: { name: `${req.body.firstName} ${req.body.lastName}`, userType: x.userType },
-			// 	});
-			// }
-		});
+		if (validationErrors.isEmpty()) {
+			data.users.forEach((x) => {
+				if (
+					x.firstName.toLowerCase() == req.body.firstName.toLowerCase() &&
+					x.lastName.toLowerCase() == req.body.lastName.toLowerCase()
+				) {
+					errObj.isError = true;
+					errObj.errors.push(`nameExists=true`);
+				}
+				if (x.email == req.body.email) {
+					errObj.isError = true;
+					errObj.errors.push('emailExists=true');
+				}
+			});
+		} else console.log(`Validation errors found ${validationErrors.errors}`);
 
-		// console.log(errObj.errors);
-		//jshint ignore:start
-		if (errObj.isError) res.json({ success: true, isError: true, message: errObj });
+		if (errObj.isError || !validationErrors.isEmpty())
+			res.json({
+				success: true,
+				isError: true,
+				message: errObj,
+				validationErrors: validationErrors,
+			});
 		else next();
-		//jshint ignore:end
 	},
 	(req, res, next) => {
-		res.json({ success: true, isError: false, message: 'Account created successfully' });
+		const errors = validationResult(req);
+		res.json({
+			success: true,
+			isError: false,
+			validationErrors: errors,
+			message: 'Account created successfully',
+		});
 	}
 );
 
-app.post('/data/submit/log-in', (req, res, next) => {
-	const { email, password } = req.body;
-	let user = { isAvailable: false, userId: null };
-	// console.log(req.body);
-	data.users.forEach((x) => {
-		if (x.email === email && x.password === password) {
-			// res.json({
-			// 	success: true,
-			// 	isError: false,
-			// 	message: 'Successfully logged in.',
-			// 	isRedirect: true,
-			// 	redirectUrl: `/user/${x.id}`,
-			// });
-			// res.redirect(`/user/${x.id}`);
-			user.userId = x.id;
-			user.isAvailable = true;
-		}
-	});
-	if (user.isAvailable) {
-		res.redirect(`/user/${user.userId}`);
-		// console.log(user.userId);
-	} else
-		res.json({
-			success: true,
-			isError: true,
-			message: `Email or password is incorrect.`,
-		});
-});
+app.post(
+	'/data/submit/log-in',
+	[
+		check('email')
+			.exists()
+			.withMessage('Email cannot be empty')
+			.isEmail()
+			.withMessage('Email is not within the standards.')
+			.normalizeEmail(),
+		check('password').exists().withMessage('Password cannot be empty'),
+	],
+	(req, res, next) => {
+		const validationErrors = validationResult(req);
+		console.log(req.body);
+		const { email, password } = req.body;
+		let user = { isAvailable: false, userId: null, username: null };
+		if (validationErrors.isEmpty()) {
+			data.users.forEach((x) => {
+				if (x.email === email && x.password === password) {
+					user.userId = x.id;
+					user.username = `${x.firstName.toLowerCase()}-${x.lastName.toLowerCase()}`;
+					user.isAvailable = true;
+				}
+			});
+		} else console.log(`Validation errors found. ${validationErrors.errors}`);
+		if (user.isAvailable) res.redirect(`/user/${user.username}`);
+		else res.redirect('/login?emailOrPasswordMismatch=true');
+	}
+);
 
 // ? ////////////////////////////// Handles unknown requests ////////////////////////////////
 
@@ -424,4 +443,4 @@ app.all('*', (req, res) => {
 
 // ? ////////////////////////// Server call /////////////////////////////////////////////////
 
-app.listen(5500, () => console.log('user hit the server'));
+app.listen(process.env.PORT, () => console.log(`user hit the server on ${process.env.PORT}`));

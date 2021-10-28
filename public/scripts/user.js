@@ -45,6 +45,9 @@ fetch(`/data/users/${userId}`)
 	.then(({ isError, data }) => {
 		if (!isError) {
 			document.title = `ZEERUM \- ${data.firstName}\'s Profile`;
+			document.getElementById(
+				'user-profile'
+			).innerHTML = `<img class="user-profile-img" src="${data.profilePicture}">`;
 			document.querySelector(
 				'.user-img-container'
 			).innerHTML = `<img src="${data.profilePicture}" alt="" /><span class="edit-profile-picture"><i class="fas fa-pen"></i></span>`;
@@ -58,3 +61,8 @@ fetch(`/data/users/${userId}`)
 				<span class="articles-number">${articlesPublished} articles published</span>`;
 		} else console.log(`Error occurred when requesting user data.`);
 	});
+
+document.getElementById('user-profile').addEventListener('click', () => {
+	const userProfileDropDown = document.querySelector('.user-profile-dropdown');
+	userProfileDropDown.classList.toggle('user-profile-dropdown-active');
+});

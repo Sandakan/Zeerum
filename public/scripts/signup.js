@@ -1,9 +1,19 @@
-var isErrorInForm = {
+import reportError from './formReportError.js';
+const queryErrors = document.location.search.split('?').at(-1);
+let isErrorInForm = {
 	name: null,
 	email: null,
 	password: null,
-	retypePassword: null,
+	confirmPassword: null,
 };
+
+if (queryErrors.includes('emailExists=true')) {
+	reportError('email', 'add', 'Email is already taken.');
+}
+if (queryErrors.includes('nameExists=true')) {
+	reportError('first-name', 'add', 'Firstname is used.');
+	reportError('last-name', 'add', 'Lastname is used.');
+}
 
 const isNullOrEmpty = (id) => {
 	const element = document.getElementById(id);
@@ -16,21 +26,6 @@ const isNullOrEmpty = (id) => {
 		reportError(id, 'remove');
 		return false;
 	}
-};
-
-const reportError = (id, type, errMsg) => {
-	if (type === 'add') {
-		document.querySelector(`.${id}-container .data-error-container`).style.display = 'block';
-		document.querySelector(`.${id}-container .data-error-container .data-error`).innerText =
-			errMsg;
-		document.getElementById(id).style.backgroundColor = 'rgba(255,0,0,0.3)';
-		console.log(`error added to element : ${id}`);
-	} else if (type === 'remove') {
-		document.querySelector(`.${id}-container .data-error-container`).style.display = 'none';
-		document.querySelector(`.${id}-container .data-error-container .data-error`).innerText = '';
-		document.getElementById(id).style.backgroundColor = '#ccc';
-		console.log(`error removed from element : ${id}`);
-	} else console.log(`error: unknown error type \'${type}\'`);
 };
 
 const nameValidator = (id) => {
@@ -87,21 +82,21 @@ const passwordValidator = (id) => {
 	}
 };
 
-const retypePasswordValidator = (id, retypeId) => {
+const retypePasswordValidator = (id, confirmId) => {
 	const password = document.getElementById(id);
-	const retypePassword = document.getElementById(retypeId);
-	console.log(password.value, retypePassword.value);
-	if (!isNullOrEmpty(retypeId)) {
-		if (password.value !== retypePassword.value) {
-			reportError('retype-password', 'add', 'Retyped password does not match');
-			isErrorInForm.retypePassword = true;
+	const confirmPassword = document.getElementById(confirmId);
+	console.log(password.value, confirmPassword.value);
+	if (!isNullOrEmpty(confirmId)) {
+		if (password.value !== confirmPassword.value) {
+			reportError('confirm-password', 'add', 'Retyped password does not match');
+			isErrorInForm.confirmPassword = true;
 		} else {
-			reportError('retype-password', 'remove');
-			isErrorInForm.retypePassword = false;
+			reportError('confirm-password', 'remove');
+			isErrorInForm.confirmPassword = false;
 		}
 	} else {
-		reportError('retype-password', 'remove');
-		isErrorInForm.retypePassword = false;
+		reportError('confirm-password', 'remove');
+		isErrorInForm.confirmPassword = false;
 	}
 };
 
@@ -125,9 +120,9 @@ const retypePasswordValidator = (id, retypeId) => {
 // 	!isErrorInForm.name &&
 // 	!isErrorInForm.email &&
 // 	!isErrorInForm.password &&
-// 	!isErrorInForm.retypePassword
+// 	!isErrorInForm.confirmPassword
 // ) {
-// 	const fetchedData = await fetch('/data/submit/sign-in', { method: 'POST' });
+// 	const fetchedData = await fetch('/data/submit/signup', { method: 'POST' });
 // 	const data = await fetchedData.json();
 // 	if (data.isError) {
 // 		data.message.errors.forEach((x) => {
@@ -143,7 +138,7 @@ const retypePasswordValidator = (id, retypeId) => {
 // 		console.log('Validation successful. Sending form data...');
 // 		return true;
 // 	}
-// fetch('/data/submit/sign-in', {
+// fetch('/data/submit/signup', {
 // 	method: 'POST',
 // 	body: JSON.stringify(data),
 // 	headers: {
@@ -208,42 +203,43 @@ document.getElementById('form').addEventListener('submit', (e) => {
 	};
 
 	if (
-		!isErrorInForm.name &&
-		!isErrorInForm.email &&
-		!isErrorInForm.password &&
-		!isErrorInForm.retypePassword
+		isErrorInForm.name ||
+		isErrorInForm.email ||
+		isErrorInForm.password ||
+		isErrorInForm.confirmPassword
 	) {
-		// let fetchedData = {
-		// 	success: false,
-		// 	isError: true,
-		// };
-		fetch('/data/submit/sign-in', {
-			method: 'POST',
-			body: JSON.stringify(data),
-			headers: {
-				'Content-type': 'application/json; charset=UTF-8',
-			},
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				fetchedData = data;
-				console.log(fetchedData);
-			});
-		if (fetchedData.isError) {
-			alert('error found');
-			e.preventDefault();
-			fetchedData.message.errors.forEach((x) => {
-				if (x === 'emailExists') {
-					reportError('email', 'add', 'Email exists in the server');
-				} else if (x === 'nameExists') {
-					reportError('first-name', 'add', 'First name exists');
-					reportError('last-name', 'add', 'Last name exists');
-				}
-			});
-		} else {
-			alert('Validation successful. Sending form data...');
-		}
-	} else e.preventDefault();
+		e.preventDefault();
+		// // let fetchedData = {
+		// // 	success: false,
+		// // 	isError: true,
+		// // };
+		// fetch('/data/submit/signup', {
+		// 	method: 'POST',
+		// 	body: JSON.stringify(data),
+		// 	headers: {
+		// 		'Content-type': 'application/json; charset=UTF-8',
+		// 	},
+		// })
+		// 	.then((response) => response.json())
+		// 	.then((data) => {
+		// 		fetchedData = data;
+		// 		console.log(fetchedData);
+		// 	});
+		// if (fetchedData.isError) {
+		// 	alert('error found');
+		// 	e.preventDefault();
+		// 	fetchedData.message.errors.forEach((x) => {
+		// 		if (x === 'emailExists') {
+		// 			reportError('email', 'add', 'Email exists in the server');
+		// 		} else if (x === 'nameExists') {
+		// 			reportError('first-name', 'add', 'First name exists');
+		// 			reportError('last-name', 'add', 'Last name exists');
+		// 		}
+		// 	});
+		// } else {
+		// 	alert('Validation successful. Sending form data...');
+		// }
+	}
 });
 
 // ? ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -7,9 +7,9 @@
     background-color: rgba(0, 0, 0, 0.1);
 }
 */
-.nav-bar .link-list ul li[name="get-started"]:hover{
+.nav-bar .link-list ul li[id="get-started"]:hover{
     background: var(--background-color);
-    
+    border: 2px solid var(--highlight-color);
 }
 
 .nav-bar .link-list ul li:hover a {

@@ -104,6 +104,11 @@
 	); */
 }
 
+.discover-items .heading-container a {
+	color: #fff;
+	text-decoration: none;
+}
+
 /*////////////////////////////////////////////////   @ MEDIA   /////////////////////////////////////////////////////////*/
 @media screen and (min-width: 1920px) {
 	.discover-items {
