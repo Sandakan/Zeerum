@@ -1,4 +1,3 @@
-// jshint ignore:start
 export default async (url, func) => {
 	try {
 		const object = await fetch(url);

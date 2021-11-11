@@ -19,29 +19,47 @@ document.querySelector('#search').addEventListener('input', () => {
 	setTimeout(() => {
 		let searchInput = document.querySelector('#search').value;
 		if (searchInput !== '') {
-			fetchData(`/data/articles?search=${searchInput.toLowerCase()}`, (data) => {
-				// console.log(data);
-				const { success, resourceAvailability, articleData } = data;
-				if (resourceAvailability) {
-					let temp = '';
-					articleData.forEach((x) => {
+			fetchData(`/data/search/${searchInput.toLowerCase()}`, (res) => {
+				if (res.success) {
+					const { articles, users, tags } = res.results;
+					let temp = [];
+					articles.forEach((x) => {
 						let searchedLettersHighlight = x.title
 							.toLowerCase()
 							.replaceAll(
 								`${searchInput.toLowerCase()}`,
-								`<span class="searched-letter-highlight">${searchInput}</span>`
+								`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
 							);
-						// .split('')
-						// .map((y) => {
-						// 	if (searchInput.toLowerCase().includes(y.toLowerCase())) {
-						// 		return `<span class="searched-letter-highlight">${y}</span>`;
-						// 	} else return y;
-						// })
-						// .join('');
-						temp += `<a href="/articles/${x.title}" class="search-result">${searchedLettersHighlight}</a>`;
+						if (temp.length < 3)
+							temp.push(
+								`<a href="${x.url}" class="search-result"><img src="/images/article.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
+							);
 					});
-					console.log(temp);
-					document.querySelector('.search-results-container').innerHTML = temp;
+					users.forEach((x) => {
+						let searchedLettersHighlight = x.fullname
+							.toLowerCase()
+							.replaceAll(
+								`${searchInput.toLowerCase()}`,
+								`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
+							);
+						if (temp.length < 3)
+							temp.push(
+								`<a href="${x.url}" class="search-result"><img src="/images/user.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
+							);
+					});
+					tags.forEach((x) => {
+						let searchedLettersHighlight = x.name
+							.toLowerCase()
+							.replaceAll(
+								`${searchInput.toLowerCase()}`,
+								`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
+							);
+						if (temp.length < 3)
+							temp.push(
+								`<a href="${x.url}" class="search-result"><img src="/images/tag.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
+							);
+					});
+					document.querySelector('.search-results-container').innerHTML = temp.join('');
 				} else {
 					document.querySelector(
 						'.search-results-container'
@@ -51,7 +69,7 @@ document.querySelector('#search').addEventListener('input', () => {
 		} else {
 			document.querySelector(
 				'.search-results-container'
-			).innerHTML = `<div class="search-anything"><img src="/images/search.png" alt="A magnifying glass">Search for anything from here including articles, tags, authors, hot topics etc.</div>`;
+			).innerHTML = `<div class="search-description"><img src="/images/search.png" alt="A magnifying glass">Search for anything from here including articles, tags, authors, hot topics etc.</div>`;
 		}
 	}, 300);
 });

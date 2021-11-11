@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Sign in to Zeerum</title>
+		<title>Sign up to Zeerum</title>
 		<link rel="icon" href="/images/icon.png" type="image/png" />
 		<link rel="stylesheet" href="/styles/main.css" />
 		<link rel="stylesheet" href="/styles/sign-up.css" />
@@ -43,18 +43,11 @@
 			<div class="signup-description">
 				<img src="images/sign_up/sign-up.svg" alt="" />
 				<div class="description">
-					Sign in with us to receive articles around the world to your inbox. Engage with the
+					Sign up with us to receive articles around the world to your inbox. Engage with the
 					ZEERUM community to help each other and to share knowledge.
 				</div>
 			</div>
-			<form
-				action="/data/submit/signup"
-				class="form"
-				id="form"
-				method="POST"
-				target="_self"
-				name="signup"
-			>
+			<form action="/signup" class="form" id="form" method="POST" target="_self" name="signup">
 				<div class="signup-heading">Join with Us</div>
 				<div class="first-name-container">
 					<input
@@ -138,7 +131,7 @@
 						<span class="data-error"></span>
 					</div>
 				</div>
-				<input type="submit" id="submit" value="Sign In" aria-label="Submit your input" />
+				<input type="submit" id="submit" value="Sign up" aria-label="Submit your input" />
 				<a href="login" class="log-in">Are you already with us? Then Log in.</a>
 			</form>
 		</div>
@@ -159,7 +152,7 @@
 					tech-article website, now it grows as one of the most visited websites for ideas and
 					information to keep up with the world and to widen the horizon of creativity.
 					<br /><br />
-					Made with <span style="color: red">❤</span> by Sandakan as a simple ICT project.
+					Made with <span class="heart">❤</span> by Sandakan as a simple ICT project.
 				</div>
 				<div class="newsletter-description">
 					<ul>
@@ -177,12 +170,12 @@
 						<li><a href="/discover">Discover</a></li>
 						<li><a href="/write">Write</a></li>
 						<li><a href="/about">About</a></li>
-						<li><a href="/signup">Sign in</a></li>
+						<li><a href="/signup">Sign up</a></li>
 						<li><a href="/login">Log in</a></li>
 					</ul>
 				</div>
 			</div>
-			<div class="copyright">All rights reserved &copy; 2020-2021.</div>
+			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
 
 		<script async type="module" src="/scripts/signup.js"></script>

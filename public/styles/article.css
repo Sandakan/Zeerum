@@ -187,6 +187,36 @@
 	bottom: -20px;
 	left: 60px;
 	font-size: 0.9rem;
+	padding-right: 100px;
+	color: hsla(0, 0%, 0%, 0.7);
+}
+.article-data-container > .article-data > .footnotes a {
+	color: initial;
+}
+
+.article-data-container > .article-data > .tags {
+	position: relative;
+	bottom: -20px;
+	left: 60px;
+	margin-top: 20px;
+	display: flex;
+	flex-wrap: wrap;
+}
+.article-data-container > .article-data > .tags a {
+	text-decoration: none;
+	color: #fff;
+	outline: none;
+}
+.article-data-container > .article-data > .tags a .tag {
+	width: -moz-fit-content;
+	width: fit-content;
+	height: -moz-fit-content;
+	height: fit-content;
+	padding: 3px 8px;
+	margin: 0 10px 0 0;
+	background-color: var(--highlight-color);
+	border-radius: 20px;
+	font-size: 1.2rem;
 }
 
 /*? //////////////////////////////////////////// End of article styling ///////////////////////////////////////////// */
@@ -212,6 +242,7 @@
 
 .author {
 	width: 100%;
+	height: -moz-fit-content;
 	height: fit-content;
 	background-color: transparent;
 	display: flex;
@@ -224,19 +255,24 @@
 	width: 100%;
 	margin: 20px 0 10px 0;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 }
 
 .author .author-data-container img {
-	width: 50px;
-	height: 50px;
+	width: 60px;
+	height: 60px;
 	border-radius: 50px;
+	margin-bottom: 10px;
+	cursor: pointer;
 }
 
 .author .author-data-container .name {
 	color: #000;
 	margin: 0 15px;
+	font-size: 1.2rem;
+	cursor: pointer;
 }
 
 .author hr {
@@ -375,7 +411,7 @@
 }
 .author-information-container .comments-section .comments {
 	width: 90%;
-	min-height: 250px;
+	min-height: 200px;
 	height: fit-content;
 	border-radius: 10px;
 	margin: 20px 0 10px 0;
@@ -387,12 +423,28 @@
 
 .author-information-container .comments-section .comments .comment {
 	display: block;
-	padding: 5px 5px 12px 15px;
+	padding: 5px 5px 12px 5px;
 	position: relative;
+	display: flex;
+	flex-direction: row;
 	word-break: break-word;
 }
+.author-information-container .comments-section .comments .comment img {
+	width: 25px;
+	height: 25px;
+	border-radius: 50px;
+	margin: 0 7px 0 5px;
+	cursor: pointer;
+}
+.author-information-container .comments-section .comments .comment .text .commented-date {
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	display: block;
+	color: hsla(0, 0%, 0%, 0.6);
+	word-spacing: 2px;
+}
 
-.author-information-container .comments-section .comments .comment::after {
+/* .author-information-container .comments-section .comments .comment::after {
 	content: '';
 	position: absolute;
 	top: 12px;
@@ -404,7 +456,7 @@
 	background-color: #000;
 	display: block;
 	border-radius: 10px;
-}
+} */
 
 .author-information-container .comments-section .comments .comment .date {
 	position: absolute;
@@ -426,6 +478,12 @@
 /*? //////////////////////////////////////////////   @ MEDIA    ///////////////////////////////////////////////////// */
 
 @media screen and (min-width: 1920px) {
+	.article-elements-container {
+		width: 80vw;
+		position: relative;
+		left: 50%;
+		transform: translateX(-50%);
+	}
 	.author-information-container .comments-section .add-comment input[name='add-comment'] {
 		height: 50px;
 	}

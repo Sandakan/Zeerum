@@ -1,71 +1,74 @@
+// ? PACKAGES //////////////////////////////////////////////////////////////////////////////////////////
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { check, validationResult } = require('express-validator');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
+const passport = require('passport');
+const crypto = require('crypto');
+const cors = require('cors');
+const expressIp = require('express-ip');
 require('dotenv').config();
-// const exprssSession = require('express-session');
+// const utils = require('util');
 // const { MongoClient } = require('mongodb');
 // const { readFile, writeFile } = require('fs');
-// const cors = require('cors');
+//? DATA IMPORT //////////////////////////////////////////////////////////////////////////////////////////
 
 const data = require('./data/data');
-// const home = require('./routes/home.js');
+
+// ? MIDDLEWARE & FUNCTION IMPORTS   /////////////////////////////////////////////////////////////////////
+const authenticate = require('./middleware/authenticate');
+const errorHandler = require('./middleware/errorHandler');
+const { connectToDB, createUser, checkUser } = require('./config/database');
+connectToDB();
+// ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
 
-//? DATABASE CONNECTION ////////////////////////////////////
-// const client = new MongoClient(
-// 	`mongodb+srv:\/\/${process.env.DATABASE_USER_NAME}:${process.env.DATABASE_PASSWORD}@cluster0.vhjef.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`
-// );
+// ? //////////////////////////////////// MONGOOSE CONNECTION ///////////////////////////////////////////
+const mongooseConnection = mongoose
+	.connect(process.env.LOCAL_DATABASE_CONNECTION_STRING, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+	})
+	.then((m) => m.connection.getClient());
 
-// async function run() {
-// 	try {
-// 		await client.connect();
-// 		console.log('Connected correctly to the database server');
-// 		const database = client.db('Zeerum');
-// 		const collection = database.collection('users');
-// 		// Construct a document
-// 		// let personDocument = {
-// 		// 	name: { first: 'Alan', last: 'Turing' },
-// 		// 	birth: new Date(1912, 5, 23), // June 23, 1912
-// 		// 	death: new Date(1954, 5, 7), // June 7, 1954
-// 		// 	contribs: ['Turing machine', 'Turing test', 'Turingery'],
-// 		// 	views: 1250000,
-// 		// };
-// 		// // Insert a single document, wait for promise so we can read it back
-// 		// const p = await col.insertOne(personDocument);
-// 		// Find one document
-// 		const myDocument = await collection.findOne();
-// 		// Print to the console
-// 		console.log(myDocument);
-// 	} catch (err) {
-// 		console.log(err.stack);
-// 	} finally {
-// 		await client.close();
-// 	}
-// }
-// run().catch(console.dir);
-
-// ? //////////////////////////////////
-
+// ? ///////////////////////////////// GLOBAL MIDDLEWARE ///////////////////////////////////////////////
+// app.set('view engine', 'ejs');
+app.use(express.static('./public'));
 // parse form data
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse json
 app.use(bodyParser.json());
 //handles cross-origin-resource-sharing
-// app.use(cors());
+app.use(cors());
 // handles cookies
 app.use(cookieParser());
+// sets ip-related information
+app.use(expressIp().getIpInfoMiddleware);
+// handles sessions required for user authentication and authorization
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET,
+		cookie: { maxAge: 1000 * 60 * 60 * 24 }, // Session cookie expires in one day(s)
+		resave: false,
+		saveUninitialized: true,
+		store: MongoStore.create({
+			clientPromise: mongooseConnection,
+			dbName: 'Zeerum',
+			collection: 'sessions',
+			stringify: false,
+			autoRemove: 'interval',
+			autoRemoveInterval: 1,
+		}),
+	})
+);
 
-// const resSender = () => {};
-
-app.use(express.static('./public'));
-
-// app.use('/', home);
+// ? /////////////////////////////////// MAIN ROUTES ///////////////////////////////////////////////
 
 app.get('/', (req, res) => {
-	console.log(req.cookies);
-	// res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
 	res.status(200).sendFile(path.resolve(__dirname, './public/index.html'));
 });
 
@@ -81,19 +84,32 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/login.html'));
+	if (req.session.userId || req.session.username) res.status(307).redirect('/profile');
+	else res.status(200).sendFile(path.resolve(__dirname, './public/login.html'));
 });
 
 app.get('/signup', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
+	if (req.session.username || req.session.userId) res.status(307).redirect('/profile');
+	else res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
 });
 
 app.get('/user', (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
 });
 
+app.get('/profile', authenticate, (req, res) => {
+	res.status(200).sendFile(path.resolve(__dirname, './public/profile.html'));
+});
+
 app.get('/404', (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/404.html'));
+});
+
+app.get('/logout', (req, res) => {
+	req.session.destroy((err) => {
+		console.log(err);
+		res.status(308).redirect('/');
+	});
 });
 
 // app.get('/articles', (req, res) => {
@@ -105,53 +121,16 @@ app.get('/404', (req, res) => {
 
 //? //////////////////////////////////////////////////////////////////
 //? //////////////////////////////////////////////////////////////////
-// app.get(
-// 	'/articles/:articleName',
-// 	(req, res) => {
-// 		data.articleData.map((x) => {
-// 			// console.log(req.params.articleName,x.title)
-// 			if (
-// 				x.title.replace(/\?/g, '') == req.params.articleName ||
-// 				x.title.replace(/\?/g, '') == req.params.articleName.replace(/\-/g, ' ')
-// 			) {
-// 				return void res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
-// 			}
-// 		});
-// 		return void res.status(404).sendFile(path.resolve(__dirname, './public/index.html'));
-// 		// next();
-// 	}
-// 	// (req, res, next) => {
-// 	// 	res.status(404).json({
-// 	// 		request: { success: true, reason: 'Not Found', status: 404, File: req.params.articleName },
-// 	// 	});
-// 	// }
-// );
-app.get('/articles/:articleName', (req, res, next) => {
-	// console.log(req.cookies);
-	// res.cookie('isLoggedIn', false, { expires: new Date(Date.now() + 900000) });
+app.get('/articles/:article', (req, res, next) => {
 	let isResourceAvailable = false;
 	data.articleData.forEach((x) => {
-		// console.log(
-		// 	x.title
-		// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
-		// 		.replace(/\s/gm, '-')
-		// 		.replace(/-$/gm, ''),
-		// 	req.params.articleName
-		// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
-		// 		.replace(/\s/gm, '-')
-		// 		.replace(/-$/gm, ''),
-		// 	x.title
-		// 		.replace(/[^a-zA-Z0-9\s]/gm, '')
-		// 		.replace(/\s/gm, '-')
-		// 		.replace(/-$/gm, '') === req.params.articleName
-		// );
 		if (
 			x.title
 				.replace(/[^a-zA-Z0-9\s]/gm, '')
 				.replace(/\s/gm, '-')
 				.replace(/-$/gm, '')
-				.toLowerCase() === req.params.articleName ||
-			x.id == Number(req.params.articleName)
+				.toLowerCase() === req.params.article ||
+			x.id == Number(req.params.article)
 		)
 			isResourceAvailable = true;
 	});
@@ -160,13 +139,12 @@ app.get('/articles/:articleName', (req, res, next) => {
 	else next();
 });
 
-app.get('/tags/:tagName', (req, res, next) => {
+app.get('/tags/:tag', (req, res, next) => {
 	let isResourceAvailable = false;
 	data.tags.forEach((x) => {
-		// console.log(req.params.tagName, x.name.toLowerCase());
 		if (
-			x.name.toLowerCase() === req.params.tagName.toLowerCase() ||
-			x.id === Number(req.params.tagName)
+			x.name.toLowerCase() === req.params.tag.toLowerCase() ||
+			x.id === Number(req.params.tag)
 		) {
 			isResourceAvailable = true;
 		}
@@ -181,9 +159,9 @@ app.get('/search/:searchItem', (req, res) => {
 
 app.get('/user/:userId', (req, res, next) => {
 	let isResourceAvailable = false;
-	data.users.map((x, id) => {
+	data.users.map((x) => {
 		if (
-			x.id == parseInt(req.params.userId) ||
+			x.userId == parseInt(req.params.userId) ||
 			`${x.firstName} ${x.lastName}`.replace(/\s/gm, '-').replace(/-$/gm, '').toLowerCase() ==
 				req.params.userId.toLowerCase() ||
 			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.userId.toLowerCase()
@@ -196,41 +174,78 @@ app.get('/user/:userId', (req, res, next) => {
 });
 // ? /////////////////////////  Data GET requests  ////////////////////////////////////////
 
+app.get('/data/search/:searchPhrase', (req, res, next) => {
+	let resourceAvailability = false;
+	let results = { articles: [], users: [], tags: [] };
+	data.articleData.forEach((x) => {
+		if (x.title.toLowerCase().includes(req.params.searchPhrase.toLowerCase())) {
+			results.articles.push({
+				title: x.title,
+				url: `/articles/${x.title
+					.replace(/[^a-zA-Z0-9\s]/gm, '')
+					.replace(/\s/gm, '-')
+					.replace(/-$/gm, '')
+					.toLowerCase()}`,
+			});
+			resourceAvailability = true;
+		}
+	});
+
+	data.users.forEach((x) => {
+		if (
+			`${x.firstName} ${x.lastName}`
+				.toLowerCase()
+				.includes(req.params.searchPhrase.toLowerCase())
+		) {
+			results.users.push({
+				fullname: `${x.firstName} ${x.lastName}`,
+				url: `/user/${x.firstName.toLowerCase()}-${x.lastName.toLowerCase()}`,
+			});
+			resourceAvailability = true;
+		}
+	});
+
+	data.tags.forEach((x) => {
+		if (x.name.toLowerCase().includes(req.params.searchPhrase.toLowerCase())) {
+			results.tags.push({ name: x.name, url: `/tags/${x.name.toLowerCase()}` });
+			resourceAvailability = true;
+		}
+	});
+
+	if (resourceAvailability) {
+		res.status(200).json({
+			success: true,
+			status: 200,
+			message: 'Request successful.',
+			results: results,
+		});
+	} else
+		res.status(404).json({
+			success: false,
+			status: 404,
+			message: 'Result cannot be found. Try searching using different keywords.',
+		});
+});
+
 app.get(
 	'/data/articles',
 	(req, res, next) => {
-		// console.log(req.query, Object.entries(req.query).length);
 		if (Object.entries(req.query).length === 0) {
-			res.json({
+			res.status(200).json({
 				success: true,
-				isError: false,
-				resourceAvailability: true,
+				status: 200,
+				message: `Request successful.`,
 				data: data.articleData,
 			});
 		} else next();
 	},
 	(req, res, next) => {
-		if (req.query.search) {
-			let articleDataContainer = [];
-			data.articleData.map((x, id) => {
-				// console.log(x.title.includes(req.query.search));
-				if (x.title.toLowerCase().includes(req.query.search)) {
-					articleDataContainer.push(data.articleData[id]);
-				}
-			});
-			if (articleDataContainer.length !== 0) {
-				res.json({
-					success: true,
-					resourceAvailability: true,
-					articleData: articleDataContainer,
-				});
-			} else next();
-		} else if (req.query.userId) {
+		if (req.query.userId) {
 			let userId = req.query.userId;
 			let articleDataContainer = [];
 			data.articleData.map((x, id) => {
 				if (
-					x.author.id === parseInt(userId) ||
+					x.author.userId === parseInt(userId) ||
 					x.author.name.replace(/\s/gim, '-').toLowerCase() === userId ||
 					x.author.name.replace(/\s/gim, '').toLowerCase() === userId
 				) {
@@ -238,106 +253,175 @@ app.get(
 				}
 			});
 			if (articleDataContainer.length !== 0) {
-				res.json({
+				res.status(200).json({
 					success: true,
-					isError: false,
-					resourceAvailability: true,
-					articleData: articleDataContainer,
+					status: 200,
+					message: `Request successful.`,
+					data: articleDataContainer,
 				});
 			} else next();
 		}
 	},
 	(req, res, next) => {
-		res.json({
-			success: true,
-			isError: true,
-			resourceAvailability: false,
+		res.status(404).json({
+			success: false,
+			status: 404,
+			message: `We couldn't find find what you were looking for`,
 		});
 	}
 );
-app.get('/data/articles/:articleName', (req, res) => {
-	let article = { isAvailable: false, data: null };
+app.get('/data/articles/:article', (req, res) => {
+	let article = { isAvailable: false, data: null, author: null };
 	data.articleData.map((x, id) => {
-		// console.log(x.title, req.params.articleName);
+		// console.log(x.title, req.params.article);
 		if (
 			x.title
 				.replace(/[^a-zA-Z0-9\s]/gm, '')
 				.replace(/\s/gm, '-')
 				.replace(/-$/gm, '')
-				.toLowerCase() === req.params.articleName ||
-			x.id === parseInt(req.params.articleName)
+				.toLowerCase() === req.params.article ||
+			x[id] === parseInt(req.params.article)
 		) {
 			article.isAvailable = true;
 			article.data = x;
+			article.author = data.users[x.author.userId];
 		}
 	});
 	if (article.isAvailable)
-		res.status(200).json([article.data, data.users[article.data.author.id]]);
+		res.status(200).json({
+			success: true,
+			status: 200,
+			data: [
+				article.data,
+				{
+					userId: article.author.userId,
+					firstName: article.author.firstName,
+					lastName: article.author.lastName,
+					fullName: `${article.author.firstName}-${article.author.lastName}`,
+					profilePictureUrl: article.author.profilePictureUrl,
+				},
+			],
+		});
 	else
 		res.status(404).json({
-			success: true,
-			isError: true,
-			resourceAvailability: false,
-			message: `There is no article named ${req.params.articleName}`,
+			success: false,
+			message: `There is no article named ${req.params.article}`,
 		});
 });
 
-app.get('/data/users/:userId', (req, res, next) => {
+app.get('/data/users/:user', (req, res, next) => {
 	let user = { isAvailable: false, data: null, userId: null, username: null };
 
 	data.users.map((x, id) => {
 		if (
-			x.id == Number(req.params.userId) ||
+			x.userId == Number(req.params.user) ||
 			`${x.firstName} ${x.lastName}`.replace(/\s/gm, '-').replace(/-$/gm, '').toLowerCase() ==
-				req.params.userId.toLowerCase() ||
-			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.userId.toLowerCase()
+				req.params.user.toLowerCase() ||
+			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.user.toLowerCase()
 		) {
 			user.isAvailable = true;
-			user.data = x;
+			user.data = {
+				userId: x.userId,
+				firstName: x.firstName,
+				lastName: x.lastName,
+				profilePictureUrl: x.profilePictureUrl,
+				followers: x.followers,
+				followings: x.followings,
+				country: x.country,
+				userType: x.userType,
+				registeredDate: x.registeredDate,
+			};
 		}
 	});
-	if (user.isAvailable) res.status(200).json({ success: true, isError: false, data: user.data });
+	if (user.isAvailable)
+		res.status(200).json({
+			success: true,
+			status: 200,
+			message: 'Request successful.',
+			data: user.data,
+		});
 	else
 		res.status(404).json({
-			success: true,
-			isError: true,
-			resourceAvailability: false,
-			message: `There is no user with id ${req.params.userId}`,
+			success: false,
+			message: `There is no user with the name/id ${req.params.user}`,
 		});
 });
 
 app.get('/data/tags', (req, res) => {
-	res.json({ success: true, isError: false, resourceAvailability: true, data: data.tags });
+	res.status(200).json({
+		success: true,
+		status: 200,
+		message: `Request successful.`,
+		data: data.tags,
+	});
 });
+
 app.get('/data/tags/:tag', (req, res) => {
-	let tag = { isAvailable: false, data: null };
+	let tag = { resourceAvailability: false, data: null };
 	data.tags.map((x, id) => {
 		if (
 			x.name.toLowerCase() == req.params.tag.toLowerCase() ||
-			x.id == parseInt(req.params.tag)
+			x[id] == parseInt(req.params.tag)
 		) {
-			tag.isAvailable = true;
+			tag.resourceAvailability = true;
 			tag.data = x;
 		}
 	});
-	if (tag.isAvailable) res.status(200).json(tag.data);
+	if (tag.resourceAvailability) res.status(200).json(tag.data);
 	else
 		res.status(404).json({
-			success: true,
-			isError: true,
-			resourceAvailability: false,
+			success: false,
 			message: `There is no tag named ${req.params.tag}`,
 		});
 });
-//req.protocol + '://' + req.get('host') + req.originalUrl
+
+app.get('/data/profile', authenticate, (req, res) => {
+	const {
+		userId,
+		firstName,
+		lastName,
+		profilePictureUrl,
+		followers,
+		followings,
+		registeredDate,
+		userType,
+		country,
+	} = req.session.user;
+
+	const articlesPublished = (userId) => {
+		let count = 0;
+		data.articleData.forEach((x) => {
+			if (x.author.userId === userId) count++;
+		});
+		return count;
+	};
+
+	res.status(200).json({
+		success: true,
+		status: 200,
+		message: `Request successful.`,
+		data: {
+			userId: userId,
+			firstName: firstName,
+			lastName: lastName,
+			profilePictureUrl: profilePictureUrl,
+			followers: followers,
+			followings: followings,
+			registeredDate: registeredDate,
+			userType: userType,
+			country: country,
+			articlesPublished: articlesPublished(),
+		},
+	});
+});
 
 // ? //////////////////////////////  Data POST requests  ////////////////////////////////////
 app.post(
-	'/data/submit/signup',
+	'/signup',
 	[
 		check('firstName').exists().withMessage('Name cannot be empty').trim().escape(),
 		check('lastName').exists().withMessage('Name cannot be empty').trim().escape(),
-		check('birthday').exists().withMessage('Birthday cannot be empty.'),
+		check('birthday').exists().withMessage('Birthday cannot be empty.').toDate(),
 		check('email')
 			.exists()
 			.withMessage('Email cannot be empty')
@@ -348,60 +432,70 @@ app.post(
 			.exists()
 			.withMessage('password cannot be empty')
 			.isLength({ min: 8 })
-			.withMessage('Password should contain at least 15 characters')
-			.isStrongPassword({
-				minLength: 8,
-				minNumbers: 1,
-			})
-			.withMessage(
-				'Password should contain at least 8 characters including letters and numbers.'
-			),
+			.withMessage('Password should contain at least 8 characters'),
+		// .isStrongPassword({
+		// 	minLength: 8,
+		// 	minNumbers: 1,
+		// })
+		// .withMessage(
+		// 	'Password should contain at least 8 characters including letters and numbers.'
+		// ),
 		check('confirmPassword', 'Passwords do not match').custom(
 			(value, { req }) => value === req.body.password
 		),
 	],
-	(req, res, next) => {
+	async (req, res, next) => {
 		const validationErrors = validationResult(req);
 		console.log(req.body);
 		let errObj = { isError: false, errors: [] };
 		if (validationErrors.isEmpty()) {
-			data.users.forEach((x) => {
-				if (
-					x.firstName.toLowerCase() == req.body.firstName.toLowerCase() &&
-					x.lastName.toLowerCase() == req.body.lastName.toLowerCase()
-				) {
+			const { firstName, lastName, email } = req.body;
+			await checkUser({ firstName, lastName }, (data) => {
+				// This checks whether there are any existing users in the database with the entered input.
+				console.log(data);
+				const { isThereAUser } = data;
+				if (isThereAUser) {
 					errObj.isError = true;
-					errObj.errors.push(`nameExists=true`);
+					errObj.errors.push('nameExists=true');
 				}
-				if (x.email == req.body.email) {
+			});
+			await checkUser({ email }, (data) => {
+				// This checks whether there are any existing users in the database with the entered input.
+				console.log(data);
+				const { isThereAUser } = data;
+				if (isThereAUser) {
 					errObj.isError = true;
 					errObj.errors.push('emailExists=true');
 				}
 			});
-		} else console.log(`Validation errors found ${validationErrors.errors}`);
-
-		if (errObj.isError || !validationErrors.isEmpty())
-			res.json({
-				success: true,
-				isError: true,
-				message: errObj,
-				validationErrors: validationErrors,
+		} else {
+			console.log(`Validation errors found ${validationErrors.errors}`);
+			return res.status(400).json({
+				success: false,
+				message: 'Server validation errors found. Please check your inputs.',
 			});
+		}
+		if (errObj.isError) res.status(307).redirect(`/signup?${errObj.errors.join('&')}`);
 		else next();
 	},
 	(req, res, next) => {
 		const errors = validationResult(req);
-		res.json({
-			success: true,
-			isError: false,
-			validationErrors: errors,
-			message: 'Account created successfully',
+		createUser({ ...req.body, country: req.ipInfo.country }, (data) => {
+			const { success, userData } = data;
+			console.log(data);
+			if (success) {
+				req.session.userId = userData.userId;
+				req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
+				req.session.user = userData;
+				res.status(307).redirect('/profile');
+			} else
+				res.status(500).send(`<h1>Error occurredwhen signing up. Please try again later.</h1>`);
 		});
 	}
 );
 
 app.post(
-	'/data/submit/log-in',
+	'/log-in',
 	[
 		check('email')
 			.exists()
@@ -413,20 +507,32 @@ app.post(
 	],
 	(req, res, next) => {
 		const validationErrors = validationResult(req);
-		console.log(req.body);
 		const { email, password } = req.body;
-		let user = { isAvailable: false, userId: null, username: null };
+		let user = { isAvailable: false, userId: null, username: null, data: null };
+		// console.log(req.body);
 		if (validationErrors.isEmpty()) {
-			data.users.forEach((x) => {
-				if (x.email === email && x.password === password) {
-					user.userId = x.id;
-					user.username = `${x.firstName.toLowerCase()}-${x.lastName.toLowerCase()}`;
-					user.isAvailable = true;
-				}
+			checkUser({ email, password }, (data) => {
+				const { isThereAUser } = data;
+				if (isThereAUser) {
+					const userData = data.userData[0];
+					console.log(data, userData);
+					// user.isAvailable = true;
+					req.session.userId = userData.userId;
+					req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
+					req.session.user = userData;
+					res.status(307).redirect(`/profile`);
+				} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
 			});
-		} else console.log(`Validation errors found. ${validationErrors.errors}`);
-		if (user.isAvailable) res.redirect(`/user/${user.username}`);
-		else res.redirect('/login?emailOrPasswordMismatch=true');
+		} else {
+			console.log(`Validation errors found.`);
+			res.status(400).json({
+				success: false,
+				status: 400,
+				isValidationError: true,
+				message: 'Validation errors found.',
+				errors: validationErrors,
+			});
+		}
 	}
 );
 
@@ -434,13 +540,15 @@ app.post(
 
 app.all('*', (req, res) => {
 	res.status(404).sendFile(path.resolve(__dirname, './public/404.html'));
-	// res.json({ success: false });
 	console.log(
-		`Error : File not found. \n\t${req.protocol}\:\/\/${req.get('host') + req.originalUrl}`,
+		`Error : File not found. \n\tRequest method: ${req.method}\n\t${req.protocol}\:\/\/${
+			req.get('host') + req.originalUrl
+		}`,
 		req.url
 	);
 });
 
-// ? ////////////////////////// Server call /////////////////////////////////////////////////
+// ? ////////////////////////// ERROR HANDLER AND SERVER CALL /////////////////////////////////////////////////
+app.use(errorHandler);
 
 app.listen(process.env.PORT, () => console.log(`user hit the server on ${process.env.PORT}`));

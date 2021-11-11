@@ -3,14 +3,13 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>ZEERUM - Development In Progress</title>
 		<link rel="icon" href="/images/icon.png" type="image/png" />
 		<link rel="stylesheet" href="/styles/main.css" />
 		<link rel="stylesheet" href="/styles/animations.css" />
-		<link rel="stylesheet" href="/styles/home.css" />
+		<link rel="stylesheet" href="/styles/user.css" />
 		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
+		<title>ZEERUM</title>
 	</head>
-
 	<body>
 		<nav class="nav-bar">
 			<a href="/" class="label-container">
@@ -28,7 +27,6 @@
 				</ul>
 			</div>
 			<div class="user-profile-dropdown" id="user-profile-dropdown">
-				<span class="arrow"></span>
 				<ul>
 					<li>
 						<a href="/profile"><i class="fas fa-user"></i> Profile</a>
@@ -42,87 +40,22 @@
 				</ul>
 			</div>
 		</nav>
-		<div class="banner-container" id="banner">
-			<div class="banner">
-				<div class="banner-img"></div>
-				<div class="banner-elements-container">
-					<div class="banner-text">
-						<span
-							>Join <span class="label-in-banner">ZEERUM</span> to share <br />
-							your <span class="banner-highlighted-text">Knowledge.</span></span
-						>
-					</div>
-					<div class="search-bar-container">
-						<div class="search-bar">
-							<div class="search-results-container">
-								<div class="search-description">
-									<img src="/images/search.png" alt="A magnifying glass" />
-									Search for anything from here including articles, tags, authors, hot
-									topics etc.
-								</div>
-							</div>
-							<input
-								type="search"
-								name="search"
-								id="search"
-								placeholder="Search for Anything"
-							/>
-							<div class="search-btn" id="search-btn">
-								<i class="fas fa-search"></i>
-							</div>
-						</div>
-					</div>
-				</div>
+
+		<div class="user-container">
+			<div class="user-img-container"></div>
+			<div class="user-data-container"></div>
+		</div>
+
+		<span class="page-heading-1">Articles</span>
+		<div class="other-content">
+			<div class="articles-container"></div>
+			<div class="div-2">
+				Dolorum vel dolorum dolorem facilis laborum fuga. Omnis asperiores natus deserunt
+				inventore fugit veritatis inventore. Necessitatibus pariatur at. Nostrum incidunt minima
+				id. Voluptatibus laborum molestias voluptatum magnam voluptatibus libero voluptas qui.
+				Vitae eligendi reprehenderit aut expedita recusandae dolore in est.
 			</div>
 		</div>
-
-		<div class="page-heading-1">Recently Added</div>
-		<div class="other-content">
-			<nav class="nav-box-2">
-				<div class="navigate-through-links">
-					<div class="trending-articles-heading">Trending Articles</div>
-					<ul></ul>
-				</div>
-				<hr />
-				<div class="search-through-tags-heading">Search Through Tags</div>
-				<div class="search-through-tags"></div>
-			</nav>
-
-			<div class="articles-container"></div>
-		</div>
-
-		<div class="get-started-container">
-			<a href="/login" class="log-in-btn">Log In</a>
-			<span class="or">OR</span>
-			<a href="/signup" class="signup-btn">Sign up</a>
-			<span class="heading">
-				Receive articles right to your email when they are in the air.
-			</span>
-			<span class="zeerum-user">
-				zeerum <br />
-				user <br />
-				<i class="fas fa-medal"></i>
-			</span>
-			<span class="description">
-				<ul>
-					<li>Our daily uploaded articles are now at your fingertips.</li>
-					<li>They are personalized to your reading too.</li>
-					<li>
-						We'll send an email containing popular, trending and personalized articles from
-						the authors right to your inbox.
-					</li>
-				</ul>
-			</span>
-			<span class="exit">
-				<i
-					class="far fa-times-circle"
-					onclick="document.querySelector('.get-started-container').classList.add('invisible');"
-				></i>
-			</span>
-		</div>
-
-		<!-- ? Below goes the footer -->
-
 		<div class="footer">
 			<div class="footer-label-and-move-to-top-container">
 				<a href="/" class="label-container">
@@ -164,8 +97,6 @@
 		</div>
 
 		<script async src="/scripts/animations.js"></script>
-		<script type="module" src="/scripts/home.js"></script>
-		<script type="module" src="/scripts/search.js"></script>
 		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

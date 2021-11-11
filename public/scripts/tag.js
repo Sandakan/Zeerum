@@ -5,9 +5,9 @@ const noArticlesContainer = document.querySelector('.no-articles-container');
 
 // console.log(window.location.pathname.split('/')[1]);
 
-fetchData(`/data/tags/`, ({ resourceAvailability, data }) => {
-	// console.log(resourceAvailability, data);
-	if (resourceAvailability) {
+fetchData(`/data/tags/`, ({ success, data }) => {
+	// console.log(success, data);
+	if (success) {
 		data.forEach((x) => {
 			if (window.location.pathname.split('/')[1] === 'search') {
 				document.title = `ZEERUM \| You searched for ${window.location.pathname
@@ -40,8 +40,8 @@ fetchData(`/data/tags/`, ({ resourceAvailability, data }) => {
 	} else console.log('Error occurred when requesting tags data.');
 });
 
-fetchData(`/data/articles/`, ({ resourceAvailability, data }) => {
-	if (resourceAvailability) {
+fetchData(`/data/articles/`, ({ success, data }) => {
+	if (success) {
 		data.forEach((x) => {
 			// console.log(x);
 			document.querySelector(
@@ -74,11 +74,15 @@ fetchData(`/data/articles/`, ({ resourceAvailability, data }) => {
 							.replace(/[^a-zA-Z0-9\s]/gm, '')
 							.replace(/\s/gm, '-')
 							.replace(/-$/gm, '')
-							.toLowerCase()}">Read more.</a><div class="article-tags-container">${x.tags.map(
-							(i) => {
-								return `<span class="tags"> <a href="${i}">${i}</a></span>`;
-							}
-						)}
+							.toLowerCase()}">Read more.</a><div class="article-author-container">By <a href="/user/${x.author.name
+							.replace(/[^a-zA-Z0-9\s]/gm, '')
+							.replace(/\s/gm, '-')
+							.replace(/-$/gm, '')
+							.toLowerCase()}">${
+							x.author.name
+						}</a></div><div class="article-tags-container">${x.tags.map((i) => {
+							return `<span class="tags"> <a href="${i}">${i}</a></span>`;
+						})}
                   </div></p></div></div>` + document.querySelector('.articles-container').innerHTML;
 
 					document.querySelector('.no-articles-container').style.display = 'none';

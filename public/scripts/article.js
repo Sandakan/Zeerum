@@ -7,38 +7,57 @@ var reactions = {
 	bookmarked: false,
 };
 
-const renderData = ([article, author]) => {
-	// const article = articleData[0];
-	// const author = authors[article.author.id];
-
-	document.title = `ZEERUM \| ${article.title}`;
-	document.querySelector('.article-img-container').innerHTML = `<img src="${article.coverImg}"/>`;
-	document.querySelector(
-		'.article-heading-container > .article-heading'
-	).innerHTML = `${article.title}`;
-	document.querySelector(
-		'.article-data-container > .article-data'
-	).innerHTML = `${article.article}<div class="end"></div><div class="footnotes">${article.footnotes}</div>`;
-	document.querySelector('.author > .author-data-container > img').src = author.profilePicture;
-	document.querySelector(
-		'.author > .author-data-container > .name'
-	).innerHTML = `${author.firstName} ${author.lastName}`;
-	document.querySelector('.reaction-buttons-container > .like > #loved-number').innerHTML =
-		article.reactions.likes;
-	document.querySelector('.reaction-buttons-container > .share > #shared-number').innerHTML =
-		article.reactions.shares;
-	document.querySelector(
-		'.reaction-buttons-container > .bookmark > #bookmarked-number'
-	).innerHTML = article.reactions.bookmarks;
-	if (article.comments.length !== 0) {
-		article.comments.forEach((comment) => {
-			document.querySelector('#comments').innerHTML =
-				`<div class="comment">${comment.comment}</div>` +
-				document.querySelector('#comments').innerHTML;
-			document.querySelector('.no-comments').style.display = 'none';
+const renderData = ({ success, data }) => {
+	if (success) {
+		const [article, author] = data;
+		document.title = `ZEERUM \| ${article.title}`;
+		document.querySelector(
+			'.article-img-container'
+		).innerHTML = `<img src="${article.coverImg}"/>`;
+		document.querySelector(
+			'.article-heading-container > .article-heading'
+		).innerHTML = `${article.title}`;
+		document.querySelector('.article-data-container > .article-data').innerHTML = `${
+			article.article
+		}<div class="end"></div><div class="footnotes">${
+			article.footnotes
+		}</div><div class="tags">${article.tags
+			.map((x) => {
+				return `<a href="/tags/${x.toLowerCase()}"><span class="tag">#${x}</span></a>`;
+			})
+			.join('')}</div>`;
+		document.querySelector(
+			'.author > .author-data-container'
+		).innerHTML = `<img src="${author.profilePictureUrl}" alt="" /><span class="name">${author.firstName} ${author.lastName}</span>`;
+		document.querySelector('.author-data-container > img').addEventListener('click', () => {
+			document.location = `/user/${author.fullName.toLowerCase()}`;
 		});
-	}
-	console.log(author);
+		document.querySelector('.author-data-container > .name').addEventListener('click', () => {
+			document.location = `/user/${author.fullName.toLowerCase()}`;
+		});
+		document.querySelector('.reaction-buttons-container > .like > #loved-number').innerHTML =
+			article.reactions.likes.length;
+		document.querySelector('.reaction-buttons-container > .share > #shared-number').innerHTML =
+			article.reactions.shares.length;
+		document.querySelector(
+			'.reaction-buttons-container > .bookmark > #bookmarked-number'
+		).innerHTML = article.reactions.bookmarks.length;
+		if (article.comments.length !== 0) {
+			article.comments.forEach((comment) => {
+				fetchData(`/data/users/${comment.userId}`, ({ data }) => {
+					document.querySelector('#comments').innerHTML =
+						`<div class="comment"><img src="${
+							data.profilePictureUrl
+						}" onclick="window.location = \`/user/${data.firstName.toLowerCase()}-${data.lastName.toLowerCase()}\`" /><div class="text">${
+							comment.comment
+						}<span class="commented-date">${comment.date}</span></div></div>` +
+						document.querySelector('#comments').innerHTML;
+					document.querySelector('.no-comments').style.display = 'none';
+				});
+			});
+		}
+		console.log(author);
+	} else console.log('Error occurred when requesting article data.');
 };
 console.log(requestingArticleName);
 requestingArticleName !== '/data/articles/'

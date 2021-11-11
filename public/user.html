@@ -20,19 +20,22 @@
 					<li><a class="home" href="/">Home</a></li>
 					<li><a class="discover" href="/discover">Discover</a></li>
 					<li><a class="write" href="/write">Write</a></li>
+					<li id="get-started">
+						<a class="get-started" name="get-started" href="/signup">Get started</a>
+					</li>
 					<li id="user-profile" class="user-profile"></li>
 				</ul>
 			</div>
-			<div class="user-profile-dropdown">
+			<div class="user-profile-dropdown" id="user-profile-dropdown">
 				<ul>
 					<li>
-						<a href="#"><i class="fas fa-user"></i> Profile</a>
+						<a href="/profile"><i class="fas fa-user"></i> Profile</a>
 					</li>
 					<li>
 						<a href="#"><i class="fas fa-cog"></i> Settings</a>
 					</li>
-					<li>
-						<a href="#"><i class="fas fa-sign-out-alt"></i> Log out</a>
+					<li id="logout">
+						<a href="/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
 					</li>
 				</ul>
 			</div>
@@ -43,40 +46,14 @@
 			<div class="user-data-container"></div>
 		</div>
 
-		<span class="page-heading-1 your-articles">Your articles</span>
+		<span class="page-heading-1">Articles</span>
 		<div class="other-content">
 			<div class="articles-container"></div>
 			<div class="div-2">
-				Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sequi nam nostrum dicta
-				officiis aut, est porro perspiciatis perferendis culpa, quibusdam sint soluta, quam
-				tenetur quasi molestias! Repellat, accusantium! Sit, provident. Accusamus ab cumque
-				asperiores corrupti, enim exercitationem, consequatur sint laudantium sed cupiditate
-				minus modi deserunt rerum eligendi quaerat expedita totam voluptates eveniet delectus
-				neque. Odit quia cumque placeat quos doloribus! Culpa at, adipisci quidem delectus magni
-				sequi, reprehenderit, quisquam dignissimos aut enim voluptatibus eaque nam facere illo
-				temporibus repellat numquam nisi vitae labore praesentium earum? Minus necessitatibus
-				delectus quam nulla! Sit, itaque quo! Quod voluptates magni eaque consectetur, voluptate
-				magnam sequi obcaecati quo quas odio maxime reprehenderit! Officiis quo odit, impedit
-				consequatur modi molestias saepe repudiandae. Doloremque qui magnam pariatur? Eligendi
-				minus cum libero tempore necessitatibus quaerat distinctio assumenda iusto id tempora
-				magni, aperiam earum? Quo, fugit asperiores est natus ullam, mollitia laudantium, minima
-				quos accusantium amet provident perferendis neque. Dolorum quidem exercitationem
-				adipisci esse assumenda omnis nostrum quasi. Illo voluptatibus vero facere amet
-				reiciendis, deserunt dolorem sequi eius repellat omnis? Ducimus, beatae? Eveniet,
-				incidunt rem maxime similique qui illo! Exercitationem laudantium quos eos quod debitis
-				dicta ad, facilis vel corporis officiis velit consequatur perferendis dolor aut
-				doloribus esse ab voluptatibus itaque impedit quisquam a. Eaque doloremque voluptatibus
-				autem rem! Architecto tempora ab a quidem nihil labore adipisci. Est quis pariatur
-				debitis modi odit explicabo quidem illum repudiandae reprehenderit? Sed blanditiis quas
-				minima fugiat corrupti molestiae facilis veniam necessitatibus a! Voluptates doloremque,
-				earum, maiores tempore cum laboriosam repellat quia minima dolores aliquam dolore.
-				Molestiae voluptatibus reprehenderit aliquid consequatur incidunt exercitationem rerum,
-				doloribus aliquam. Perspiciatis maxime tempore minus totam eaque alias! Amet natus in
-				libero laboriosam impedit expedita eligendi debitis, vitae velit aspernatur dolor a
-				corporis temporibus incidunt eius officia quod quo minus consequatur! Culpa ipsa vel
-				quis explicabo ducimus recusandae. Exercitationem voluptatibus ipsum temporibus quisquam
-				possimus? Ducimus libero voluptatum consequatur odit iste voluptate eaque neque quia
-				sit!
+				Dolorum vel dolorum dolorem facilis laborum fuga. Omnis asperiores natus deserunt
+				inventore fugit veritatis inventore. Necessitatibus pariatur at. Nostrum incidunt minima
+				id. Voluptatibus laborum molestias voluptatum magnam voluptatibus libero voluptas qui.
+				Vitae eligendi reprehenderit aut expedita recusandae dolore in est.
 			</div>
 		</div>
 		<div class="footer">
@@ -93,7 +70,7 @@
 					tech-article website, now it grows as one of the most visited websites for ideas and
 					information to keep up with the world and to widen the horizon of creativity.
 					<br /><br />
-					Made with <span style="color: red">❤</span> by Sandakan as a simple ICT project.
+					Made with <span class="heart">❤</span> by Sandakan as a simple ICT project.
 				</div>
 				<div class="newsletter-description">
 					<ul>
@@ -111,15 +88,16 @@
 						<li><a href="/discover">Discover</a></li>
 						<li><a href="/write">Write</a></li>
 						<li><a href="/about">About</a></li>
-						<li><a href="/signup">Sign in</a></li>
+						<li><a href="/signup">Sign up</a></li>
 						<li><a href="/login">Log in</a></li>
 					</ul>
 				</div>
 			</div>
-			<div class="copyright">All rights reserved &copy; 2020-2021.</div>
+			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
 
 		<script src="/scripts/user.js"></script>
 		<script async src="/scripts/animations.js"></script>
+		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

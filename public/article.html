@@ -12,19 +12,35 @@
 	</head>
 
 	<body>
-		<div class="nav-bar">
+		<nav class="nav-bar">
 			<a href="/" class="label-container">
 				<div class="label">zeerum</div>
 			</a>
 			<div class="link-list">
 				<ul>
-					<li><a href="/">Home</a></li>
-					<li><a href="/discover">Discover</a></li>
-					<li><a href="/write">Write</a></li>
-					<li id="get-started"><a href="/signup">Get started</a></li>
+					<li><a class="home" href="/">Home</a></li>
+					<li><a class="discover" href="/discover">Discover</a></li>
+					<li><a class="write" href="/write">Write</a></li>
+					<li id="get-started">
+						<a class="get-started" name="get-started" href="/signup">Get started</a>
+					</li>
+					<li id="user-profile" class="user-profile"></li>
 				</ul>
 			</div>
-		</div>
+			<div class="user-profile-dropdown" id="user-profile-dropdown">
+				<ul>
+					<li>
+						<a href="/profile"><i class="fas fa-user"></i> Profile</a>
+					</li>
+					<li>
+						<a href="#"><i class="fas fa-cog"></i> Settings</a>
+					</li>
+					<li id="logout">
+						<a href="/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
 		<div class="article-elements-container">
 			<div class="article-data-container">
 				<div class="article-img-and-heading-container">
@@ -39,10 +55,7 @@
 			<!-- Here goes the information related to the author, comments for the article etc. -->
 			<div class="author-information-container">
 				<div class="author">
-					<div class="author-data-container">
-						<img src="/images/user.png" alt="" />
-						<span class="name"></span>
-					</div>
+					<div class="author-data-container"></div>
 
 					<hr />
 
@@ -66,6 +79,7 @@
 							type="text"
 							name="add-comment"
 							id="add-comment"
+							class="add-comment"
 							placeholder="Add a comment"
 							value=""
 						/>
@@ -83,7 +97,7 @@
 		<div class="get-started-container">
 			<a href="/login" class="log-in-btn">Log In</a>
 			<span class="or">OR</span>
-			<a href="/signup" class="signup-btn">Sign In</a>
+			<a href="/signup" class="signup-btn">Sign up</a>
 			<span class="heading">
 				Receive articles right to your email when they are in the air.
 			</span>
@@ -126,7 +140,7 @@
 					tech-article website, now it grows as one of the most visited websites for ideas and
 					information to keep up with the world and to widen the horizon of creativity.
 					<br /><br />
-					Made with <span style="color: red">❤</span> by Sandakan as a simple ICT project.
+					Made with <span class="heart">❤</span> by Sandakan as a simple ICT project.
 				</div>
 				<div class="newsletter-description">
 					<ul>
@@ -144,15 +158,16 @@
 						<li><a href="/discover">Discover</a></li>
 						<li><a href="/write">Write</a></li>
 						<li><a href="/about">About</a></li>
-						<li><a href="/signup">Sign in</a></li>
+						<li><a href="/signup">Sign up</a></li>
 						<li><a href="/login">Log in</a></li>
 					</ul>
 				</div>
 			</div>
-			<div class="copyright">All rights reserved &copy; 2020-2021.</div>
+			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
 
 		<script src="/scripts/animations.js"></script>
 		<script type="module" src="/scripts/article.js"></script>
+		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

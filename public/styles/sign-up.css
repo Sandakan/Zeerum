@@ -155,6 +155,7 @@ input {
 	text-align: center;
 	color: var(--highlight-color-variant);
 	text-decoration: none;
+	font-size: 1.1rem;
 }
 
 @media screen and (min-width: 1920px) {
