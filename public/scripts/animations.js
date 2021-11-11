@@ -4,14 +4,16 @@ var scrollTopValue;
 var previousScrollTopValue = 0;
 
 window.onscroll = function () {
-    scrollTopValue = document.documentElement.scrollTop;
-    if (scrollTopValue > previousScrollTopValue && scrollTopValue > 300) {
-        navBar.classList.add('hidden');
-        previousScrollTopValue = scrollTopValue;
-    } else {
-        navBar.classList.remove('hidden');
-        previousScrollTopValue = scrollTopValue;
-    }
+	scrollTopValue = document.documentElement.scrollTop;
+	if (scrollTopValue > previousScrollTopValue && scrollTopValue > 300) {
+		navBar.classList.add('hidden');
+		previousScrollTopValue = scrollTopValue;
+		document
+			.querySelector('.user-profile-dropdown')
+			.classList.remove('user-profile-dropdown-active');
+	} else {
+		navBar.classList.remove('hidden');
+		previousScrollTopValue = scrollTopValue;
+	}
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-

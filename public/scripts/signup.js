@@ -70,7 +70,7 @@ const passwordValidator = (id) => {
 			reportError('password', 'add', 'Password must be at least 8 characters');
 			isErrorInForm.password = true;
 		} else if (!/[a-zA-z]/gi.test(element.value) || !/[0-9]/gi.test(element.value)) {
-			reportError('password', 'add', 'Password should contain letters and digits');
+			reportError('password', 'add', 'Password must contain letters and digits');
 			isErrorInForm.password = true;
 		} else {
 			reportError('password', 'remove');
@@ -86,6 +86,7 @@ const retypePasswordValidator = (id, confirmId) => {
 	const password = document.getElementById(id);
 	const confirmPassword = document.getElementById(confirmId);
 	console.log(password.value, confirmPassword.value);
+	console.log(password.value, confirmPassword.value);
 	if (!isNullOrEmpty(confirmId)) {
 		if (password.value !== confirmPassword.value) {
 			reportError('confirm-password', 'add', 'Retyped password does not match');
@@ -99,80 +100,6 @@ const retypePasswordValidator = (id, confirmId) => {
 		isErrorInForm.confirmPassword = false;
 	}
 };
-
-// const dataAvailabilityChecker = async () => {
-// 	if (
-// 		!isNullOrEmpty('first-name') ||
-// 		!isNullOrEmpty('last-name') ||
-// 		!isNullOrEmpty('birthday') ||
-// 		!isNullOrEmpty('email') ||
-// 		!isNullOrEmpty('password') ||
-// 		!isNullOrEmpty('retype-password')
-// 	) {
-// const data = {
-// 	firstName: document.getElementById('first-name').value,
-// 	lastName: document.getElementById('last-name').value,
-// 	birthday: document.getElementById('birthday').value,
-// 	email: document.getElementById('email').value,
-// 	password: document.getElementById('password').value,
-// };
-// if (
-// 	!isErrorInForm.name &&
-// 	!isErrorInForm.email &&
-// 	!isErrorInForm.password &&
-// 	!isErrorInForm.confirmPassword
-// ) {
-// 	const fetchedData = await fetch('/data/submit/signup', { method: 'POST' });
-// 	const data = await fetchedData.json();
-// 	if (data.isError) {
-// 		data.message.errors.forEach((x) => {
-// 			if (x === 'emailExists') {
-// 				reportError('email', 'add', 'Email exists in the server');
-// 			} else if (x === 'nameExists') {
-// 				reportError('first-name', 'add', 'First name exists');
-// 				reportError('last-name', 'add', 'Last name exists');
-// 			}
-// 		});
-// 		return false;
-// 	} else {
-// 		console.log('Validation successful. Sending form data...');
-// 		return true;
-// 	}
-// fetch('/data/submit/signup', {
-// 	method: 'POST',
-// 	body: JSON.stringify(data),
-// 	headers: {
-// 		'Content-type': 'application/json; charset=UTF-8',
-// 	},
-// })
-// 	.then((response) => response.json())
-// 	.then((data) => {
-// 		if (data.isError) {
-// 			data.message.errors.forEach((x) => {
-// 				if (x === 'emailExists') {
-// 					reportError('email', 'add', 'Email exists in the server');
-// 				} else if (x === 'nameExists') {
-// 					reportError('first-name', 'add', 'First name exists');
-// 					reportError('last-name', 'add', 'Last name exists');
-// 				}
-// 			});
-// 			return false;
-// 		} else {
-// 			console.log('Validation successful. Sending form data...');
-// 			return true;
-// 		}
-// 	});
-// } else {
-// 	alert(`Form incomplete`);
-// 	return false;
-// }
-// 		alert('correct');
-// 		return false;
-// 	} else {
-// 		alert('wrong');
-// 		return false;
-// 	}
-// };
 
 // ? Event Listeners //////////////////////////////////////////////////////////
 document.getElementById('first-name').addEventListener('change', () => {
@@ -189,56 +116,18 @@ document.getElementById('password').addEventListener('change', () => {
 	passwordValidator('password', 'password');
 });
 
-document.getElementById('retype-password').addEventListener('change', () => {
-	retypePasswordValidator('password', 'retype-password');
+document.getElementById('confirm-password').addEventListener('change', () => {
+	retypePasswordValidator('password', 'confirm-password');
 });
 
-document.getElementById('form').addEventListener('submit', (e) => {
-	const data = {
-		firstName: document.getElementById('first-name').value,
-		lastName: document.getElementById('last-name').value,
-		birthday: document.getElementById('birthday').value,
-		email: document.getElementById('email').value,
-		password: document.getElementById('password').value,
-	};
-
+document.getElementById('form').addEventListener('submit', (event) => {
 	if (
 		isErrorInForm.name ||
 		isErrorInForm.email ||
 		isErrorInForm.password ||
 		isErrorInForm.confirmPassword
 	) {
-		e.preventDefault();
-		// // let fetchedData = {
-		// // 	success: false,
-		// // 	isError: true,
-		// // };
-		// fetch('/data/submit/signup', {
-		// 	method: 'POST',
-		// 	body: JSON.stringify(data),
-		// 	headers: {
-		// 		'Content-type': 'application/json; charset=UTF-8',
-		// 	},
-		// })
-		// 	.then((response) => response.json())
-		// 	.then((data) => {
-		// 		fetchedData = data;
-		// 		console.log(fetchedData);
-		// 	});
-		// if (fetchedData.isError) {
-		// 	alert('error found');
-		// 	e.preventDefault();
-		// 	fetchedData.message.errors.forEach((x) => {
-		// 		if (x === 'emailExists') {
-		// 			reportError('email', 'add', 'Email exists in the server');
-		// 		} else if (x === 'nameExists') {
-		// 			reportError('first-name', 'add', 'First name exists');
-		// 			reportError('last-name', 'add', 'Last name exists');
-		// 		}
-		// 	});
-		// } else {
-		// 	alert('Validation successful. Sending form data...');
-		// }
+		event.preventDefault();
 	}
 });
 

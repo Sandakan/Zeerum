@@ -117,12 +117,13 @@ input[id='submit'] {
 	font-size: 1.6rem;
 }
 
-.form > a {
+.form > .signup {
 	text-align: center;
 	grid-column: 2/7;
 	grid-row: 10/11;
 	color: var(--highlight-color-variant);
 	text-decoration: none;
+	font-size: 1.1rem;
 }
 
 @media screen and (max-width: 1050px) {
