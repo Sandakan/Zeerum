@@ -11,6 +11,7 @@
 	--background-color-3: hsl(190, 17%, 52%);
 	--highlight-color: hsl(360, 67%, 51%);
 	--highlight-color-2: hsl(213, 92%, 61%);
+	--highlight-color-3: #fbc531;
 	--highlight-color-variant: hsl(243, 39%, 36%);
 	--article-text-color: hsl(0, 0%, 0%);
 	font-size: 14px;
@@ -216,19 +217,22 @@ input {
 }
 
 .user-profile > .user-profile-img {
-	width: 40px;
-	height: 40px;
+	width: 45px;
+	height: 45px;
+	padding: 3px;
+	border: 2px solid transparent;
 	border-radius: 50px;
-	transition: box-shadow 0.2s ease-in-out;
+	transition: border-color 0.4s ease 0.1s;
 	box-shadow: none;
 }
 .user-profile > .user-profile-img:hover {
-	box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 30px;
+	/* box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 30px; */
+	border-color: var(--highlight-color);
 }
 
 .user-profile-dropdown {
-	height: 50px;
-	width: 200px;
+	height: 20vh;
+	width: 250px;
 	position: absolute;
 	background-color: hsl(208, 52%, 95%);
 	right: 10px;
@@ -236,7 +240,7 @@ input {
 	color: #000;
 	padding: 10px 15px;
 	z-index: 1;
-	font-size: 1.5rem;
+	font-size: 1.4rem;
 	border-radius: 10px;
 	opacity: 0;
 	transition: opacity 0.25s ease-in-out, height 0.25s ease-in-out;
@@ -287,6 +291,50 @@ input {
 .nav-bar .link-list ul li[id='user-profile'],
 .nav-bar .user-profile-dropdown {
 	display: none;
+}
+
+.popup-container {
+	width: 100%;
+	height: 100vh;
+	z-index: 11;
+	background-color: hsla(210, 30%, 24%, 0.5);
+	backdrop-filter: blur(10px);
+	position: absolute;
+	top: 0;
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.popup-container-active {
+	display: flex;
+}
+
+.popup {
+	width: 60vw;
+	height: 80vh;
+	background-color: var(--background-color);
+	border-radius: 20px;
+	position: relative;
+	overflow-y: scroll;
+	padding: 5px 10px;
+}
+
+.popup .close-btn {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	font-size: 1.5rem;
+	cursor: pointer;
+	color: rgb(134, 134, 134);
+}
+
+.popup h1 {
+	font-size: 2.5rem;
+	font-weight: 400;
+	text-align: center;
+	margin: 20px 0;
 }
 
 .banner-container {
@@ -686,6 +734,33 @@ input {
 	-moz-box-shadow: 10px 30px 70px -20px rgba(0, 0, 0, 0.49);
 }
 
+.no-articles-container {
+	width: 70%;
+	height: fit-content;
+	display: none;
+	flex-direction: column;
+	align-items: center;
+}
+
+.no-articles-container img {
+	width: 300px;
+	padding: 20px;
+}
+
+.no-articles-container .no-articles {
+	display: block;
+	text-align: center;
+	font-size: 1.5rem;
+	padding: 20px 0;
+}
+
+.no-articles-container .no-search {
+	display: none;
+	text-align: center;
+	font-size: 1.5rem;
+	padding: 20px 0;
+}
+
 .article {
 	min-width: 300px;
 	height: fit-content;
@@ -728,6 +803,9 @@ input {
 	color: #000;
 	height: 100%;
 	text-decoration: none;
+}
+.article .article-info-container .article-heading:hover a {
+	text-decoration: underline;
 }
 
 .article .article-info-container .article-description {

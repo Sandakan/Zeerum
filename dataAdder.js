@@ -16,7 +16,7 @@ const addData = async (col, data) => {
 		console.log('Connected successfully to the database server');
 		const database = client.db(process.env.DATABASE_NAME);
 		const collection = database.collection(col);
-
+		//const customData = {};
 		collection.insertMany(data, (err, res) => {
 			if (err) throw err;
 			console.log(res);

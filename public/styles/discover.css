@@ -19,7 +19,6 @@
 	position: relative;
 	z-index: 1;
 	display: flex;
-	justify-content: center;
 	align-items: center;
 }
 
@@ -30,9 +29,8 @@
 	left: 0;
 }
 
-.search-bar {
-	position: relative;
-	left: 0;
+.search-bar-container {
+	left: unset;
 }
 
 .discover-categories-container {

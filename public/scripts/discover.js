@@ -1,13 +1,11 @@
-// jshint ignore:start
 import fetchData from './fetchData.js';
 
 fetchData('/data/tags', ({ success, data }) => {
-	// console.log(resourceAvailability, data);
 	if (success) {
 		var result = '';
 		data.forEach((x) => {
 			result += `<div class="discover-categories" onclick="window.location.href = 'tags/${x.name.toLowerCase()}'"><div class="img-container"><img src="${
-				x.picture
+				x.pictureUrl
 			}" alt="" /></div><div class="heading-container"><a href="tags/${x.name.toLowerCase()}"># ${
 				x.name
 			}</a></div></div>`;

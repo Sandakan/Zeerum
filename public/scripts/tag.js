@@ -2,8 +2,9 @@
 import fetchData from '../scripts/fetchData.js';
 
 const noArticlesContainer = document.querySelector('.no-articles-container');
-
-// console.log(window.location.pathname.split('/')[1]);
+let tag = isNaN(Number(window.location.pathname.split('/').pop()))
+	? window.location.pathname.split('/').pop().toLowerCase()
+	: Number(window.location.pathname.split('/').pop());
 
 fetchData(`/data/tags/`, ({ success, data }) => {
 	// console.log(success, data);
@@ -26,7 +27,8 @@ fetchData(`/data/tags/`, ({ success, data }) => {
 					.split('/')
 					.pop()} \". Recheck the spelling and try seaching with different words.`;
 			} else if (
-				x.name.toLowerCase() === window.location.pathname.split('/').pop().toLowerCase()
+				x.name.toLowerCase() === window.location.pathname.split('/').pop().toLowerCase() ||
+				x.tagId === Number(window.location.pathname.split('/').pop())
 			) {
 				document.title = `ZEERUM \| You searched for \#${x.name}`;
 				document.querySelector('.highlight-tags').innerHTML = `#${x.name}`;
@@ -43,46 +45,36 @@ fetchData(`/data/tags/`, ({ success, data }) => {
 fetchData(`/data/articles/`, ({ success, data }) => {
 	if (success) {
 		data.forEach((x) => {
-			// console.log(x);
+			console.log(x);
 			document.querySelector(
 				'.navigate-through-links > ul'
-			).innerHTML += `<li><a href="../articles/${x.title
-				.replace(/[^a-zA-Z0-9\s]/gm, '')
-				.replace(/\s/gm, '-')
-				.replace(/-$/gm, '')
-				.toLowerCase()}">${x.title}</a></li>`;
+			).innerHTML += `<li><a href="../articles/${x.urlSafeTitle}">${x.title}</a></li>`;
 			x.tags.forEach((y) => {
-				if (window.location.pathname.split('/').pop().toLowerCase() == y.toLowerCase()) {
+				if (window.location.pathname.split('/').pop().toLowerCase() === y.toLowerCase()) {
 					document.querySelector('.articles-container').innerHTML =
-						`<div class="article" onclick=\"window.location = \'../articles/${x.title
-							.replace(/[^a-zA-Z0-9\s]/gm, '')
-							.replace(/\s/gm, '-')
-							.replace(/-$/gm, '')
-							.toLowerCase()}\'\"><img class="article-image" src="${x.coverImg}" alt="${
+						`<div class="article" onclick=\"window.location = \'../articles/${
+							x.urlSafeTitle
+						}\'\"><img class="article-image" src="${x.coverImg}" alt="${
 							x.coverImgAlt
-						}" onclick="window.location = '../articles/${x.title
-							.replace(/[^a-zA-Z0-9\s]/gm, '')
-							.replace(/\s/gm, '-')
-							.replace(/-$/gm, '')
-							.toLowerCase()}'"><div class="article-info-container"> <h2 class="article-heading"><a href="../articles/${x.title
-							.replace(/[^a-zA-Z0-9\s]/gm, '')
-							.replace(/\s/gm, '-')
-							.replace(/-$/gm, '')
-							.toLowerCase()}">${x.title}</a></h2><p class="article-description">${
+						}" onclick="window.location = '../articles/${
+							x.urlSafeTitle
+						}'"><div class="article-info-container"> <h2 class="article-heading"><a href="../articles/${
+							x.urlSafeTitle
+						}">${x.title}</a></h2><p class="article-description">${
 							x.description
-						}<a class="more" href="../articles/${x.title
-							.replace(/[^a-zA-Z0-9\s]/gm, '')
-							.replace(/\s/gm, '-')
-							.replace(/-$/gm, '')
-							.toLowerCase()}">Read more.</a><div class="article-author-container">By <a href="/user/${x.author.name
+						}<a class="more" href="../articles/${
+							x.urlSafeTitle
+						}">Read more.</a><div class="article-author-container">By <a href="/user/${x.author.name
 							.replace(/[^a-zA-Z0-9\s]/gm, '')
 							.replace(/\s/gm, '-')
 							.replace(/-$/gm, '')
 							.toLowerCase()}">${
 							x.author.name
-						}</a></div><div class="article-tags-container">${x.tags.map((i) => {
-							return `<span class="tags"> <a href="${i}">${i}</a></span>`;
-						})}
+						}</a></div><div class="article-tags-container">${x.tags
+							.map((i) => {
+								return `<span class="tags"> <a href="${i}">${i}</a></span>`;
+							})
+							.join('')}
                   </div></p></div></div>` + document.querySelector('.articles-container').innerHTML;
 
 					document.querySelector('.no-articles-container').style.display = 'none';
@@ -95,28 +87,19 @@ fetchData(`/data/articles/`, ({ success, data }) => {
 				x.title.toLowerCase().includes(window.location.pathname.split('/').pop().toLowerCase())
 			) {
 				document.querySelector('.articles-container').innerHTML =
-					`<div class="article" onclick=\"window.location = \'../articles/${encodeURI(
-						x.title
-							.replace(/[^a-zA-Z0-9\s]/gm, '')
-							.replace(/\s/gm, '-')
-							.replace(/-$/gm, '')
-					).toLowerCase()}\'\"><img class="article-image" src="${x.coverImg}" alt="${
+					`<div class="article" onclick=\"window.location = \'../articles/${
+						x.urlSafeTitle
+					}\'\"><img class="article-image" src="${x.coverImg}" alt="${
 						x.coverImgAlt
-					}" onclick="window.location = '../articles/${x.title
-						.replace(/[^a-zA-Z0-9\s]/gm, '')
-						.replace(/\s/gm, '-')
-						.replace(/-$/gm, '')
-						.toLowerCase()}'"><div class="article-info-container"> <h2 class="article-heading"><a href="../articles/${x.title
-						.replace(/[^a-zA-Z0-9\s]/gm, '')
-						.replace(/\s/gm, '-')
-						.replace(/-$/gm, '')
-						.toLowerCase()}">${x.title}</a></h2><p class="article-description">${
+					}" onclick="window.location = '../articles/${
+						x.urlSafeTitle
+					}'"><div class="article-info-container"> <h2 class="article-heading"><a href="../articles/${
+						x.urlSafeTitle
+					}">${x.title}</a></h2><p class="article-description">${
 						x.description
-					}<a class="more" href="../articles/${x.title
-						.replace(/[^a-zA-Z0-9\s]/gm, '')
-						.replace(/\s/gm, '-')
-						.replace(/-$/gm, '')
-						.toLowerCase()}">Read more.</a><div class="article-tags-container">${x.tags.map(
+					}<a class="more" href="../articles/${
+						x.urlSafeTitle
+					}">Read more.</a><div class="article-tags-container">${x.tags.map(
 						(i) => `<span class="tags"> <a href="${i}">${i}</a></span>`
 					)}
                   </div></p></div></div>` + document.querySelector('.articles-container').innerHTML;

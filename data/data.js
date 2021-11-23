@@ -3,6 +3,7 @@ var articleData = [
 	{
 		articleId: 0,
 		title: 'Mechanical keyboards vs. Membrane keyboards',
+		urlSafeTitle: 'mechanical-keyboards-vs-membrane-keyboards',
 		coverImg: '../images/articles/0/keyboard.jpg',
 		coverImgAlt: 'A mechanical keyboard with backlighting',
 		releasedDate: '2021 October 1',
@@ -35,6 +36,7 @@ var articleData = [
 	{
 		articleId: 1,
 		title: 'What is Visual Studio Code ?',
+		urlSafeTitle: 'what-is-visual-studio-code',
 		coverImg: '/images/articles/1/visual-studio-code-2.jpg',
 		coverImgAlt: 'Visual Studio Code logo',
 		releasedDate: '2021 October 1',
@@ -83,6 +85,8 @@ var articleData = [
 	{
 		articleId: 2,
 		title: "ProJo Hoops Wrap: EG's McMullen scores school-record of 54 points, sets possible state record with 13 3-pointers.",
+		urlSafeTitle:
+			'projo-hoops-wrap-egs-mcmullen-scores-schoolrecord-of-54-points-sets-possible-state-record-with-13-3pointers',
 		coverImg: '/images/articles/2/sports.jpg',
 		coverImgAlt: 'Basketball player trying to put a basketball to the ring',
 		releasedDate: '2021 October 1',
@@ -275,7 +279,7 @@ var tags = [
 	{
 		tagId: 23,
 		name: 'Productivity',
-		pictureUrl: '/images/tags/productivity.png',
+		pictureUrl: '/images/tags/productivity.jpg',
 	},
 	{
 		tagId: 24,

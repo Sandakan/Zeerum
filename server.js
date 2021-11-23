@@ -1,3 +1,4 @@
+// jshint -W014
 // ? PACKAGES //////////////////////////////////////////////////////////////////////////////////////////
 const express = require('express');
 const path = require('path');
@@ -7,13 +8,16 @@ const { check, validationResult } = require('express-validator');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
-const passport = require('passport');
-const crypto = require('crypto');
 const cors = require('cors');
 const expressIp = require('express-ip');
+const fileUpload = require('express-fileupload');
+const fs = require('fs');
 require('dotenv').config();
-// const utils = require('util');
+require('express-async-errors');
+// const passport = require('passport');
+// const crypto = require('crypto');
 // const { MongoClient } = require('mongodb');
+// const utils = require('util');
 // const { readFile, writeFile } = require('fs');
 //? DATA IMPORT //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,18 +26,17 @@ const data = require('./data/data');
 // ? MIDDLEWARE & FUNCTION IMPORTS   /////////////////////////////////////////////////////////////////////
 const authenticate = require('./middleware/authenticate');
 const errorHandler = require('./middleware/errorHandler');
-const { connectToDB, createUser, checkUser } = require('./config/database');
+const { createAccountLimiter } = require('./middleware/rate-limit');
+const {
+	connectToDB,
+	createUser,
+	checkUser,
+	requestData,
+	updateUserData,
+} = require('./config/database');
 connectToDB();
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
-
-// ? //////////////////////////////////// MONGOOSE CONNECTION ///////////////////////////////////////////
-const mongooseConnection = mongoose
-	.connect(process.env.LOCAL_DATABASE_CONNECTION_STRING, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	})
-	.then((m) => m.connection.getClient());
 
 // ? ///////////////////////////////// GLOBAL MIDDLEWARE ///////////////////////////////////////////////
 // app.set('view engine', 'ejs');
@@ -48,6 +51,17 @@ app.use(cors());
 app.use(cookieParser());
 // sets ip-related information
 app.use(expressIp().getIpInfoMiddleware);
+// handles file uploads
+// app.use(
+// 	fileUpload({
+// 		useTempFiles: true,
+// 		tempFileDir: path.join(__dirname, './temp/'),
+// 		createParentPath: true,
+// 		preserveFilename: true,
+// 		preserveExtension: true,
+// 		debug: true,
+// 	})
+// );
 // handles sessions required for user authentication and authorization
 app.use(
 	session({
@@ -56,7 +70,12 @@ app.use(
 		resave: false,
 		saveUninitialized: true,
 		store: MongoStore.create({
-			clientPromise: mongooseConnection,
+			clientPromise: mongoose
+				.connect(process.env.LOCAL_DATABASE_CONNECTION_STRING, {
+					useNewUrlParser: true,
+					useUnifiedTopology: true,
+				})
+				.then((m) => m.connection.getClient()),
 			dbName: 'Zeerum',
 			collection: 'sessions',
 			stringify: false,
@@ -93,13 +112,18 @@ app.get('/signup', (req, res) => {
 	else res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
 });
 
-app.get('/user', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
-});
-
 app.get('/profile', authenticate, (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/profile.html'));
 });
+
+// app.get('/upload', (req, res, next) => {
+// 	res.send(
+// 		` <form ref='uploadForm' encType="multipart/form-data" class="" action="/data/upload" method="post">
+//       <input type="file" name="file"><br>
+//       <input type="submit" name="" value="upload">
+//     </form>`
+// 	);
+// });
 
 app.get('/404', (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/404.html'));
@@ -111,6 +135,9 @@ app.get('/logout', (req, res) => {
 		res.status(308).redirect('/');
 	});
 });
+// app.get('/user', (req, res) => {
+// 	res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
+// });
 
 // app.get('/articles', (req, res) => {
 // 	res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
@@ -121,35 +148,33 @@ app.get('/logout', (req, res) => {
 
 //? //////////////////////////////////////////////////////////////////
 //? //////////////////////////////////////////////////////////////////
-app.get('/articles/:article', (req, res, next) => {
-	let isResourceAvailable = false;
-	data.articleData.forEach((x) => {
-		if (
-			x.title
-				.replace(/[^a-zA-Z0-9\s]/gm, '')
+/*
+.replace(/[^a-zA-Z0-9\s]/gm, '')
 				.replace(/\s/gm, '-')
 				.replace(/-$/gm, '')
-				.toLowerCase() === req.params.article ||
-			x.id == Number(req.params.article)
-		)
-			isResourceAvailable = true;
-	});
-	if (isResourceAvailable)
+				.toLowerCase()
+*/
+app.get('/articles/:article', async (req, res, next) => {
+	const article = isNaN(Number(req.params.article))
+		? req.params.article
+		: Number(req.params.article);
+	const articleData = isNaN(article)
+		? await requestData('articles', { urlSafeTitle: article })
+		: await requestData('articles', { articleData: article });
+	if (articleData.success && articleData.data.length !== 0)
 		res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
 	else next();
 });
 
-app.get('/tags/:tag', (req, res, next) => {
-	let isResourceAvailable = false;
-	data.tags.forEach((x) => {
-		if (
-			x.name.toLowerCase() === req.params.tag.toLowerCase() ||
-			x.id === Number(req.params.tag)
-		) {
-			isResourceAvailable = true;
-		}
-	});
-	if (isResourceAvailable) res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
+app.get('/tags/:tag', async (req, res, next) => {
+	const tag = isNaN(Number(req.params.tag))
+		? req.params.tag.toLowerCase()
+		: Number(req.params.tag);
+	const tagData = isNaN(tag)
+		? await requestData('tags', { name: { $regex: new RegExp(tag, 'i') } })
+		: await requestData('tags', { tagId: tag });
+	if (tagData.success && tagData.data.length !== 0)
+		res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
 	else next();
 });
 
@@ -157,107 +182,133 @@ app.get('/search/:searchItem', (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
 });
 
-app.get('/user/:userId', (req, res, next) => {
-	let isResourceAvailable = false;
-	data.users.map((x) => {
-		if (
-			x.userId == parseInt(req.params.userId) ||
-			`${x.firstName} ${x.lastName}`.replace(/\s/gm, '-').replace(/-$/gm, '').toLowerCase() ==
-				req.params.userId.toLowerCase() ||
-			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.userId.toLowerCase()
-		) {
-			isResourceAvailable = true;
-		}
-	});
-	if (isResourceAvailable) res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
-	else next();
+app.get('/user/:user', async (req, res, next) => {
+	const user = isNaN(Number(req.params.user)) ? req.params.user : Number(req.params.user);
+	if (
+		req.session.userId &&
+		(req.session.userId === user || req.session.username === user.toString().toLowerCase())
+	)
+		res.redirect('/profile');
+	else {
+		const userData = isNaN(user)
+			? await checkUser({
+					firstName: user.split('-')[0].replace(/^\w/, (x) => x.toUpperCase()),
+					lastName: user.split('-')[1].replace(/^\w/, (x) => x.toUpperCase()),
+			  })
+			: await checkUser({ userId: user });
+		// console.log(user, userData);
+		if (userData.success && userData.isThereAUser)
+			res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
+		else next();
+	}
 });
 // ? /////////////////////////  Data GET requests  ////////////////////////////////////////
 
-app.get('/data/search/:searchPhrase', (req, res, next) => {
-	let resourceAvailability = false;
-	let results = { articles: [], users: [], tags: [] };
-	data.articleData.forEach((x) => {
-		if (x.title.toLowerCase().includes(req.params.searchPhrase.toLowerCase())) {
-			results.articles.push({
-				title: x.title,
-				url: `/articles/${x.title
-					.replace(/[^a-zA-Z0-9\s]/gm, '')
-					.replace(/\s/gm, '-')
-					.replace(/-$/gm, '')
-					.toLowerCase()}`,
+app.get('/data/search/:searchPhrase', async (req, res, next) => {
+	const searchPhrase = req.params.searchPhrase;
+	const articleData = await requestData('articles', {
+		title: { $regex: new RegExp(`${searchPhrase}`, 'i') },
+	});
+	const tagData = await requestData('tags', {
+		name: { $regex: new RegExp(`${searchPhrase}`, 'i') },
+	});
+	const userData = await checkUser({
+		firstName: { $regex: new RegExp(`${searchPhrase}`, 'i') },
+	});
+	if (articleData.success || tagData.success || userData.success) {
+		if (articleData.data.length !== 0 || tagData.data.length !== 0 || userData.isThereAUser) {
+			const results = {
+				articles: articleData.data || [],
+				users: userData.userData || [],
+				tags: tagData.data || [],
+			};
+			// console.log(searchPhrase, results);
+			res.status(200).json({
+				success: true,
+				status: 200,
+				message: 'Request successful.',
+				results: results,
 			});
-			resourceAvailability = true;
-		}
-	});
-
-	data.users.forEach((x) => {
-		if (
-			`${x.firstName} ${x.lastName}`
-				.toLowerCase()
-				.includes(req.params.searchPhrase.toLowerCase())
-		) {
-			results.users.push({
-				fullname: `${x.firstName} ${x.lastName}`,
-				url: `/user/${x.firstName.toLowerCase()}-${x.lastName.toLowerCase()}`,
+		} else
+			res.status(404).json({
+				success: false,
+				status: 404,
+				message: 'Result cannot be found. Try searching using different keywords.',
 			});
-			resourceAvailability = true;
-		}
-	});
-
-	data.tags.forEach((x) => {
-		if (x.name.toLowerCase().includes(req.params.searchPhrase.toLowerCase())) {
-			results.tags.push({ name: x.name, url: `/tags/${x.name.toLowerCase()}` });
-			resourceAvailability = true;
-		}
-	});
-
-	if (resourceAvailability) {
-		res.status(200).json({
-			success: true,
-			status: 200,
-			message: 'Request successful.',
-			results: results,
-		});
 	} else
-		res.status(404).json({
-			success: false,
-			status: 404,
-			message: 'Result cannot be found. Try searching using different keywords.',
-		});
+		res.status(500).json({ success: false, message: 'Error occurred. Please try again later.' });
 });
 
 app.get(
 	'/data/articles',
-	(req, res, next) => {
+	async (req, res, next) => {
 		if (Object.entries(req.query).length === 0) {
-			res.status(200).json({
-				success: true,
-				status: 200,
-				message: `Request successful.`,
-				data: data.articleData,
-			});
-		} else next();
-	},
-	(req, res, next) => {
-		if (req.query.userId) {
-			let userId = req.query.userId;
-			let articleDataContainer = [];
-			data.articleData.map((x, id) => {
-				if (
-					x.author.userId === parseInt(userId) ||
-					x.author.name.replace(/\s/gim, '-').toLowerCase() === userId ||
-					x.author.name.replace(/\s/gim, '').toLowerCase() === userId
-				) {
-					articleDataContainer.push(data.articleData[id]);
-				}
-			});
-			if (articleDataContainer.length !== 0) {
+			const { success, data } = await requestData('articles');
+			if (success)
 				res.status(200).json({
 					success: true,
 					status: 200,
 					message: `Request successful.`,
-					data: articleDataContainer,
+					data: data,
+				});
+			else
+				res.status(404).json({
+					success: false,
+					status: 404,
+					message: 'No articles found. Please try again later.',
+				});
+		} else next();
+	},
+	async (req, res, next) => {
+		if (req.query.userId) {
+			const userId = isNaN(Number(req.query.userId))
+				? req.query.userId
+				: Number(req.query.userId);
+			const { success, data } = isNaN(userId)
+				? await requestData('articles', {
+						'author.name': `${userId
+							.split('-')[0]
+							.replace(/^\w/, (x) => x.toUpperCase())} ${userId
+							.split('-')[1]
+							.replace(/^\w/, (x) => x.toUpperCase())}`,
+				  })
+				: await requestData('articles', {
+						'author.userId': Number(userId),
+				  });
+			if (success && data.length !== 0) {
+				res.status(200).json({
+					success: true,
+					status: 200,
+					message: `Request successful.`,
+					data: data,
+				});
+			} else
+				res.status(404).json({
+					success: false,
+					status: 404,
+					message: 'No articles found. Please try again later.',
+				});
+		} else next();
+	},
+	async (req, res, next) => {
+		if (req.query.tagId) {
+			const tag = isNaN(Number(req.query.tagId))
+				? req.query.tagId
+				: await requestData('tags', { tagId: 1 }, { tagId: false, pictureUrl: false }).then(
+						(x) => x.data[0].name
+				  );
+			console.log(tag);
+			const articleData = await requestData('articles', {
+				tags: { $regex: RegExp(tag, 'i') },
+			});
+			// console.log(tag, articleData);
+			if (articleData.success && articleData.data.length !== 0) {
+				res.json({
+					success: true,
+					status: 200,
+					message: `Request successful.`,
+					tag: tag,
+					data: articleData,
 				});
 			} else next();
 		}
@@ -270,75 +321,60 @@ app.get(
 		});
 	}
 );
-app.get('/data/articles/:article', (req, res) => {
-	let article = { isAvailable: false, data: null, author: null };
-	data.articleData.map((x, id) => {
-		// console.log(x.title, req.params.article);
-		if (
-			x.title
-				.replace(/[^a-zA-Z0-9\s]/gm, '')
-				.replace(/\s/gm, '-')
-				.replace(/-$/gm, '')
-				.toLowerCase() === req.params.article ||
-			x[id] === parseInt(req.params.article)
-		) {
-			article.isAvailable = true;
-			article.data = x;
-			article.author = data.users[x.author.userId];
-		}
-	});
-	if (article.isAvailable)
+app.get('/data/articles/:article', async (req, res) => {
+	const article = isNaN(Number(req.params.article))
+		? req.params.article
+		: Number(req.params.article);
+	const articleData = isNaN(article)
+		? await requestData('articles', { urlSafeTitle: article })
+		: await requestData('articles', { articleId: article });
+	if (
+		articleData.success &&
+		articleData.data.length !== 0 &&
+		(articleData.data[0].title
+			.replace(/[^a-zA-Z0-9\s]/gm, '')
+			.replace(/\s/gm, '-')
+			.replace(/-$/gm, '')
+			.toLowerCase() === article ||
+			articleData.data[0].articleId === article)
+	) {
+		const authorData = await requestData('users', { userId: articleData.data[0].author.userId });
 		res.status(200).json({
 			success: true,
 			status: 200,
-			data: [
-				article.data,
-				{
-					userId: article.author.userId,
-					firstName: article.author.firstName,
-					lastName: article.author.lastName,
-					fullName: `${article.author.firstName}-${article.author.lastName}`,
-					profilePictureUrl: article.author.profilePictureUrl,
+			data: {
+				article: articleData.data[0],
+				author: {
+					userId: authorData.data[0].userId,
+					firstName: authorData.data[0].firstName,
+					lastName: authorData.data[0].lastName,
+					fullName: `${authorData.data[0].firstName}-${authorData.data[0].lastName}`,
+					profilePictureUrl: authorData.data[0].profilePictureUrl,
 				},
-			],
+			},
 		});
-	else
+	} else
 		res.status(404).json({
 			success: false,
-			message: `There is no article named ${req.params.article}`,
+			message: `There is no article/articleId named ${req.params.article}`,
 		});
 });
 
-app.get('/data/users/:user', (req, res, next) => {
-	let user = { isAvailable: false, data: null, userId: null, username: null };
+app.get('/data/users/:user', async (req, res, next) => {
+	let user = isNaN(Number(req.params.user)) ? req.params.user : Number(req.params.user);
+	const userData = isNaN(Number(req.params.user))
+		? await checkUser({
+				firstName: user.split('-')[0].replace(/^\w/, (x) => x.toUpperCase()),
+				lastName: user.split('-')[1].replace(/^\w/, (x) => x.toUpperCase()),
+		  })
+		: await checkUser({ userId: user });
 
-	data.users.map((x, id) => {
-		if (
-			x.userId == Number(req.params.user) ||
-			`${x.firstName} ${x.lastName}`.replace(/\s/gm, '-').replace(/-$/gm, '').toLowerCase() ==
-				req.params.user.toLowerCase() ||
-			`${x.firstName}${x.lastName}`.toLowerCase() == req.params.user.toLowerCase()
-		) {
-			user.isAvailable = true;
-			user.data = {
-				userId: x.userId,
-				firstName: x.firstName,
-				lastName: x.lastName,
-				profilePictureUrl: x.profilePictureUrl,
-				followers: x.followers,
-				followings: x.followings,
-				country: x.country,
-				userType: x.userType,
-				registeredDate: x.registeredDate,
-			};
-		}
-	});
-	if (user.isAvailable)
+	if (userData.isThereAUser)
 		res.status(200).json({
 			success: true,
 			status: 200,
 			message: 'Request successful.',
-			data: user.data,
+			data: userData.userData[0],
 		});
 	else
 		res.status(404).json({
@@ -347,77 +383,205 @@ app.get('/data/users/:user', (req, res, next) => {
 		});
 });
 
-app.get('/data/tags', (req, res) => {
-	res.status(200).json({
-		success: true,
-		status: 200,
-		message: `Request successful.`,
-		data: data.tags,
-	});
+app.get('/data/tags', async (req, res) => {
+	const tagData = await requestData('tags');
+	if (tagData.success)
+		res.status(200).json({
+			success: true,
+			status: 200,
+			message: `Request successful.`,
+			data: tagData.data,
+		});
+	else
+		res.json({ success: false, status: 404, message: 'No tags found. Please try again later.' });
 });
 
-app.get('/data/tags/:tag', (req, res) => {
-	let tag = { resourceAvailability: false, data: null };
-	data.tags.map((x, id) => {
-		if (
-			x.name.toLowerCase() == req.params.tag.toLowerCase() ||
-			x[id] == parseInt(req.params.tag)
-		) {
-			tag.resourceAvailability = true;
-			tag.data = x;
-		}
-	});
-	if (tag.resourceAvailability) res.status(200).json(tag.data);
+app.get('/data/tags/:tag', async (req, res) => {
+	const tag = isNaN(Number(req.params.tag)) ? req.params.tag : Number(req.params.tag);
+	const tagData = isNaN(tag)
+		? await requestData('tags', { name: tag.replace(/^\w/, (x) => x.toUpperCase()) })
+		: await requestData('tags', { tagId: tag });
+	if (tagData.success && tagData.data.length !== 0)
+		res.status(200).json({ success: true, status: 200, data: tagData.data });
 	else
 		res.status(404).json({
 			success: false,
-			message: `There is no tag named ${req.params.tag}`,
+			status: 404,
+			message: `There is no tag/tagId named ${req.params.tag}`,
 		});
 });
 
-app.get('/data/profile', authenticate, (req, res) => {
-	const {
-		userId,
-		firstName,
-		lastName,
-		profilePictureUrl,
-		followers,
-		followings,
-		registeredDate,
-		userType,
-		country,
-	} = req.session.user;
+app.get(
+	'/data/profile',
+	authenticate,
+	async (req, res, next) => {
+		if (req.query.followUser !== undefined && req.query.followingUserId) {
+			console.log(req.query.followUser, req.query.followingUserId);
+			let userData = await checkUser({ userId: req.session.userId });
+			const followingUserId = Number(req.query.followingUserId);
+			let followingUserData = await checkUser({ userId: followingUserId });
+			if (req.query.followUser === 'true') {
+				// ? If use wants to follow
+				if (followingUserData.success && followingUserData.isThereAUser && userData.success) {
+					if (!userData.userData[0].followings.includes(followingUserId)) {
+						userData.userData[0].followings.push(followingUserId);
+						followingUserData.userData[0].followers.push(Number(req.session.userId));
+						console.log(
+							userData.userData[0].followings,
+							followingUserData.userData[0].followers
+						);
+						await updateUserData(
+							{ userId: req.session.userId },
+							{ followings: userData.userData[0].followings }
+						);
+						await updateUserData(
+							{ userId: followingUserId },
+							{ followers: followingUserData.userData[0].followers }
+						);
+						req.session.user = userData.userData[0];
+						//? if you haven't followed the same user before
+						// console.log(req.query.followUser, req.query.followingUserId);
+						res.json({
+							success: true,
+							status: 200,
+							message: `Followed ${followingUserData.userData[0].username} by ${req.session.username}`,
+						});
+					} else {
+						// ? if you have followed the same user before
+						res.status(400).json({
+							success: false,
+							status: 400,
+							message: `You have already followed ${followingUserData.userData[0].username}`,
+						});
+					}
+				} else {
+					res.json({ success: false, message: 'Follow request failed' });
+				}
+			} else {
+				//? If user wants to unfollow
+				if (followingUserData.success && followingUserData.isThereAUser && userData.success) {
+					// ? if you haven't unfollowed the same user before
+					if (userData.userData[0].followings.includes(followingUserId)) {
+						const positionUser = userData.userData[0].followings.indexOf(followingUserId);
+						const positionFollowing = followingUserData.userData[0].followers.indexOf(
+							Number(req.session.userId)
+						);
+						userData.userData[0].followings.splice(positionUser, 1);
+						followingUserData.userData[0].followers.splice(positionFollowing, 1);
 
-	const articlesPublished = (userId) => {
-		let count = 0;
-		data.articleData.forEach((x) => {
-			if (x.author.userId === userId) count++;
+						await updateUserData(
+							{ userId: req.session.userId },
+							{ followings: userData.userData[0].followings }
+						);
+						await updateUserData(
+							{ userId: followingUserId },
+							{ followers: followingUserData.userData[0].followers }
+						);
+						req.session.user = userData.userData[0];
+						res.json({
+							success: true,
+							status: 200,
+							message: `Unfollowed ${followingUserData.userData[0].username} by ${req.session.username}`,
+						});
+					} else {
+						// ? if you have unfollowed the same user before
+						res.status(400).json({
+							success: false,
+							status: 400,
+							message: `You have already unfollowed ${followingUserData.userData[0].username}`,
+						});
+					}
+				} else res.json({ success: false, message: 'Unfollow request failed' });
+			}
+		} else next();
+	},
+	async (req, res, next) => {
+		if (req.params.becomeAnAuthor) {
+			res.json({ success: true, status: 200, message: 'Success on route become an author.' });
+		} else next();
+	},
+	async (req, res) => {
+		const {
+			userId,
+			firstName,
+			lastName,
+			profilePictureUrl,
+			followers,
+			followings,
+			registeredDate,
+			userType,
+			country,
+		} = req.session.user;
+
+		const articlesPublished = async (userId) => {
+			const articleData = await requestData('articles', { 'author.userId': userId });
+			if (articleData.success && articleData.data.length !== 0) return articleData.data.length;
+			else return 0;
+		};
+
+		res.status(200).json({
+			success: true,
+			status: 200,
+			message: `Request successful.`,
+			data: {
+				userId: userId,
+				firstName: firstName,
+				lastName: lastName,
+				profilePictureUrl: profilePictureUrl,
+				followers: followers,
+				followings: followings,
+				registeredDate: registeredDate,
+				userType: userType,
+				country: country,
+				articlesPublished: await articlesPublished(userId),
+			},
 		});
-		return count;
-	};
+	}
+);
 
-	res.status(200).json({
-		success: true,
-		status: 200,
-		message: `Request successful.`,
-		data: {
-			userId: userId,
-			firstName: firstName,
-			lastName: lastName,
-			profilePictureUrl: profilePictureUrl,
-			followers: followers,
-			followings: followings,
-			registeredDate: registeredDate,
-			userType: userType,
-			country: country,
-			articlesPublished: articlesPublished(),
-		},
-	});
-});
+app.post(
+	'/data/upload',
+	fileUpload({
+		useTempFiles: true,
+		tempFileDir: path.join(__dirname, './temp/'),
+		createParentPath: true,
+		preserveFilename: true,
+		preserveExtension: true,
+		debug: true,
+	}),
+	(req, res, next) => {
+		if (!req.files || Object.keys(req.files).length === 0) {
+			return res.status(400).send('No files were uploaded.');
+		} else {
+			const profilePicture = req.files.profilePicture;
+			const location = `./public/images/users/${req.session.user.userType}s/${req.session.userId}/`;
+			fs.mkdir(location, (err) => {
+				if (err) console.log(err);
+			});
+			profilePicture.mv(`${location}/profilePicture.jpg`, (err) => {
+				if (err) return next(err);
+				updateUserData(
+					{ userId: req.session.userId },
+					{
+						profilePictureUrl: `/images/users/${req.session.user.userType}s/${req.session.userId}/profilePicture.jpg`,
+					}
+				).then(async ({ success }) => {
+					if (success) {
+						console.log(req.files);
+						const user = await checkUser({ userId: req.session.userId });
+						req.session.user = user.userData[0];
+						res.redirect('/profile');
+					} else res.json({ success: false });
+				});
+			});
+		}
+	}
+);
 
 // ? //////////////////////////////  Data POST requests  ////////////////////////////////////
 app.post(
 	'/signup',
+	createAccountLimiter,
 	[
 		check('firstName').exists().withMessage('Name cannot be empty').trim().escape(),
 		check('lastName').exists().withMessage('Name cannot be empty').trim().escape(),
@@ -447,27 +611,21 @@ app.post(
 	async (req, res, next) => {
 		const validationErrors = validationResult(req);
 		console.log(req.body);
-		let errObj = { isError: false, errors: [] };
 		if (validationErrors.isEmpty()) {
+			let errObj = { isError: false, errors: [] };
 			const { firstName, lastName, email } = req.body;
-			await checkUser({ firstName, lastName }, (data) => {
-				// This checks whether there are any existing users in the database with the entered input.
-				console.log(data);
-				const { isThereAUser } = data;
-				if (isThereAUser) {
-					errObj.isError = true;
-					errObj.errors.push('nameExists=true');
-				}
-			});
-			await checkUser({ email }, (data) => {
-				// This checks whether there are any existing users in the database with the entered input.
-				console.log(data);
-				const { isThereAUser } = data;
-				if (isThereAUser) {
-					errObj.isError = true;
-					errObj.errors.push('emailExists=true');
-				}
-			});
+			const nameCheck = await checkUser({ firstName, lastName });
+			const emailCheck = await checkUser({ email });
+			if (nameCheck.isThereAUser) {
+				errObj.isError = true;
+				errObj.errors.push('nameExists=true');
+			}
+			if (emailCheck.isThereAUser) {
+				errObj.isError = true;
+				errObj.errors.push('emailExists=true');
+			}
+			if (errObj.isError) res.status(307).redirect(`/signup?${errObj.errors.join('&')}`);
+			else next();
 		} else {
 			console.log(`Validation errors found ${validationErrors.errors}`);
 			return res.status(400).json({
@@ -475,8 +633,6 @@ app.post(
 				message: 'Server validation errors found. Please check your inputs.',
 			});
 		}
-		if (errObj.isError) res.status(307).redirect(`/signup?${errObj.errors.join('&')}`);
-		else next();
 	},
 	(req, res, next) => {
 		const errors = validationResult(req);
@@ -489,7 +645,9 @@ app.post(
 				req.session.user = userData;
 				res.status(307).redirect('/profile');
 			} else
-				res.status(500).send(`<h1>Error occurredwhen signing up. Please try again later.</h1>`);
+				res.status(500).send(
+					`<h1>Error occurred when signing up. Please try again later.</h1>`
+				);
 		});
 	}
 );
@@ -505,24 +663,20 @@ app.post(
 			.normalizeEmail(),
 		check('password').exists().withMessage('Password cannot be empty'),
 	],
-	(req, res, next) => {
+	async (req, res, next) => {
 		const validationErrors = validationResult(req);
 		const { email, password } = req.body;
 		let user = { isAvailable: false, userId: null, username: null, data: null };
 		// console.log(req.body);
 		if (validationErrors.isEmpty()) {
-			checkUser({ email, password }, (data) => {
-				const { isThereAUser } = data;
-				if (isThereAUser) {
-					const userData = data.userData[0];
-					console.log(data, userData);
-					// user.isAvailable = true;
-					req.session.userId = userData.userId;
-					req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
-					req.session.user = userData;
-					res.status(307).redirect(`/profile`);
-				} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
-			});
+			const data = await checkUser({ email, password });
+			console.log(data);
+			if (data.isThereAUser) {
+				req.session.userId = data.userData[0].userId;
+				req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
+				req.session.user = data.userData[0];
+				res.status(307).redirect(`/profile`);
+			} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
 		} else {
 			console.log(`Validation errors found.`);
 			res.status(400).json({

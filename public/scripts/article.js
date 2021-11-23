@@ -1,5 +1,5 @@
-// jshint ignore:start
 import fetchData from './fetchData.js';
+import timeFromNow from './timeFromNow.js';
 var requestingArticleName = `/data${window.location.pathname}`;
 var reactions = {
 	liked: false,
@@ -7,9 +7,11 @@ var reactions = {
 	bookmarked: false,
 };
 
-const renderData = ({ success, data }) => {
+const renderData = (res) => {
+	const { success, data } = res;
+	console.log(res);
 	if (success) {
-		const [article, author] = data;
+		const { article, author } = data;
 		document.title = `ZEERUM \| ${article.title}`;
 		document.querySelector(
 			'.article-img-container'
@@ -26,9 +28,9 @@ const renderData = ({ success, data }) => {
 				return `<a href="/tags/${x.toLowerCase()}"><span class="tag">#${x}</span></a>`;
 			})
 			.join('')}</div>`;
-		document.querySelector(
-			'.author > .author-data-container'
-		).innerHTML = `<img src="${author.profilePictureUrl}" alt="" /><span class="name">${author.firstName} ${author.lastName}</span>`;
+		document.querySelector('.author > .author-data-container').innerHTML = `<img src="${
+			author.profilePictureUrl || '/images/user.png'
+		}" alt="" /><span class="name">${author.firstName} ${author.lastName}</span>`;
 		document.querySelector('.author-data-container > img').addEventListener('click', () => {
 			document.location = `/user/${author.fullName.toLowerCase()}`;
 		});
@@ -44,25 +46,31 @@ const renderData = ({ success, data }) => {
 		).innerHTML = article.reactions.bookmarks.length;
 		if (article.comments.length !== 0) {
 			article.comments.forEach((comment) => {
-				fetchData(`/data/users/${comment.userId}`, ({ data }) => {
-					document.querySelector('#comments').innerHTML =
-						`<div class="comment"><img src="${
-							data.profilePictureUrl
-						}" onclick="window.location = \`/user/${data.firstName.toLowerCase()}-${data.lastName.toLowerCase()}\`" /><div class="text">${
-							comment.comment
-						}<span class="commented-date">${comment.date}</span></div></div>` +
-						document.querySelector('#comments').innerHTML;
-					document.querySelector('.no-comments').style.display = 'none';
+				fetchData(`/data/users/${comment.userId}`, ({ success, data }) => {
+					if (success) {
+						document.querySelector('#comments').innerHTML =
+							`<div class="comment"><img src="${
+								data.profilePictureUrl || '/images/user.png'
+							}" onclick="window.location = \`/user/${data.firstName.toLowerCase()}-${data.lastName.toLowerCase()}\`" /><div class="text">${
+								comment.comment
+							}<span class="commented-date">${timeFromNow(
+								comment.date
+							)}</span></div></div>` + document.querySelector('#comments').innerHTML;
+						document.querySelector('.no-comments').style.display = 'none';
+					} else {
+						document.querySelector('#comments').innerHTML =
+							`<div class="comment"><img src="/images/user.png" onclick="window.location = \`/user/unknownOrDeletedUser" /><div class="text">${comment.comment}<span class="commented-date">${comment.date}</span></div></div>` +
+							document.querySelector('#comments').innerHTML;
+						document.querySelector('.no-comments').style.display = 'none';
+					}
 				});
 			});
 		}
-		console.log(author);
-	} else console.log('Error occurred when requesting article data.');
+	} else console.log(`Error occurred when requesting article data. ${res.message}`);
 };
 console.log(requestingArticleName);
-requestingArticleName !== '/data/articles/'
-	? fetchData(requestingArticleName, renderData)
-	: console.log("You didn't request an article");
+if (requestingArticleName !== '/data/articles/') fetchData(requestingArticleName, renderData);
+else console.log("You didn't request an article");
 
 // ? //////////////////////////////////////////////////////////////////////////////
 
@@ -95,19 +103,15 @@ comment.addEventListener('keyup', function (event) {
 });
 
 function sendComment() {
-	let date = new Date();
-	const currentDate = `${date.getFullYear()}-${
-		date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth()
-	}-${date.getDate() > 9 ? date.getDate() : '0' + date.getDate()}`;
-	const currentTime = `${date.getHours() > 12 ? '0' + (date.getHours() - 12) : date.getHours()}:${
-		date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes
-	}:${date.getSeconds() > 9 ? date.getSeconds() : '0' + date.getSeconds()} ${
-		date.getHours() > 12 ? 'PM' : 'AM'
-	}`;
 	if (comment.value !== '' && /\S/gi.test(comment.value)) {
 		commentContainer.innerHTML =
-			`<div class="comment">${comment.value}<span class="date">By you on ${currentDate} at ${currentTime}</span></div>` +
-			commentContainer.innerHTML;
+			`<div class="comment"><img src="${sessionStorage.getItem(
+				'userProfilePictureUrl'
+			)}" onclick="window.location = \`/user/${sessionStorage.getItem(
+				'username'
+			)}\`" /><div class="text">${comment.value}<span class="commented-date">${timeFromNow(
+				new Date().getTime()
+			)}</span></div></div>` + commentContainer.innerHTML;
 		comment.value = '';
 	}
 }

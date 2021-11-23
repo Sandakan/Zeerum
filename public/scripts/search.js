@@ -20,44 +20,51 @@ document.querySelector('#search').addEventListener('input', () => {
 		let searchInput = document.querySelector('#search').value;
 		if (searchInput !== '') {
 			fetchData(`/data/search/${searchInput.toLowerCase()}`, (res) => {
+				console.log(res);
 				if (res.success) {
 					const { articles, users, tags } = res.results;
 					let temp = [];
 					articles.forEach((x) => {
-						let searchedLettersHighlight = x.title
-							.toLowerCase()
-							.replaceAll(
-								`${searchInput.toLowerCase()}`,
-								`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
-							);
-						if (temp.length < 3)
-							temp.push(
-								`<a href="${x.url}" class="search-result"><img src="/images/article.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
-							);
+						if (articles.length !== 0) {
+							let searchedLettersHighlight = x.title
+								.toLowerCase()
+								.replaceAll(
+									`${searchInput.toLowerCase()}`,
+									`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
+								);
+							if (temp.length < 3)
+								temp.push(
+									`<a href="/articles/${x.urlSafeTitle}" class="search-result"><img src="/images/article.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
+								);
+						}
 					});
 					users.forEach((x) => {
-						let searchedLettersHighlight = x.fullname
-							.toLowerCase()
-							.replaceAll(
-								`${searchInput.toLowerCase()}`,
-								`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
-							);
-						if (temp.length < 3)
-							temp.push(
-								`<a href="${x.url}" class="search-result"><img src="/images/user.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
-							);
+						if (users.length !== 0) {
+							let searchedLettersHighlight = `${x.firstName} ${x.lastName}`
+								.toLowerCase()
+								.replaceAll(
+									`${searchInput.toLowerCase()}`,
+									`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
+								);
+							if (temp.length < 3)
+								temp.push(
+									`<a href="/user/${x.username}" class="search-result"><img src="/images/user.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
+								);
+						}
 					});
 					tags.forEach((x) => {
-						let searchedLettersHighlight = x.name
-							.toLowerCase()
-							.replaceAll(
-								`${searchInput.toLowerCase()}`,
-								`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
-							);
-						if (temp.length < 3)
-							temp.push(
-								`<a href="${x.url}" class="search-result"><img src="/images/tag.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
-							);
+						if (tags.length !== 0) {
+							let searchedLettersHighlight = x.name
+								.toLowerCase()
+								.replaceAll(
+									`${searchInput.toLowerCase()}`,
+									`<span class="searched-phrase-highlight">${searchInput.toLowerCase()}</span>`
+								);
+							if (temp.length < 3)
+								temp.push(
+									`<a href="/tags/${x.name.toLowerCase()}" class="search-result"><img src="/images/tag.png" alt="" /> <span class="text">${searchedLettersHighlight}</span> </a>`
+								);
+						}
 					});
 					document.querySelector('.search-results-container').innerHTML = temp.join('');
 				} else {

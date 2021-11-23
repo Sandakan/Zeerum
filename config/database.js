@@ -8,22 +8,6 @@ const connectToDB = async () => {
 	try {
 		await client.connect();
 		console.log('Connected successfully to the database server');
-		const database = client.db(process.env.DATABASE_NAME);
-		const collection = database.collection('users');
-		// Construct a document
-		// let personDocument = {
-		// 	name: { first: 'Alan', last: 'Turing' },
-		// 	birth: new Date(1912, 5, 23), // June 23, 1912
-		// 	death: new Date(1954, 5, 7), // June 7, 1954
-		// 	contribs: ['Turing machine', 'Turing test', 'Turingery'],
-		// 	views: 1250000,
-		// };
-		// // Insert a single document, wait for promise so we can read it back
-		// const p = await col.insertOne(personDocument);
-		// Find one document
-		// const myDocument = await collection.findOne();
-		// Print to the console
-		// console.log(myDocument);
 	} catch (err) {
 		console.log(err.stack);
 	} finally {
@@ -46,6 +30,7 @@ const createUser = async (userDataObj, func) => {
 			userId: count,
 			firstName: firstName,
 			lastName: lastName,
+			username: `${firstName.toLowerCase()}-${lastName.toLowerCase()}`,
 			birthday: birthday,
 			email: email,
 			password: password,
@@ -64,48 +49,86 @@ const createUser = async (userDataObj, func) => {
 				console.log(`User added successfully`, res);
 				const data = await database
 					.collection('users')
-					.findOne({ userId: count }, { projection: { password: false } });
-				// console.log({ success: true, userData });
-				// const userData = new Promise((resolve, reject) => {
-				// 	resolve({
-				// 		success: true,
-				// 		message: `Account created successfully`,
-				// 		userData: data,
-				// 	});
-				// 	reject({
-				// 		success: false,
-				// 		message: `Account creation failed.`,
-				// 	});
-				// });
+					.findOne({ userId: count }, { projection: { _id: false, password: false } });
 				func({
 					success: true,
 					message: `Account created successfully`,
 					userData: data,
 				});
-				return userData;
 			}
 		}
 	);
 };
 
-const checkUser = async (userDataObj, func) => {
-	// console.log(userDataObj);
+const checkUser = async (userDataObj, customProjection = {}, func = () => true) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
-	database
-		.collection('users')
-		.find(userDataObj, { projection: { password: false, birthday: false } })
-		.toArray((error, result) => {
-			if (error) throw error;
-			// const userData = new Promise((resolve, reject) => {
-			// 	if (result.length !== 0) resolve({ isThereAUser: true, userData: result });
-			// 	else reject({ isThereAUser: false });
-			// });
-			if (result.length !== 0) func({ isThereAUser: true, userData: result });
-			else func({ isThereAUser: false });
-		});
-	// return userData;
+	const promise = new Promise((resolve, reject) => {
+		try {
+			database
+				.collection('users')
+				.find(userDataObj, {
+					projection: { _id: false, password: false, birthday: false, ...customProjection },
+				})
+				.toArray((error, result) => {
+					// console.log(result);
+					if (error) {
+						reject({ success: false });
+						throw error;
+					}
+					if (result.length !== 0) {
+						func({ success: true, isThereAUser: true, userData: result });
+						resolve({ success: true, isThereAUser: true, userData: result });
+					} else {
+						func({ success: true, isThereAUser: false });
+						resolve({ success: true, isThereAUser: false });
+					}
+				});
+		} catch (err) {
+			if (err) throw err;
+			reject({ success: false, error: err });
+		}
+	});
+	return promise;
 };
 
-module.exports = { connectToDB, createUser, checkUser };
+const requestData = async (collection, query = {}, customProjection = {}, func = () => true) => {
+	await client.connect();
+	const database = client.db(process.env.DATABASE_NAME);
+	const promise = new Promise(async (resolve, reject) => {
+		database
+			.collection(collection)
+			.find(query, {
+				projection: { _id: false, password: false, birthday: false, ...customProjection },
+			})
+			.toArray((error, result) => {
+				if (error) {
+					reject({ success: false });
+					throw error;
+				}
+				func({ success: true, data: result });
+				resolve({ success: true, data: result });
+				return { success: true, data: result };
+			});
+	});
+	return promise;
+};
+
+const updateUserData = async (query = {}, newValues = {}) => {
+	await client.connect();
+	const database = client.db(process.env.DATABASE_NAME);
+	const promise = new Promise(async (resolve, reject) => {
+		database.collection('users').updateOne(query, { $set: newValues }, (err, res) => {
+			if (err) {
+				reject({ success: false });
+				throw err;
+			}
+			console.log('1 document updated');
+			resolve({ success: true, message: '1 document updated' });
+		});
+	});
+	return promise;
+};
+
+module.exports = { connectToDB, createUser, checkUser, requestData, updateUserData };
 // run().catch(console.dir);

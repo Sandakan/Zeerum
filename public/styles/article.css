@@ -407,7 +407,7 @@
 }
 
 .author-information-container .comments-section .add-comment .comment-send-btn:hover i {
-	color: hsl(0, 0%, 0%);
+	color: var(--highlight-color);
 }
 .author-information-container .comments-section .comments {
 	width: 90%;
