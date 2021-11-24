@@ -1,3 +1,5 @@
+![The San Juan Mountains are beautiful!](https://github.com/Sandakan/Zeerum/edit/master/public/icon.png "San Juan Mountains")
+
 # ZEERUM - *A place to share your knowledge.*
 Zeerum is a website which lets its users to share knowledge around the world. It first started as a simple project as an alternative to articles-sharing website, now it has broaden its horizons to share knowledge with everyone. 
 
