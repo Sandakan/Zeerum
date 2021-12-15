@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 //? DATABASE CONNECTION ////////////////////////////////////
-const client = new MongoClient(process.env.LOCAL_DATABASE_CONNECTION_STRING);
+const client = new MongoClient(process.env.DATABASE_CONNECTION_STRING);
 
 const connectToDB = async () => {
 	try {
@@ -16,7 +16,7 @@ const connectToDB = async () => {
 };
 
 const createUser = async (userDataObj, func) => {
-	const { firstName, lastName, birthday, email, password, confirmPassword, country } = userDataObj;
+	const { firstName, lastName, birthday, email, password, country } = userDataObj;
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	// const collection = database.collection('users');
@@ -25,6 +25,7 @@ const createUser = async (userDataObj, func) => {
 		.countDocuments()
 		.then((res) => res);
 	console.log(count + ' documents');
+
 	database.collection('users').insertOne(
 		{
 			userId: count,
@@ -40,6 +41,7 @@ const createUser = async (userDataObj, func) => {
 			country: country,
 			followers: [],
 			followings: [],
+			bookmarks: [],
 		},
 		async (err, res) => {
 			if (err) {
@@ -49,7 +51,7 @@ const createUser = async (userDataObj, func) => {
 				console.log(`User added successfully`, res);
 				const data = await database
 					.collection('users')
-					.findOne({ userId: count }, { projection: { _id: false, password: false } });
+					.findOne({ userId: count }, { projection: { password: false } });
 				func({
 					success: true,
 					message: `Account created successfully`,
@@ -68,7 +70,7 @@ const checkUser = async (userDataObj, customProjection = {}, func = () => true) 
 			database
 				.collection('users')
 				.find(userDataObj, {
-					projection: { _id: false, password: false, birthday: false, ...customProjection },
+					projection: { birthday: false, ...customProjection },
 				})
 				.toArray((error, result) => {
 					// console.log(result);
@@ -99,7 +101,7 @@ const requestData = async (collection, query = {}, customProjection = {}, func =
 		database
 			.collection(collection)
 			.find(query, {
-				projection: { _id: false, password: false, birthday: false, ...customProjection },
+				projection: { password: false, birthday: false, ...customProjection },
 			})
 			.toArray((error, result) => {
 				if (error) {
@@ -114,21 +116,79 @@ const requestData = async (collection, query = {}, customProjection = {}, func =
 	return promise;
 };
 
-const updateUserData = async (query = {}, newValues = {}) => {
+const updateUserData = async (query = {}, newValues = {}, returnUpdatedData = false) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
-		database.collection('users').updateOne(query, { $set: newValues }, (err, res) => {
+		database.collection('users').updateOne(query, { $set: newValues }, async (err, res) => {
 			if (err) {
 				reject({ success: false });
 				throw err;
 			}
 			console.log('1 document updated');
-			resolve({ success: true, message: '1 document updated' });
+			if (returnUpdatedData) {
+				resolve({
+					success: true,
+					message: '1 document updated',
+					updatedData: await database
+						.collection('users')
+						.findOne(query, { projection: { password: false, birthday: false } }),
+				});
+			} else resolve({ success: true, message: '1 document updated' });
 		});
 	});
 	return promise;
 };
 
-module.exports = { connectToDB, createUser, checkUser, requestData, updateUserData };
-// run().catch(console.dir);
+const updateData = async (collection, query = {}, newValues = {}, returnUpdatedData = false) => {
+	// console.log(collection, query, newValues, returnUpdatedData);
+	await client.connect();
+	const database = client.db(process.env.DATABASE_NAME);
+	const promise = new Promise(async (resolve, reject) => {
+		database.collection(collection).updateMany(query, { $set: newValues }, async (err, res) => {
+			if (err) {
+				reject({ success: false, error: err });
+				throw err;
+			}
+			console.log(`${res.modifiedCount} documents updated.`);
+			if (returnUpdatedData) {
+				await database
+					.collection(collection)
+					.find(query, { projection: { password: false, birthday: false } })
+					.toArray((err, result) => {
+						if (err) throw err;
+						resolve({
+							success: true,
+							message: `${res.modifiedCount} document updated`,
+							updatedData: result,
+						});
+					});
+			} else resolve({ success: true, message: `${res.modifiedCount} documents updated` });
+		});
+	});
+	return promise;
+};
+
+const deleteData = async (collection, query = {}) => {
+	await client.connect();
+	const database = client.db(process.env.DATABASE_NAME);
+	const promise = new Promise(async (resolve, reject) => {
+		database.collection(collection).deleteMany(query, (err, result) => {
+			if (err) {
+				reject({ success: false, error: err });
+				throw err;
+			} else resolve({ success: true, message: `${result.deletedCount} documents deleted.` });
+		});
+	});
+	return promise;
+};
+
+module.exports = {
+	connectToDB,
+	createUser,
+	checkUser,
+	requestData,
+	updateUserData,
+	updateData,
+	deleteData,
+};

@@ -5,3 +5,81 @@
 .articles-container {
 	min-height: 100px;
 }
+
+.articles-container .user {
+	width: 100%;
+	height: 130px;
+	background-color: var(--background-color);
+	border-radius: 20px;
+	margin: 20px 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 10px 20px;
+	cursor: pointer;
+}
+.articles-container .user img {
+	width: 100px;
+	height: 100px;
+	border-radius: 50px;
+	margin: 0 40px;
+	cursor: pointer;
+}
+.articles-container .user .user-data {
+	padding-top: 10px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	margin-left: 20px;
+}
+.articles-container .user .user-data span {
+	margin-bottom: 5px;
+}
+.articles-container .user .user-data .name {
+	font-size: 1.5rem;
+	word-spacing: 3px;
+}
+.articles-container .user .user-data .name a {
+	color: #000;
+	text-decoration: none;
+}
+.articles-container .user .user-data .name:hover a {
+	text-decoration: underline;
+}
+.articles-container .user .user-data .user-type {
+	text-transform: uppercase;
+	font-weight: 500;
+}
+
+.articles-container .user .user-data .stats {
+	margin-top: 10px;
+}
+
+.articles-container .tag {
+	width: 100%;
+	height: 80px;
+	background-color: var(--background-color);
+	border-radius: 20px;
+	margin: 20px 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 10px 20px;
+	cursor: pointer;
+}
+
+.articles-container .tag img {
+	width: 50px;
+	height: 50px;
+	margin: 0 70px;
+}
+
+.articles-container .tag .name {
+	font-size: 1.5rem;
+	color: #000;
+	text-decoration: none;
+}
+
+.articles-container .tag .name:hover {
+	text-decoration: underline;
+}

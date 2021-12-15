@@ -41,12 +41,18 @@
 				</ul>
 			</div>
 		</nav>
-		<div class="article-elements-container">
+
+		<div class="popup-container" id="popup-container">
+			<div class="popup"></div>
+		</div>
+
+		<article class="article-elements-container">
 			<div class="article-data-container">
 				<div class="article-img-and-heading-container">
 					<div class="article-img-container"></div>
-					<div class="article-heading-container">
+					<div class="article-heading-and-stats-container">
 						<span class="article-heading"></span>
+						<div class="article-stats"></div>
 					</div>
 				</div>
 				<div class="article-data"></div>
@@ -56,17 +62,15 @@
 			<div class="author-information-container">
 				<div class="author">
 					<div class="author-data-container"></div>
-
 					<hr />
-
 					<div class="reaction-buttons-container">
-						<div class="like" onclick="this.classList.toggle('love-reaction')">
-							<i class="fas fa-heart"></i><span id="loved-number">0</span>
+						<div class="like">
+							<i class="fas fa-heart"></i><span id="liked-number">0</span>
 						</div>
-						<div class="share" onclick="this.classList.toggle('share-reaction')">
+						<div class="share">
 							<i class="fas fa-share-alt"></i><span id="shared-number">0</span>
 						</div>
-						<div class="bookmark" onclick="this.classList.toggle('bookmark-reaction')">
+						<div class="bookmark">
 							<i class="fas fa-bookmark"></i><span id="bookmarked-number">0</span>
 						</div>
 					</div>
@@ -74,17 +78,17 @@
 					<hr />
 				</div>
 				<div class="comments-section">
-					<div class="add-comment">
+					<div class="comment-input-container">
 						<input
 							type="text"
-							name="add-comment"
-							id="add-comment"
-							class="add-comment"
+							name="comment-input-container"
+							id="comment-input-container"
+							class="comment-input-container"
 							placeholder="Add a comment"
 							value=""
 						/>
 						<div class="comment-send-btn">
-							<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+							<i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
 						</div>
 					</div>
 					<div class="comments" id="comments">
@@ -92,7 +96,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</article>
 
 		<div class="get-started-container">
 			<a href="/login" class="log-in-btn">Log In</a>
@@ -136,7 +140,7 @@
 
 			<div class="footer-content">
 				<div class="description">
-					We are a community that hosts ideas of beautiful minds. First started as a
+					We are a community that shares ideas of beautiful minds. First started as a
 					tech-article website, now it grows as one of the most visited websites for ideas and
 					information to keep up with the world and to widen the horizon of creativity.
 					<br /><br />
@@ -166,7 +170,7 @@
 			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
 
-		<script src="/scripts/animations.js"></script>
+		<script src="/scripts/scrollTop.js"></script>
 		<script type="module" src="/scripts/article.js"></script>
 		<script type="module" src="/scripts/profile.js"></script>
 	</body>

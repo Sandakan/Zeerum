@@ -18,6 +18,7 @@ var articleData = [
 			shares: [1, 2],
 			bookmarks: [1, 2],
 		},
+		views: { allTime: 0 },
 		comments: [
 			{
 				userId: 1,
@@ -51,6 +52,7 @@ var articleData = [
 			shares: [2],
 			bookmarks: [1, 2],
 		},
+		views: { allTime: 0 },
 		comments: [
 			{
 				userId: 2,
@@ -101,6 +103,7 @@ var articleData = [
 			shares: [2, 0],
 			bookmarks: [2],
 		},
+		views: { allTime: 0 },
 		comments: [],
 		article:
 			'<p>When Jack McMullen goes to the gym to work on his shot, he won’t let himself leave until he hits 10 3-pointers in a row. Monday, he came close to doing it in a game. McMullen was beyond hot against Rogers, hitting 13 of 15 3-pointers in a 54-point night to lead the East Greenwich boys basketball team to a 73-50 win over the Vikings. “It was just like a Larry Bird/Steph Curry type of night,” EG coach Don Bowen said. “The kids on the bench were like ‘are you kidding me?’ He was just in a zone.” “My whole life, shooting with my dad, you hit four in a row from three and the next one is usually back rim or one is off,” McMullen said. “I was waiting for the back rim to happen but they just kept going in. This is the biggest groove I’ve ever had in my life.” McMullen’s 54 points beat the former record of 51 set by Dave Canning in 1996. It’s the most points scored by a high school player since Erickson Bans scored 57 in a playoff game against Tolman on Feb 26, 2019.</p><p>The 13 3-pointers is an East Greenwich and almost doubled McMullen’s personal best of seven I a single high school game. Where it stands among state records is uncertain; Bans hit 11 in that playoff game against Tolman and Steve DeMeo, his coach, said that was his career high. <b>Henry Coleman</b>, the Mount St. Charles boys basketball coach who serves as the state’s unofficial high school basketball historian, couldn’t remember anyone hitting more than 10 prior to Bans. Whether or not it’s a state record doesn’t matter much to McMullen.</p><img src="/images/articles/2/images.jpg" alt=""><span> “Right now it’s so surreal,” McMullen said. “I worked really hard with my dad in the gym and having the results show, some al-time results maybe, it’s just really cool.</span><span>“I’m really happy and proud of the work my dad and I put in.”</span><span>McMullen scored 10 points in the first quarter, hitting two 3-pointers. He followed it with a 17-point second quarter, hitting four 3-pointers.</span>',

@@ -6,18 +6,13 @@
 	transform: translateX(-50%) scaleX(0.3);
 }
 
-.banner-container {
-	height: 80vh;
-	margin: 0 0 100px 0;
-}
-
 .banner {
-	height: calc(100vh - 150px);
 	align-items: center;
+	justify-content: center;
 }
 
 .banner-img {
-	background-image: url('/images/banners/banner6.jpg') !important;
+	background-image: url('/images/banners/banner21.jpg') !important;
 }
 
 .banner-elements-container {
@@ -33,4 +28,15 @@
 	font-size: 5rem;
 	position: relative;
 	left: 0;
+	width: fit-content;
+}
+
+.banner-text span a {
+	color: var(--highlight-color);
+	text-decoration: none;
+	border-bottom: 2px solid var(--highlight-color);
+}
+.banner-text span h6 {
+	font-size: 1rem;
+	font-weight: 400;
 }

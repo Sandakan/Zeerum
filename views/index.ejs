@@ -3,7 +3,8 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>ZEERUM - Development In Progress</title>
+		<meta name="csrf-token" content="<%= csrfToken %>" />
+		<title>ZEERUM - <%= status %></title>
 		<link rel="icon" href="/images/icon.png" type="image/png" />
 		<link rel="stylesheet" href="/styles/main.css" />
 		<link rel="stylesheet" href="/styles/animations.css" />
@@ -47,8 +48,8 @@
 				<div class="banner-elements-container">
 					<div class="banner-text">
 						<span
-							>Join <span class="label-in-banner">ZEERUM</span> to share <br />
-							your <span class="banner-highlighted-text">technology.</span></span
+							>Join <span class="label-in-banner">ZEERUM</span> to share your
+							<span class="banner-highlighted-text">Knowledge.</span></span
 						>
 					</div>
 					<div class="search-bar-container">
@@ -66,7 +67,6 @@
 								id="search"
 								placeholder="Search for Anything"
 							/>
-							<label for="search"></label>
 							<div class="search-btn" id="search-btn">
 								<i class="fas fa-search"></i>
 							</div>
@@ -78,7 +78,7 @@
 
 		<div class="page-heading-1">Recently Added</div>
 		<div class="other-content">
-			<nav class="nav-box-2">
+			<nav class="nav-box">
 				<div class="navigate-through-links">
 					<div class="trending-articles-heading">Trending Articles</div>
 					<ul></ul>
@@ -95,9 +95,7 @@
 			<a href="/login" class="log-in-btn">Log In</a>
 			<span class="or">OR</span>
 			<a href="/signup" class="signup-btn">Sign up</a>
-			<span class="heading">
-				Receive articles right to your email when they are in the air.
-			</span>
+			<span class="heading"> Join with us to share your knowledge with others. </span>
 			<span class="zeerum-user">
 				zeerum <br />
 				user <br />
@@ -133,7 +131,7 @@
 
 			<div class="footer-content">
 				<div class="description">
-					We are a community that hosts ideas of beautiful minds. First started as a
+					We are a community that shares ideas of beautiful minds. First started as a
 					tech-article website, now it grows as one of the most visited websites for ideas and
 					information to keep up with the world and to widen the horizon of creativity.
 					<br /><br />
@@ -163,9 +161,9 @@
 			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
 
-		<script async src="/scripts/animations.js"></script>
-		<!-- <script type="module" src="/scripts/home.js"></script>
+		<script async src="/scripts/scrollTop.js"></script>
+		<script type="module" src="/scripts/home.js"></script>
 		<script type="module" src="/scripts/search.js"></script>
-		<script type="module" src="/scripts/profile.js"></script> -->
+		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

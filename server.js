@@ -1,21 +1,23 @@
 // jshint -W014
 // ? PACKAGES //////////////////////////////////////////////////////////////////////////////////////////
-const express = require('express');
-const path = require('path');
+const { check, validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { check, validationResult } = require('express-validator');
-const session = require('express-session');
-const mongoose = require('mongoose');
-const MongoStore = require('connect-mongo');
 const cors = require('cors');
+const ejs = require('ejs');
+const express = require('express');
 const expressIp = require('express-ip');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
+const nodemailer = require('nodemailer');
+const path = require('path');
+const session = require('express-session');
 require('dotenv').config();
 require('express-async-errors');
 // const passport = require('passport');
-// const crypto = require('crypto');
 // const { MongoClient } = require('mongodb');
 // const utils = require('util');
 // const { readFile, writeFile } = require('fs');
@@ -27,19 +29,23 @@ const data = require('./data/data');
 const authenticate = require('./middleware/authenticate');
 const errorHandler = require('./middleware/errorHandler');
 const { createAccountLimiter } = require('./middleware/rate-limit');
+const { csrfProtection } = require('./middleware/csrfProtection');
 const {
 	connectToDB,
 	createUser,
 	checkUser,
 	requestData,
 	updateUserData,
+	updateData,
 } = require('./config/database');
 connectToDB();
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
 
 // ? ///////////////////////////////// GLOBAL MIDDLEWARE ///////////////////////////////////////////////
-// app.set('view engine', 'ejs');
+// view engine
+app.set('view engine', 'ejs');
+// public files
 app.use(express.static('./public'));
 // parse form data
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -71,7 +77,7 @@ app.use(
 		saveUninitialized: true,
 		store: MongoStore.create({
 			clientPromise: mongoose
-				.connect(process.env.LOCAL_DATABASE_CONNECTION_STRING, {
+				.connect(process.env.DATABASE_CONNECTION_STRING, {
 					useNewUrlParser: true,
 					useUnifiedTopology: true,
 				})
@@ -87,8 +93,9 @@ app.use(
 
 // ? /////////////////////////////////// MAIN ROUTES ///////////////////////////////////////////////
 
-app.get('/', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/index.html'));
+app.get('/', csrfProtection, (req, res) => {
+	// res.status(200).sendFile(path.resolve(__dirname, './public/index.html'));
+	res.render('index', { status: 'Development in progress.', csrfToken: req.csrfToken() });
 });
 
 app.get('/discover', (req, res) => {
@@ -103,27 +110,20 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-	if (req.session.userId || req.session.username) res.status(307).redirect('/profile');
+	if (req.session.userId !== undefined || req.session.username)
+		res.status(307).redirect('/profile');
 	else res.status(200).sendFile(path.resolve(__dirname, './public/login.html'));
 });
 
 app.get('/signup', (req, res) => {
-	if (req.session.username || req.session.userId) res.status(307).redirect('/profile');
+	if (req.session.username || req.session.userId !== undefined)
+		res.status(307).redirect('/profile');
 	else res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
 });
 
 app.get('/profile', authenticate, (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/profile.html'));
 });
-
-// app.get('/upload', (req, res, next) => {
-// 	res.send(
-// 		` <form ref='uploadForm' encType="multipart/form-data" class="" action="/data/upload" method="post">
-//       <input type="file" name="file"><br>
-//       <input type="submit" name="" value="upload">
-//     </form>`
-// 	);
-// });
 
 app.get('/404', (req, res) => {
 	res.status(200).sendFile(path.resolve(__dirname, './public/404.html'));
@@ -185,8 +185,8 @@ app.get('/search/:searchItem', (req, res) => {
 app.get('/user/:user', async (req, res, next) => {
 	const user = isNaN(Number(req.params.user)) ? req.params.user : Number(req.params.user);
 	if (
-		req.session.userId &&
-		(req.session.userId === user || req.session.username === user.toString().toLowerCase())
+		req.session.userId !== undefined &&
+		(req.session.userId === user || user.toString().toLowerCase() === req.session.username)
 	)
 		res.redirect('/profile');
 	else {
@@ -202,19 +202,23 @@ app.get('/user/:user', async (req, res, next) => {
 		else next();
 	}
 });
-// ? /////////////////////////  Data GET requests  ////////////////////////////////////////
+// ? /////////////////////////  Data GET and POST requests  ////////////////////////////////////////
 
 app.get('/data/search/:searchPhrase', async (req, res, next) => {
 	const searchPhrase = req.params.searchPhrase;
+	console.log(searchPhrase);
 	const articleData = await requestData('articles', {
 		title: { $regex: new RegExp(`${searchPhrase}`, 'i') },
 	});
 	const tagData = await requestData('tags', {
 		name: { $regex: new RegExp(`${searchPhrase}`, 'i') },
 	});
-	const userData = await checkUser({
-		firstName: { $regex: new RegExp(`${searchPhrase}`, 'i') },
-	});
+	const userData = await checkUser(
+		{
+			username: { $regex: new RegExp(`${searchPhrase}`, 'i') },
+		},
+		{ _id: false, password: false }
+	);
 	if (articleData.success || tagData.success || userData.success) {
 		if (articleData.data.length !== 0 || tagData.data.length !== 0 || userData.isThereAUser) {
 			const results = {
@@ -260,20 +264,20 @@ app.get(
 		} else next();
 	},
 	async (req, res, next) => {
-		if (req.query.userId) {
-			const userId = isNaN(Number(req.query.userId))
-				? req.query.userId
-				: Number(req.query.userId);
-			const { success, data } = isNaN(userId)
+		if (req.query.authorUserId) {
+			const authorUserId = isNaN(Number(req.query.authorUserId))
+				? req.query.authorUserId
+				: Number(req.query.authorUserId);
+			const { success, data } = isNaN(authorUserId)
 				? await requestData('articles', {
-						'author.name': `${userId
+						'author.name': `${authorUserId
 							.split('-')[0]
-							.replace(/^\w/, (x) => x.toUpperCase())} ${userId
+							.replace(/^\w/, (x) => x.toUpperCase())} ${authorUserId
 							.split('-')[1]
 							.replace(/^\w/, (x) => x.toUpperCase())}`,
 				  })
 				: await requestData('articles', {
-						'author.userId': Number(userId),
+						'author.userId': Number(authorUserId),
 				  });
 			if (success && data.length !== 0) {
 				res.status(200).json({
@@ -288,6 +292,17 @@ app.get(
 					status: 404,
 					message: 'No articles found. Please try again later.',
 				});
+		} else next();
+	},
+	async (req, res, next) => {
+		if (req.query.userBookmarked === 'true') {
+			const { success, data } = await requestData('articles', {
+				'reactions.bookmarks': req.session.userId,
+			});
+			if (success && data.length > 0) {
+				res.json({ success: true, status: 200, message: 'Request successful.', data: data });
+			} else
+				res.json({ success: false, status: 404, message: 'No user bookmarked articles found' });
 		} else next();
 	},
 	async (req, res, next) => {
@@ -321,42 +336,251 @@ app.get(
 		});
 	}
 );
-app.get('/data/articles/:article', async (req, res) => {
-	const article = isNaN(Number(req.params.article))
-		? req.params.article
-		: Number(req.params.article);
-	const articleData = isNaN(article)
-		? await requestData('articles', { urlSafeTitle: article })
-		: await requestData('articles', { articleId: article });
-	if (
-		articleData.success &&
-		articleData.data.length !== 0 &&
-		(articleData.data[0].title
-			.replace(/[^a-zA-Z0-9\s]/gm, '')
-			.replace(/\s/gm, '-')
-			.replace(/-$/gm, '')
-			.toLowerCase() === article ||
-			articleData.data[0].articleId === article)
-	) {
-		const authorData = await requestData('users', { userId: articleData.data[0].author.userId });
-		res.status(200).json({
-			success: true,
-			status: 200,
-			data: {
-				article: articleData.data[0],
-				author: {
-					userId: authorData.data[0].userId,
-					firstName: authorData.data[0].firstName,
-					lastName: authorData.data[0].lastName,
-					fullName: `${authorData.data[0].firstName}-${authorData.data[0].lastName}`,
-					profilePictureUrl: authorData.data[0].profilePictureUrl,
-				},
-			},
+// GET request to request article data, store like, bookmark, share results.
+app.get(
+	'/data/articles/:article',
+	//  LIKE ARTICLE
+	async (req, res, next) => {
+		if (req.query.likeArticle) {
+			// ? if you request to like the article
+			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
+				(res) => res.data[0]
+			);
+			if (req.query.likeArticle === 'true' && req.session.userId !== undefined) {
+				if (!article.reactions.likes.includes(Number(req.session.userId))) {
+					// ? if you haven't liked the same article before
+					article.reactions.likes.push(req.session.userId);
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ 'reactions.likes': article.reactions.likes }
+					);
+					res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
+				} else {
+					// ? if you have liked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already liked ${req.params.article}`,
+					});
+				}
+			} else if (req.query.likeArticle === 'false' && req.session.userId !== undefined) {
+				if (article.reactions.likes.includes(Number(req.session.userId))) {
+					// ? if you haven't liked the same article before
+					const likedIdPosition = article.reactions.likes.indexOf(req.session.userId);
+					article.reactions.likes.splice(likedIdPosition, 1);
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ 'reactions.likes': article.reactions.likes }
+					);
+					res.json({
+						success: true,
+						status: 200,
+						message: `You disliked ${req.params.article}`,
+					});
+				} else {
+					// ? if you have liked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already disliked ${req.params.article}`,
+					});
+				}
+			} else
+				res.json({
+					success: false,
+					status: 400,
+					message: `Invalid request to like ${req.params.article}`,
+				});
+		} else next();
+	},
+	// BOOKMARK ARTICLE
+	async (req, res, next) => {
+		if (req.query.bookmarkArticle) {
+			// ? If you request to share the article
+			const user = req.session.user;
+			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
+				(res) => res.data[0]
+			);
+			if (req.query.bookmarkArticle === 'true' && req.session.userId !== undefined) {
+				if (!article.reactions.bookmarks.includes(Number(req.session.userId))) {
+					// ? if you haven't bookmarked the same article before
+					article.reactions.bookmarks.push(Number(req.session.userId));
+					user.bookmarks.push(Number(article.articleId));
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ 'reactions.bookmarks': article.reactions.bookmarks }
+					);
+					await updateUserData({ userId: req.session.userId }, { bookmarks: user.bookmarks });
+					req.session.user.bookmarks = user.bookmarks;
+					res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
+				} else {
+					// ? if you have bookmarked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already bookmarked ${req.params.article}`,
+					});
+				}
+			} else if (req.query.bookmarkArticle === 'false' && req.session.userId !== undefined) {
+				if (article.reactions.bookmarks.includes(Number(req.session.userId))) {
+					// ? if you haven't un-bookmarked the same article before
+					const userBookmarkedIdPosition = user.bookmarks.indexOf(article.articleId);
+					const bookmarkedIdPosition = article.reactions.bookmarks.indexOf(req.session.userId);
+					article.reactions.bookmarks.splice(bookmarkedIdPosition, 1);
+					user.bookmarks.splice(userBookmarkedIdPosition, 1);
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ 'reactions.bookmarks': article.reactions.bookmarks }
+					);
+					await updateUserData({ userId: req.session.userId }, { bookmarks: user.bookmarks });
+					req.session.user.bookmarks = user.bookmarks;
+					res.json({
+						success: true,
+						status: 200,
+						message: `You un-bookmarked ${req.params.article}`,
+					});
+				} else {
+					// ? if you have un-bookmarked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already un-bookmarked ${req.params.article}`,
+					});
+				}
+			} else
+				res.json({
+					success: false,
+					message: `Invalid request to bookmark on ${req.params.article}`,
+				});
+		} else next();
+	},
+	// SHARE ARTICLE
+	async (req, res, next) => {
+		if (req.query.shareArticle === 'true') {
+			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
+				(res) => res.data[0]
+			);
+			await updateData(
+				'articles',
+				{ urlSafeTitle: req.params.article },
+				{ 'reactions.shares': article.reactions.shares + 1 }
+			);
+			res.json({ success: true, status: 200, message: `You shared ${req.params.article}` });
+		} else if (req.query.shareArticle === 'false') {
+			res.json({
+				success: false,
+				status: 400,
+				message: `Invalid request to share articles ${req.params.article}`,
+			});
+		} else next();
+	},
+	// SEND ARTICLE DATA
+	async (req, res) => {
+		const article = isNaN(Number(req.params.article))
+			? req.params.article
+			: Number(req.params.article);
+		const articleData = isNaN(article)
+			? await requestData('articles', { urlSafeTitle: article })
+			: await requestData('articles', { articleId: article });
+		if (
+			articleData.success &&
+			articleData.data.length !== 0 &&
+			(articleData.data[0].title
+				.replace(/[^a-zA-Z0-9\s]/gm, '')
+				.replace(/\s/gm, '-')
+				.replace(/-$/gm, '')
+				.toLowerCase() === article ||
+				articleData.data[0].articleId === article)
+		) {
+			const authorData = await requestData('users', {
+				userId: articleData.data[0].author.userId,
+			});
+			const { updatedData: updatedArticleData } = await updateData(
+				'articles',
+				{ urlSafeTitle: req.params.article },
+				{ 'views.allTime': articleData.data[0].views.allTime + 1 },
+				true
+			);
+
+			const comments = articleData.data[0].comments.sort(
+				(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+			);
+			updatedArticleData[0].comments = comments;
+
+			if (req.session.user) {
+				res.status(200).json({
+					success: true,
+					status: 200,
+					data: {
+						article: updatedArticleData[0],
+						author: {
+							userId: authorData.data[0].userId,
+							firstName: authorData.data[0].firstName,
+							lastName: authorData.data[0].lastName,
+							fullName: `${authorData.data[0].firstName}-${authorData.data[0].lastName}`,
+							profilePictureUrl: authorData.data[0].profilePictureUrl,
+						},
+						user: {
+							followers: req.session.user.followers || null,
+							followings: req.session.user.followings || null,
+						},
+					},
+				});
+			} else
+				res.status(200).json({
+					success: true,
+					status: 200,
+					data: {
+						article: updatedArticleData[0],
+						author: {
+							userId: authorData.data[0].userId,
+							firstName: authorData.data[0].firstName,
+							lastName: authorData.data[0].lastName,
+							fullName: `${authorData.data[0].firstName}-${authorData.data[0].lastName}`,
+							profilePictureUrl: authorData.data[0].profilePictureUrl,
+						},
+						user: undefined,
+					},
+				});
+		} else
+			res.status(404).json({
+				success: false,
+				message: `There is no article/articleId named ${req.params.article}`,
+			});
+	}
+);
+// POST request to /data/articles/:article for adding comments.
+app.post('/data/articles/:article', authenticate, async (req, res, next) => {
+	const { userId, commentContent } = req.body;
+	if (userId && commentContent) {
+		const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
+			(res) => res.data[0]
+		);
+		article.comments.push({
+			userId: Number(userId),
+			date: new Date(),
+			isEdited: false,
+			editedDate: null,
+			comment: commentContent,
+		});
+		await updateData(
+			'articles',
+			{ urlSafeTitle: req.params.article },
+			{ comments: article.comments }
+		).then((result) => {
+			if (result.success) {
+				res.json({ success: true, status: 200, message: `Commented on ${req.params.article}` });
+			}
 		});
 	} else
-		res.status(404).json({
+		res.json({
 			success: false,
-			message: `There is no article/articleId named ${req.params.article}`,
+			status: 400,
+			message: `Invalid request to comment to article ${req.paramas.article} without required parameters`,
 		});
 });
 
@@ -424,7 +648,7 @@ app.get(
 				// ? If use wants to follow
 				if (followingUserData.success && followingUserData.isThereAUser && userData.success) {
 					if (!userData.userData[0].followings.includes(followingUserId)) {
-						userData.userData[0].followings.push(followingUserId);
+						userData.userData[0].followings.push(Number(followingUserId));
 						followingUserData.userData[0].followers.push(Number(req.session.userId));
 						console.log(
 							userData.userData[0].followings,
@@ -466,6 +690,7 @@ app.get(
 						const positionFollowing = followingUserData.userData[0].followers.indexOf(
 							Number(req.session.userId)
 						);
+						console.log(userData.userData[0]);
 						userData.userData[0].followings.splice(positionUser, 1);
 						followingUserData.userData[0].followers.splice(positionFollowing, 1);
 
@@ -496,8 +721,41 @@ app.get(
 		} else next();
 	},
 	async (req, res, next) => {
-		if (req.params.becomeAnAuthor) {
-			res.json({ success: true, status: 200, message: 'Success on route become an author.' });
+		if (req.query.changeUserType) {
+			const user = req.session.user;
+			if (req.query.changeUserType === 'author' && user.userType === 'reader') {
+				user.userType = 'author';
+				const { updatedData } = await updateUserData(
+					{ userId: req.session.userId },
+					{ userType: 'author' },
+					true
+				);
+				console.log(`updated data`, updatedData);
+				req.session.user = user;
+				res.json({
+					success: true,
+					status: 200,
+					message: `Success on becoming a ${req.query.changeUserType}.`,
+				});
+			} else if (req.query.changeUserType === 'reader' && user.userType === 'author') {
+				user.userType = 'reader';
+				console.log(user);
+				const { updatedData } = await updateUserData(
+					{ userId: req.session.userId },
+					{ userType: 'reader' },
+					true
+				);
+				req.session.user = user;
+				res.json({
+					success: true,
+					status: 200,
+					message: `Success on becoming a ${req.query.changeUserType}.`,
+				});
+			} else
+				res.status(400).json({
+					success: false,
+					message: `You are already a ${req.session.user.userType}`,
+				});
 		} else next();
 	},
 	async (req, res) => {
@@ -511,6 +769,7 @@ app.get(
 			registeredDate,
 			userType,
 			country,
+			bookmarks,
 		} = req.session.user;
 
 		const articlesPublished = async (userId) => {
@@ -534,6 +793,7 @@ app.get(
 				userType: userType,
 				country: country,
 				articlesPublished: await articlesPublished(userId),
+				bookmarks: bookmarks,
 			},
 		});
 	}
@@ -578,7 +838,7 @@ app.post(
 	}
 );
 
-// ? //////////////////////////////  Data POST requests  ////////////////////////////////////
+// ? //////////////////////////////  Data POST FORM requests  ////////////////////////////////////
 app.post(
 	'/signup',
 	createAccountLimiter,
@@ -636,18 +896,28 @@ app.post(
 	},
 	(req, res, next) => {
 		const errors = validationResult(req);
-		createUser({ ...req.body, country: req.ipInfo.country }, (data) => {
-			const { success, userData } = data;
-			console.log(data);
-			if (success) {
-				req.session.userId = userData.userId;
-				req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
-				req.session.user = userData;
-				res.status(307).redirect('/profile');
-			} else
-				res.status(500).send(
-					`<h1>Error occurred when signing up. Please try again later.</h1>`
-				);
+		const { firstName, lastName, birthday, password, email } = req.body;
+
+		//hash the Passwords
+		bcrypt.genSalt(10, (err, salt) => {
+			if (err) throw err;
+			bcrypt.hash(password, salt, (err, hashedPassword) => {
+				if (err) throw err;
+				req.body.password = hashedPassword;
+				createUser({ ...req.body, country: req.ipInfo.country }, (data) => {
+					const { success, userData } = data;
+					console.log(data);
+					if (success) {
+						req.session.userId = userData.userId;
+						req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
+						req.session.user = userData;
+						res.status(307).redirect('/profile');
+					} else
+						res.status(500).send(
+							`<h1>Error occurred when signing up. Please try again later.</h1>`
+						);
+				});
+			});
 		});
 	}
 );
@@ -669,14 +939,17 @@ app.post(
 		let user = { isAvailable: false, userId: null, username: null, data: null };
 		// console.log(req.body);
 		if (validationErrors.isEmpty()) {
-			const data = await checkUser({ email, password });
+			const data = await checkUser({ email });
 			console.log(data);
-			if (data.isThereAUser) {
-				req.session.userId = data.userData[0].userId;
-				req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
-				req.session.user = data.userData[0];
-				res.status(307).redirect(`/profile`);
-			} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
+			bcrypt.compare(password, data.userData[0].password, (err, result) => {
+				if (err) throw err;
+				if (result) {
+					req.session.userId = data.userData[0].userId;
+					req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
+					req.session.user = data.userData[0];
+					res.status(307).redirect(`/profile`);
+				} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
+			});
 		} else {
 			console.log(`Validation errors found.`);
 			res.status(400).json({
@@ -705,4 +978,6 @@ app.all('*', (req, res) => {
 // ? ////////////////////////// ERROR HANDLER AND SERVER CALL /////////////////////////////////////////////////
 app.use(errorHandler);
 
-app.listen(process.env.PORT, () => console.log(`user hit the server on ${process.env.PORT}`));
+app.listen(process.env.PORT || 5000, () =>
+	console.log(`user hit the server on ${process.env.PORT}`)
+);

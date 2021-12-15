@@ -39,7 +39,7 @@
 .form {
 	min-width: 400px;
 	width: 450px;
-	height: 550px;
+	height: 100vh;
 	border-radius: 20px;
 	margin: 0 100px;
 	background-color: hsla(0, 0%, 100%, 0.5);
@@ -91,10 +91,15 @@ input {
 	outline: none;
 	padding: 10px;
 	font-size: 1.1rem;
-	border: 2px solid #ccc;
-	background-color: #ccc;
+	border: 2px solid rgb(221, 221, 221);
+	background-color: rgb(221, 221, 221);
 	border-radius: 20px;
 	transition: border-color 0.2s linear, background 0.2s linear;
+}
+
+input:focus {
+	background-color: #ccc;
+	border-color: #ccc;
 }
 
 input[id='submit'] {

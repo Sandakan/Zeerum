@@ -5,7 +5,7 @@ require('dotenv').config();
 const data = articleData;
 console.log('execution started');
 //? DATABASE CONNECTION ////////////////////////////////////
-const client = new MongoClient(process.env.LOCAL_DATABASE_CONNECTION_STRING);
+const client = new MongoClient(process.env.DATABASE_CONNECTION_STRING);
 
 // const jsonData = json.parse(data);
 // console.log(jsonData);

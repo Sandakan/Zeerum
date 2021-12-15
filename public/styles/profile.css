@@ -53,6 +53,8 @@
 	background-color: var(--highlight-color-3);
 	margin-top: 30px;
 	cursor: pointer;
+	position: relative;
+	bottom: 0;
 }
 
 .change-profile-picture form input[type='submit']:disabled {
@@ -67,15 +69,35 @@
 	padding: 0 30px;
 	text-align: center;
 	margin: 10px 0;
+	display: block;
 }
 
-.become-an-author {
+.change-user-type {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-.become-an-author img {
+.change-user-type img {
 	margin: 20px 0 10px 0;
 	width: 200px;
+}
+
+.change-user-type p {
+	font-size: 1.25rem;
+	text-align: center;
+	padding: 0 20px;
+}
+
+.change-user-type :is(#submit-become-an-author, #submit-become-a-reader) {
+	position: absolute;
+	bottom: 20px;
+	margin-top: 20px;
+	padding: 10px 15px;
+	font-size: 1.5rem;
+	border-radius: 10px;
+	border: 3px solid #2c3e50;
+	background-color: #2c3e50;
+	color: #fff;
+	cursor: pointer;
 }

@@ -183,7 +183,7 @@
 .belief-container {
 	width: 100%;
 	height: 400px;
-	margin: 50px 0 10px 0;
+	margin: 100px 0 10px 0;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
@@ -196,10 +196,10 @@
 	height: 100%;
 	position: absolute;
 	right: 0;
-}
-
-.belief-container > .background > svg {
-	object-fit: cover;
+	background-image: url('/images/about/belief-background.svg');
+	background-repeat: no-repeat;
+	background-position: right top;
+	background-size: cover;
 }
 
 .belief-container > .belief {
@@ -247,6 +247,10 @@
 	height: 100%;
 	position: absolute;
 	overflow: hidden;
+	background-image: url('/images/about/reason-background.svg');
+	background-repeat: no-repeat;
+	background-position: right top;
+	background-size: cover;
 }
 
 .reasons-container > .background > svg {
@@ -285,30 +289,87 @@
 	margin: 0;
 }
 
-.join-with-us-container {
+.testimonial-container {
 	width: 100%;
 	height: 400px;
-	margin: 20px 0 0 0;
+	padding: 40px 10px;
+	margin-top: 25px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.testimonial-container > .testimonial-heading {
+	width: 100%;
+	text-align: center;
+	font-size: 3rem;
+	text-transform: uppercase;
+	word-spacing: 5px;
+}
+/* .testimonial-container > .testimonial {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+} */
+.testimonial-container > .users-container {
+	width: 60%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.testimonial-container > .users-container > img {
+	width: 100px;
+	height: 100px;
+	border-radius: 50px;
+	filter: grayscale(1);
+	transition: filter 0.3s linear;
+}
+
+.testimonial-container > .users-container > :is(img:hover, .active) {
+	filter: grayscale(0);
+}
+
+.testimonial-container > .user-comment-container {
+	width: 100%;
+	margin-top: 20px;
+	padding: 0 50px;
+	text-align: center;
+	font-size: 1.5rem;
+	color: rgb(126, 126, 126);
+	word-spacing: 3px;
+}
+.testimonial-container > .user-comment-container > .comment-user-name {
+	margin-top: 20px;
+	text-transform: uppercase;
+}
+
+.join-with-us-container {
+	width: 100%;
+	height: 350px;
 	display: flex;
 	position: relative;
 	justify-content: center;
+	/* margin-top: 25px; */
 	background-image: url('../images/about/image1-back-removed.png');
 	background-repeat: no-repeat;
 	background-position: 50% 120%;
 	overflow: visible;
 }
 
-.join-with-us-container > hr {
+/* .join-with-us-container > hr {
 	background-color: #ccc;
 	width: 92.5%;
 	height: 5px;
 	border-width: 0;
 	position: absolute;
-	top: 50px;
+	top: 30px;
 	left: 50%;
 	border-radius: 10px;
 	transform: translateX(-50%);
-}
+} */
 
 .join-with-us-container::after {
 	content: '';
@@ -326,7 +387,7 @@
 
 .join-with-us-container > .description {
 	font-size: 3.25rem;
-	padding: 100px;
+	padding: 50px 100px;
 	text-align: center;
 }
 

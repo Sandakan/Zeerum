@@ -49,7 +49,7 @@
 .form {
 	width: 32vw;
 	min-width: 420px;
-	max-width: 550px;
+	max-width: 100vh;
 	min-height: 600px;
 	height: 60vh;
 	border-radius: 20px;

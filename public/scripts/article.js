@@ -1,24 +1,28 @@
 import fetchData from './fetchData.js';
 import timeFromNow from './timeFromNow.js';
+import togglePopup from './togglePopup.js';
+
 var requestingArticleName = `/data${window.location.pathname}`;
 var reactions = {
-	liked: false,
-	shared: false,
-	bookmarked: false,
+	liked: null,
+	bookmarked: null,
 };
 
 const renderData = (res) => {
 	const { success, data } = res;
 	console.log(res);
 	if (success) {
-		const { article, author } = data;
+		const { article, author, user } = data;
 		document.title = `ZEERUM \| ${article.title}`;
 		document.querySelector(
 			'.article-img-container'
 		).innerHTML = `<img src="${article.coverImg}"/>`;
 		document.querySelector(
-			'.article-heading-container > .article-heading'
+			'.article-heading-and-stats-container > .article-heading'
 		).innerHTML = `${article.title}`;
+		document.querySelector(
+			'.article-heading-and-stats-container > .article-stats'
+		).innerHTML = `<span class="views"><i class="fas fa-eye"></i> ${article.views.allTime} views</span>`;
 		document.querySelector('.article-data-container > .article-data').innerHTML = `${
 			article.article
 		}<div class="end"></div><div class="footnotes">${
@@ -30,36 +34,107 @@ const renderData = (res) => {
 			.join('')}</div>`;
 		document.querySelector('.author > .author-data-container').innerHTML = `<img src="${
 			author.profilePictureUrl || '/images/user.png'
-		}" alt="" /><span class="name">${author.firstName} ${author.lastName}</span>`;
+		}" alt="" /><span class="name">${author.firstName} ${author.lastName} ${
+			Number(sessionStorage.getItem('userId')) === Number(author.userId) ? '(You)' : ''
+		}</span>${
+			user !== undefined
+				? user.followings.includes(Number(author.userId))
+					? `<button class="follow-author-btn follow-author-btn-followed" title="Click to unfollow ${author.firstName}"><i class="fas fa-check"></i> Followed</button>`
+					: Number(author.userId) !== Number(sessionStorage.getItem('userId'))
+					? `<button class="follow-author-btn"><i class="fas fa-add" title="Click to follow ${author.firstName}"></i> Follow</button>`
+					: ''
+				: ''
+		}`;
 		document.querySelector('.author-data-container > img').addEventListener('click', () => {
 			document.location = `/user/${author.fullName.toLowerCase()}`;
 		});
 		document.querySelector('.author-data-container > .name').addEventListener('click', () => {
 			document.location = `/user/${author.fullName.toLowerCase()}`;
 		});
-		document.querySelector('.reaction-buttons-container > .like > #loved-number').innerHTML =
+		if (document.body.contains(document.querySelector('.follow-author-btn'))) {
+			document.querySelector('.follow-author-btn').addEventListener('click', () => {
+				if (
+					document
+						.querySelector('.follow-author-btn')
+						.classList.contains('follow-author-btn-followed')
+				) {
+					fetch(`/data/profile?followUser=false&followingUserId=${author.userId}`)
+						.then((res) => res.json())
+						.then((res) => {
+							console.log(res);
+							if (res.success) {
+								document
+									.querySelector('.follow-author-btn')
+									.classList.remove('follow-author-btn-followed');
+								document.querySelector('.follow-author-btn').innerHTML =
+									'<i class="fas fa-add"></i> follow';
+								document.querySelector(
+									'.follow-author-btn'
+								).title = `Click to follow ${author.firstName}`;
+							} else alert(res.message);
+						});
+				} else {
+					fetch(`/data/profile?followUser=true&followingUserId=${author.userId}`)
+						.then((res) => res.json())
+						.then((res) => {
+							console.log(res);
+							if (res.success) {
+								document
+									.querySelector('.follow-author-btn')
+									.classList.add('follow-author-btn-followed');
+								document.querySelector('.follow-author-btn').innerHTML =
+									'<i class="fas fa-check"></i> followed';
+								document.querySelector(
+									'.follow-author-btn'
+								).title = `Click to unfollow ${author.firstName}`;
+							} else alert(res.message);
+						});
+				}
+			});
+		}
+		document.querySelector('.reaction-buttons-container > .like > #liked-number').innerHTML =
 			article.reactions.likes.length;
 		document.querySelector('.reaction-buttons-container > .share > #shared-number').innerHTML =
-			article.reactions.shares.length;
+			article.reactions.shares;
 		document.querySelector(
 			'.reaction-buttons-container > .bookmark > #bookmarked-number'
 		).innerHTML = article.reactions.bookmarks.length;
+		if (article.reactions.likes.includes(Number(sessionStorage.getItem('userId')))) {
+			reactions.liked = true;
+			document.querySelector('.like').classList.add('liked');
+		} else reactions.liked = false;
+
+		if (article.reactions.bookmarks.includes(Number(sessionStorage.getItem('userId')))) {
+			reactions.bookmarked = true;
+			document.querySelector('.bookmark').classList.add('bookmarked');
+		} else reactions.bookmarked = false;
+
 		if (article.comments.length !== 0) {
-			article.comments.forEach((comment) => {
-				fetchData(`/data/users/${comment.userId}`, ({ success, data }) => {
+			article.comments.forEach(async (comment) => {
+				await fetchData(`/data/users/${comment.userId}`, ({ success, data }) => {
 					if (success) {
+						console.log(comment);
 						document.querySelector('#comments').innerHTML =
 							`<div class="comment"><img src="${
 								data.profilePictureUrl || '/images/user.png'
-							}" onclick="window.location = \`/user/${data.firstName.toLowerCase()}-${data.lastName.toLowerCase()}\`" /><div class="text">${
+							}" onclick="window.location = \`/user/${
+								data.username
+							}\`" /><div class="text"> <a class="name" href="/user/${data.username}">${
+								data.firstName
+							} ${data.lastName} ${
+								Number(sessionStorage.getItem('userId')) === comment.userId ? '(YOU)' : ''
+							}</a>${
 								comment.comment
-							}<span class="commented-date">${timeFromNow(
+							}<span class="commented-date" title="Commented on ${new Date(
 								comment.date
-							)}</span></div></div>` + document.querySelector('#comments').innerHTML;
+							).toString()}">${timeFromNow(comment.date)}</span></div></div>` +
+							document.querySelector('#comments').innerHTML;
 						document.querySelector('.no-comments').style.display = 'none';
 					} else {
 						document.querySelector('#comments').innerHTML =
-							`<div class="comment"><img src="/images/user.png" onclick="window.location = \`/user/unknownOrDeletedUser" /><div class="text">${comment.comment}<span class="commented-date">${comment.date}</span></div></div>` +
+							`<div class="comment"><img src="/images/user.png" onclick="window.location = \`/user/unknownOrDeletedUser" /><div class="text"> <span class="name">${`Deleted User`}</span><span class="data">${
+								comment.comment
+							}</span><span class="commented-date">${comment.date}</span></div></div>` +
 							document.querySelector('#comments').innerHTML;
 						document.querySelector('.no-comments').style.display = 'none';
 					}
@@ -75,7 +150,7 @@ else console.log("You didn't request an article");
 // ? //////////////////////////////////////////////////////////////////////////////
 
 const commentContainer = document.querySelector('#comments');
-const comment = document.querySelector('#add-comment');
+const comment = document.querySelector('#comment-input-container');
 const noComments = document.querySelector('.no-comments');
 
 document.querySelector('.comment-send-btn').addEventListener('click', () => {
@@ -104,53 +179,127 @@ comment.addEventListener('keyup', function (event) {
 
 function sendComment() {
 	if (comment.value !== '' && /\S/gi.test(comment.value)) {
-		commentContainer.innerHTML =
-			`<div class="comment"><img src="${sessionStorage.getItem(
-				'userProfilePictureUrl'
-			)}" onclick="window.location = \`/user/${sessionStorage.getItem(
-				'username'
-			)}\`" /><div class="text">${comment.value}<span class="commented-date">${timeFromNow(
-				new Date().getTime()
-			)}</span></div></div>` + commentContainer.innerHTML;
-		comment.value = '';
+		fetch(`${requestingArticleName}`, {
+			method: 'POST',
+			body: JSON.stringify({
+				userId: sessionStorage.getItem('userId'),
+				commentContent: comment.value,
+			}),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.success) {
+					commentContainer.innerHTML =
+						`<div class="comment"><img src="${
+							sessionStorage.getItem('userProfilePictureUrl') || '/images/user.png'
+						}" onclick="window.location = \`/user/${sessionStorage.getItem(
+							'username'
+						)}\`" /><div class="text">${
+							comment.value
+						}<span class="commented-date">${timeFromNow(
+							new Date().getTime()
+						)}</span></div></div>` + commentContainer.innerHTML;
+					comment.value = '';
+				} else alert(res.message);
+			});
 	}
 }
 
-function reactionsCount(id) {
-	var used = false;
-	if (used) {
-		used = false;
-		document.querySelector('#loved-number').innerHTML--;
-	} else {
-		used = true;
-		document.querySelector('#loved-number').innerHTML++;
-	}
-}
-
-const reactionsHandler = (reaction) => {
+const reactionsHandler = async (reaction) => {
 	if (reaction === 'like') {
 		if (!reactions.liked) {
-			document.querySelector('#loved-number').innerHTML++;
-			reactions.liked = true;
+			await fetch(`${requestingArticleName}?likeArticle=true`)
+				.then((res) => res.json())
+				.then((res) => {
+					if (res.success) {
+						document
+							.querySelector('.reaction-buttons-container > .like')
+							.classList.add('liked');
+						document.querySelector('#liked-number').innerHTML++;
+						reactions.liked = true;
+						console.log(res.message);
+					} else alert(res.message);
+				});
 		} else {
-			document.querySelector('#loved-number').innerHTML--;
-			reactions.liked = false;
+			await fetch(`${requestingArticleName}?likeArticle=false`)
+				.then((res) => res.json())
+				.then((res) => {
+					if (res.success) {
+						document
+							.querySelector('.reaction-buttons-container > .like')
+							.classList.remove('liked');
+						document.querySelector('#liked-number').innerHTML--;
+						reactions.liked = false;
+						console.log(res.message);
+					} else alert(res.message);
+				});
 		}
 	} else if (reaction === 'share') {
-		if (!reactions.shared) {
-			document.querySelector('#shared-number').innerHTML++;
-			reactions.shared = true;
-		} else {
-			document.querySelector('#shared-number').innerHTML--;
-			reactions.shared = false;
-		}
+		togglePopup(
+			`<img src="/images/next.png" alt="Share icon" title="Share this article"/> <h1>Share</h1><p>Share this article with your friends to share the knowledge you gained from this article. This encourages authors to write more as they know they will always have your support for them.</p> <div class="copy-container">${document.location.href}<span class="copy-btn"><i class="far fa-clipboard"></i></span></div> `,
+			'share-popup'
+		);
+
+		document.querySelector('.copy-btn').addEventListener('click', () => {
+			const href = document.location.href;
+			const type = 'text/plain';
+			console.log(href, typeof href);
+			const blob = new Blob([href], { type });
+			const data = [new ClipboardItem({ [type]: blob })];
+			navigator.clipboard.write(data).then(
+				async () => {
+					document.querySelector('.copy-container').classList.add('copied');
+					document.querySelector(
+						'.share-popup'
+					).innerHTML += `<p class="copied-message">Copied to the clipboard.</p>`;
+					await fetch(`${requestingArticleName}?shareArticle=true`)
+						.then((res) => res.json())
+						.then((res) => {
+							if (res.success) {
+								document
+									.querySelector('.reaction-buttons-container > .share')
+									.classList.add('shared');
+								document.querySelector('#shared-number').innerHTML++;
+								console.log(res.message);
+							}
+						});
+				},
+				(err) => {
+					alert('Error occurred in copying data to the clipboard.');
+					throw err;
+				}
+			);
+		});
 	} else if (reaction === 'bookmark') {
 		if (!reactions.bookmarked) {
-			document.querySelector('#bookmarked-number').innerHTML++;
-			reactions.bookmarked = true;
+			await fetch(`${requestingArticleName}?bookmarkArticle=true`)
+				.then((res) => res.json())
+				.then((res) => {
+					if (res.success) {
+						document
+							.querySelector('.reaction-buttons-container > .bookmark')
+							.classList.add('bookmarked');
+						document.querySelector('#bookmarked-number').innerHTML++;
+						reactions.bookmarked = true;
+						console.log(res.message);
+					} else alert(res.message);
+				});
 		} else {
-			document.querySelector('#bookmarked-number').innerHTML--;
-			reactions.bookmarked = false;
+			await fetch(`${requestingArticleName}?bookmarkArticle=false`)
+				.then((res) => res.json())
+				.then((res) => {
+					if (res.success) {
+						document
+							.querySelector('.reaction-buttons-container > .bookmark')
+							.classList.remove('bookmarked');
+						document.querySelector('#bookmarked-number').innerHTML--;
+						reactions.bookmarked = false;
+						console.log(res.message);
+					} else alert(res.message);
+				});
 		}
 	}
 };

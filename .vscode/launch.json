@@ -10,6 +10,12 @@
 			"name": "Launch Edge against localhost",
 			"url": "http://localhost:5600",
 			"webRoot": "${workspaceFolder}"
+		},
+		{
+			"name": "Launch Microsoft Edge and open the Edge DevTools",
+			"request": "launch",
+			"type": "vscode-edge-devtools.debug",
+			"url": "" // Provide your project's url to finish configuring
 		}
 	]
 }

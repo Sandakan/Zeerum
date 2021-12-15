@@ -2,7 +2,7 @@ export default (dateString) => {
 	const now = new Date().getTime();
 	const date = new Date(dateString);
 	const diff = now - date;
-	console.log(dateString, now, date, diff);
+	// console.log(`dateString`, dateString, now, date, diff);
 	if (diff > 0 && diff <= 1000) return 'now';
 	else if (diff < 1000 * 60)
 		return `${Math.floor(diff / 1000)} second${Math.floor(diff / 1000) === 1 ? '' : 's'} ago`;
@@ -28,7 +28,6 @@ export default (dateString) => {
 		} ago`;
 };
 
-// module.exports = { timeFromNow };
 /*
 second 1000
 minute 1000 * 60 = 60_000 

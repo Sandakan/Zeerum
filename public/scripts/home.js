@@ -24,8 +24,18 @@ fetchData('/data/articles/', (res) => {
 				.replace(/[^a-zA-Z0-9\s]/gm, '')
 				.replace(/\s/gm, '-')
 				.replace(/-$/gm, '')
-				.toLowerCase()}">${x.author.name}</a></div><div class="article-tags-container">${x.tags
-				.map((y) => `<span class="tags"><a href="tags/${y}">${y}</a></span>`)
+				.toLowerCase()}">${
+				x.author.name
+			}</a></div> <div class="article-stats-container"> <span class="stat"><i class="fas fa-eye"></i> ${
+				x.views.allTime
+			}</span><span class="stat"><i class="fas fa-heart"></i> ${
+				x.reactions.likes.length
+			}</span> <span class="stat"><i class="fas fa-bookmark"></i> ${
+				x.reactions.bookmarks.length
+			}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
+				x.reactions.shares
+			}</span></div> <div class="article-tags-container">${x.tags
+				.map((y) => `<span class="tags"><a href="tags/${y}">#${y}</a></span>`)
 				.join('')}</div></div></div>`;
 			document.querySelector(
 				'.navigate-through-links ul'
