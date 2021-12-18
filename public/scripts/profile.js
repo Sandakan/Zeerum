@@ -1,4 +1,5 @@
 import fetchData from './fetchData.js';
+import valueRounder from './valueRounder.js';
 import togglePopup from './togglePopup.js';
 
 fetchData('/data/profile', (res) => {
@@ -85,17 +86,21 @@ fetchData('/data/profile', (res) => {
 			// ? statistics data goes here
 			document.querySelector(
 				'.statistics-container'
-			).innerHTML = `<div class="stats followers"><i class="fas fa-users"></i><div class="content"><span class="value"> ${
+			).innerHTML = `<div class="stats followers"><i class="fas fa-users"></i><div class="content"><span class="value"> ${valueRounder(
 				data.followers.length
-			} </span><span class="description">Followers</span></div></div><div class="stats followings"><i class="fas fa-user-plus"></i><div class="content"><span class="value"> ${
+			)} </span><span class="description">Followers</span></div></div><div class="stats followings"><i class="fas fa-user-plus"></i><div class="content"><span class="value"> ${valueRounder(
 				data.followings.length
-			} </span><span class="description">Followings</span></div></div>${
+			)} </span><span class="description">Followings</span></div></div>${
 				sessionStorage.getItem('userType') === 'author'
-					? '<div class="stats weekly-views"><i class="fas fa-eye"></i><div class="content"><span class="value"> 2.3K </span><span class="description">Weekly Views</span></div></div><div class="stats weekly-likes"><i class="fas fa-heart"></i><div class="content"><span class="value"> 1.1K </span><span class="description">Weekly Likes</span></div></div>'
+					? `<div class="stats weekly-views"><i class="fas fa-eye"></i><div class="content"><span class="value"> ${valueRounder(
+							2351
+					  )} </span><span class="description">Weekly Views</span></div></div><div class="stats weekly-likes"><i class="fas fa-heart"></i><div class="content"><span class="value">${valueRounder(
+							1553
+					  )} </span><span class="description">Weekly Likes</span></div></div>`
 					: ''
-			}<div class="stats bookmarks"><i class="fas fa-bookmark"></i><div class="content"><span class="value"> ${
+			}<div class="stats bookmarks"><i class="fas fa-bookmark"></i><div class="content"><span class="value"> ${valueRounder(
 				data.bookmarks.length
-			} </span><span class="description">Bookmarks</span></div></div>`;
+			)} </span><span class="description">Bookmarks</span></div></div>`;
 
 			// ? Data for popup 'edit-profile-picture' goes here.
 			const changeProfilePicture = () => {

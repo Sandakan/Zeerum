@@ -1,6 +1,7 @@
 import fetchData from './fetchData.js';
 import timeFromNow from './timeFromNow.js';
 import togglePopup from './togglePopup.js';
+import valueRounder from './valueRounder.js';
 
 var requestingArticleName = `/data${window.location.pathname}`;
 var reactions = {
@@ -22,7 +23,9 @@ const renderData = (res) => {
 		).innerHTML = `${article.title}`;
 		document.querySelector(
 			'.article-heading-and-stats-container > .article-stats'
-		).innerHTML = `<span class="views"><i class="fas fa-eye"></i> ${article.views.allTime} views</span>`;
+		).innerHTML = `<span class="views"><i class="fas fa-eye"></i> ${valueRounder(
+			article.views.allTime
+		)} views</span>`;
 		document.querySelector('.article-data-container > .article-data').innerHTML = `${
 			article.article
 		}<div class="end"></div><div class="footnotes">${
@@ -93,12 +96,12 @@ const renderData = (res) => {
 			});
 		}
 		document.querySelector('.reaction-buttons-container > .like > #liked-number').innerHTML =
-			article.reactions.likes.length;
+			valueRounder(article.reactions.likes.length);
 		document.querySelector('.reaction-buttons-container > .share > #shared-number').innerHTML =
-			article.reactions.shares;
+			valueRounder(article.reactions.shares);
 		document.querySelector(
 			'.reaction-buttons-container > .bookmark > #bookmarked-number'
-		).innerHTML = article.reactions.bookmarks.length;
+		).innerHTML = valueRounder(article.reactions.bookmarks.length);
 		if (article.reactions.likes.includes(Number(sessionStorage.getItem('userId')))) {
 			reactions.liked = true;
 			document.querySelector('.like').classList.add('liked');
@@ -127,7 +130,13 @@ const renderData = (res) => {
 										<span class="commented-date" title="Commented on ${new Date(comment.date).toString()}">
 											${timeFromNow(comment.date)}
 										</span>
-										<span class="like-comment" data-comment-id="${commentId}">like</span>
+										${
+											comment.likedUsers.includes(
+												Number(sessionStorage.getItem('userId'))
+											)
+												? `<span class="like-comment liked" data-comment-id="${commentId}">liked</span>`
+												: `<span class="like-comment" data-comment-id="${commentId}">like</span>`
+										}
 										<span class="reply-btn">Reply</span>
 									</span>
 								</div>
