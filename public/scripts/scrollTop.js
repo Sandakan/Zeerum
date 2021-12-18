@@ -11,19 +11,14 @@ window.onscroll = () => {
 			.querySelector('.user-profile-dropdown')
 			.classList.remove('user-profile-dropdown-active');
 		if (document.body.contains(document.querySelector('.author-information-container'))) {
-			document.querySelector('.author-information-container').style.transform = `translateY(0)`;
+			document.querySelector('.author-information-container').classList.remove('sticky');
 		}
 	} else {
 		navBar.classList.remove('hidden');
 		if (document.body.contains(document.querySelector('.author-information-container'))) {
 			if (scrollTopValue < 50)
-				document.querySelector(
-					'.author-information-container'
-				).style.transform = `translateY(0)`;
-			else
-				document.querySelector(
-					'.author-information-container'
-				).style.transform = `translateY(50px)`;
+				document.querySelector('.author-information-container').classList.remove('sticky');
+			else document.querySelector('.author-information-container').classList.add('sticky');
 		}
 		previousScrollTopValue = scrollTopValue;
 	}

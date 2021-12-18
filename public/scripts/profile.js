@@ -21,13 +21,60 @@ fetchData('/data/profile', (res) => {
 		}
 		document.getElementById('get-started').style.display = 'none';
 		document.getElementById('user-profile').style.display = 'block';
-		document.getElementById('logout').addEventListener('click', (e) => sessionStorage.clear());
+		if (document.body.contains(document.getElementById('logout')))
+			document.getElementById('logout').addEventListener('click', (e) => sessionStorage.clear());
 		document.getElementById('user-profile').innerHTML = `<img class="user-profile-img" src="${
 			data.profilePictureUrl || '/images/user.png'
 		}" alt="${data.firstName}\'s profile picture">`;
+		document.getElementById('user-profile-dropdown').innerHTML = `
+		<div class="user-data-container">
+			<img src="${data.profilePictureUrl}"alt="${data.firstName}\'s profile picture" />
+			<a href="/profile" class="name">${data.firstName} ${data.lastName}</a>
+		</div>
+							<ul>
+					<li>
+						<a href="/profile"><i class="fas fa-user"></i> Profile</a>
+					</li>
+					${
+						sessionStorage.getItem('userType') &&
+						sessionStorage.getItem('userType') === 'reader'
+							? `<li>
+						<a href="/profile?changeUserType=author"
+							><i class="fas fa-user"></i> Become An Author</a
+						>
+					</li>`
+							: ''
+					}
+					<li>
+						<a href="/profile?popup=settings"><i class="fas fa-cog"></i> Settings</a>
+					</li>
+					<li id="logout">
+						<a href="/logout"><i class="fas fa-sign-out-alt"></i> Log out</a>
+					</li>
+				</ul>`;
+		document
+			.querySelector('.user-profile-dropdown > .user-data-container > img')
+			.addEventListener('click', () => (location.href = '/profile'));
 		if (document.querySelector('.get-started-container')) {
 			document.querySelector('.get-started-container').style.display = 'none';
 		}
+		document.getElementById('user-profile').addEventListener('click', (e) => {
+			e.stopPropagation();
+			e.target.classList.toggle('active');
+			document
+				.querySelector('.user-profile-dropdown')
+				.classList.toggle('user-profile-dropdown-active');
+		});
+		document.querySelector('body').addEventListener('click', (e) => {
+			document.querySelector('.user-profile-img').classList.remove('active');
+			e.stopPropagation();
+			document
+				.querySelector('.user-profile-dropdown')
+				.classList.remove('user-profile-dropdown-active');
+		});
+		document
+			.querySelector('.user-profile-dropdown')
+			.addEventListener('click', (e) => e.stopPropagation());
 
 		if (window.location.pathname.split('/').at(-1).includes('profile')) {
 			document.title = `ZEERUM \- ${data.firstName}\'s Profile`;
@@ -51,7 +98,7 @@ fetchData('/data/profile', (res) => {
 			} </span><span class="description">Bookmarks</span></div></div>`;
 
 			// ? Data for popup 'edit-profile-picture' goes here.
-			document.querySelector('.edit-profile-picture').addEventListener('click', () => {
+			const changeProfilePicture = () => {
 				const popUpData = ` <h1 class="heading">Edit your Profile Picture</h1><form action="/data/upload" encType="multipart/form-data" name="upload-profile-picture-form" id="upload-profile-picture-form" method="post"><label for="file"><img src="${sessionStorage.getItem(
 					'userProfilePictureUrl'
 				)}" alt="" /><i class="upload-icon fas fa-arrow-up"></i></label><input type="file" name="profilePicture" id="file" accept=".png,.jpeg,.jpg" /><p>Change your profile picture to stand out from other users. Supports PNG, JPG and JPEG images.<br /> Note that authors are mandatory to  upload a profile picture for better recognition and security. <br/><br/> Click on the above image to upload.</p><input type="submit" id="submit-profile-picture" value="Save changes" disabled/></form>`;
@@ -83,7 +130,10 @@ fetchData('/data/profile', (res) => {
 					)(img);
 					reader.readAsDataURL(file);
 				});
-			});
+			};
+			document
+				.querySelector('.edit-profile-picture')
+				.addEventListener('click', () => changeProfilePicture());
 			if (
 				window.location.search.slice(1) === `popup=edit-profile-picture` ||
 				window.location.search.slice(1) === `edit-profile-picture=true`
@@ -123,35 +173,25 @@ fetchData('/data/profile', (res) => {
 					});
 				}
 			}
+			//settings pane
+			if (window.location.search.slice(1) === `popup=settings`) {
+				const popupData = `<h1>Settings</h1><div class="settings-container"><div class="setting-types"><ul><li>Setting</li><li>Setting</li><li>Setting</li><li>Setting</li></ul></div><div class="settings-content"></div></div>`;
+				togglePopup(popupData);
+				document.querySelector('.popup').classList.add('settings');
+			}
 
-			document.querySelector('.user-data-container').innerHTML = `<span class="name">${
-				data.firstName
-			} ${data.lastName}</span>
+			document.querySelector(
+				'.user-container > .user-data-container'
+			).innerHTML = `<span class="name">${data.firstName} ${data.lastName}</span>
 				<span class="user-type-and-id">${data.userType} <span class="id">#${data.userId}</span></span>
 				<span class="country">${data.country || 'Country unknown'}</span>
 				<span class="joined-date">Joined on ${new Date(data.registeredDate).toDateString()}.</span>
 				<span class="articles-number">${data.articlesPublished} articles published</span>`;
 		}
-		document.getElementById('user-profile').addEventListener('click', (e) => {
-			e.stopPropagation();
-			e.target.classList.toggle('active');
-			document
-				.querySelector('.user-profile-dropdown')
-				.classList.toggle('user-profile-dropdown-active');
-		});
-		document.querySelector('body').addEventListener('click', (e) => {
-			document.querySelector('.user-profile-img').classList.remove('active');
-			e.stopPropagation();
-			document
-				.querySelector('.user-profile-dropdown')
-				.classList.remove('user-profile-dropdown-active');
-		});
-		document
-			.querySelector('.user-profile-dropdown')
-			.addEventListener('click', (e) => e.stopPropagation());
 	} else {
 		document.getElementById('get-started').style.display = 'block';
 		console.log(`Error occurred when requesting profile data.`, res.message);
+		sessionStorage.clear();
 	}
 });
 

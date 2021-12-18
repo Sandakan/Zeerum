@@ -101,3 +101,37 @@
 	color: #fff;
 	cursor: pointer;
 }
+
+.settings {
+	display: flex;
+	flex-direction: column;
+}
+
+.settings h1 {
+	text-align: left;
+	padding: 0 1em 0.5em 1em;
+	margin-bottom: 0;
+	border-bottom: 0.1em solid var(--background-color-4);
+}
+
+.settings .settings-container {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+	margin: 0.5em auto;
+}
+
+.settings .settings-container .setting-types {
+	width: 25%;
+	padding-left: 1em;
+	border-right: 0.25em solid var(--background-color-4);
+}
+
+.settings .settings-container .setting-types ul {
+	list-style-type: none;
+}
+.settings .settings-container .setting-types ul li {
+	font-size: 1.5em;
+	padding: 0.5em 1em;
+}

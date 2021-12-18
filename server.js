@@ -506,10 +506,10 @@ app.get(
 				true
 			);
 
-			const comments = articleData.data[0].comments.sort(
-				(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-			);
-			updatedArticleData[0].comments = comments;
+			// const comments = articleData.data[0].comments.sort(
+			// 	(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+			// );
+			// updatedArticleData[0].comments = comments;
 
 			if (req.session.user) {
 				res.status(200).json({
@@ -553,45 +553,130 @@ app.get(
 			});
 	}
 );
-// POST request to /data/articles/:article for adding comments.
-app.post('/data/articles/:article', authenticate, async (req, res, next) => {
-	const { userId, commentContent } = req.body;
-	if (userId && commentContent) {
-		const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
-			(res) => res.data[0]
-		);
-		article.comments.push({
-			userId: Number(userId),
-			date: new Date(),
-			isEdited: false,
-			editedDate: null,
-			comment: commentContent,
-		});
-		await updateData(
-			'articles',
-			{ urlSafeTitle: req.params.article },
-			{ comments: article.comments }
-		).then((result) => {
-			if (result.success) {
-				res.json({ success: true, status: 200, message: `Commented on ${req.params.article}` });
-			}
-		});
-	} else
-		res.json({
-			success: false,
-			status: 400,
-			message: `Invalid request to comment to article ${req.paramas.article} without required parameters`,
-		});
-});
+// POST request to /data/articles/:article for adding comments, liking comments.
+app.post(
+	'/data/articles/:article',
+	authenticate,
+	async (req, res, next) => {
+		if (req.query.commentOnArticle && req.body.userId && req.body.commentContent) {
+			const { userId, commentContent } = req.body;
+			if (!isNaN(Number(userId)) && typeof commentContent === 'string') {
+				const article = await requestData('articles', {
+					urlSafeTitle: req.params.article,
+				}).then((res) => res.data[0]);
+				article.comments.push({
+					userId: Number(userId),
+					date: new Date(),
+					isEdited: false,
+					editedDate: null,
+					comment: commentContent,
+					likedUsers: [],
+					replies: [],
+				});
+				await updateData(
+					'articles',
+					{ urlSafeTitle: req.params.article },
+					{ comments: article.comments }
+				).then((result) => {
+					if (result.success) {
+						res.json({
+							success: true,
+							status: 200,
+							commentId: article.comments.length - 1,
+							message: `Commented on ${req.params.article}`,
+						});
+					}
+				});
+			} else
+				res.json({
+					success: false,
+					status: 400,
+					message: `Invalid request to comment to article ${req.paramas.article} without required parameters`,
+				});
+		} else next();
+	},
+	async (req, res, next) => {
+		// to like and unlike comments
+		if (req.query.likeComment) {
+			const { commentId, userId, likeComment } = req.query;
+			console.log('commentId', commentId, 'userId', userId, 'likeComment', likeComment);
+			if (!isNaN(Number(commentId)) && !isNaN(Number(userId)) && likeComment !== null) {
+				const article = await requestData('articles', {
+					urlSafeTitle: req.params.article,
+				}).then((res) => res.data[0]);
+				if (likeComment === 'true') {
+					if (!article.comments[Number(commentId)].likedUsers.includes(Number(userId))) {
+						// if you haven't liked the same comment before
+						article.comments[Number(commentId)].likedUsers.push(Number(userId));
+						await updateData(
+							'articles',
+							{ urlSafeTitle: req.params.article },
+							{ comments: article.comments }
+						);
+						res.json({
+							success: true,
+							status: 200,
+							message: `Liked comment with id ${commentId} by user with id ${userId}`,
+						});
+					} else {
+						// if you have liked the same comment before
+						res.json({
+							success: false,
+							status: 400,
+							message: `You have already liked the comment with id ${commentId} on ${req.params.article}.`,
+						});
+					}
+				} else if (likeComment === 'false') {
+					if (article.comments[Number(commentId)].likedUsers.includes(Number(userId))) {
+						// if you haven't dis-liked this comment before
+						const userIdPosition = article.comments[Number(commentId)].likedUsers.indexOf(
+							Number(userId)
+						);
+						article.comments[Number(commentId)].likedUsers.splice(userIdPosition, 1);
+						await updateData(
+							'articles',
+							{ urlSafeTitle: req.params.article },
+							{ comments: article.comments }
+						);
+						res.json({
+							success: true,
+							status: 200,
+							message: `Disliked comment with id ${commentId} by user with id ${userId}`,
+						});
+					} else {
+						res.json({
+							success: false,
+							status: 400,
+							message: `You have already disliked this comment before.`,
+						});
+					}
+				}
+			} else
+				res.json({
+					success: false,
+					status: 400,
+					message: `Invalid request to /data//articles/${req.params.article}?likeComment without required parameters.`,
+				});
+		} else
+			res.json({
+				success: false,
+				status: 400,
+				message: `Invalid request to /data/articles/${req.params.article}`,
+			});
+	}
+);
 
 app.get('/data/users/:user', async (req, res, next) => {
 	let user = isNaN(Number(req.params.user)) ? req.params.user : Number(req.params.user);
 	const userData = isNaN(Number(req.params.user))
-		? await checkUser({
-				firstName: user.split('-')[0].replace(/^\w/, (x) => x.toUpperCase()),
-				lastName: user.split('-')[1].replace(/^\w/, (x) => x.toUpperCase()),
-		  })
-		: await checkUser({ userId: user });
+		? await checkUser(
+				{
+					firstName: user.split('-')[0].replace(/^\w/, (x) => x.toUpperCase()),
+					lastName: user.split('-')[1].replace(/^\w/, (x) => x.toUpperCase()),
+				},
+				{ password: false }
+		  )
+		: await checkUser({ userId: user }, { password: false });
 
 	if (userData.isThereAUser)
 		res.status(200).json({
@@ -810,6 +895,7 @@ app.post(
 		debug: true,
 	}),
 	(req, res, next) => {
+		// for uploading profile pictures of the users.
 		if (!req.files || Object.keys(req.files).length === 0) {
 			return res.status(400).send('No files were uploaded.');
 		} else {

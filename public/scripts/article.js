@@ -110,34 +110,91 @@ const renderData = (res) => {
 		} else reactions.bookmarked = false;
 
 		if (article.comments.length !== 0) {
-			article.comments.forEach(async (comment) => {
+			article.comments.forEach(async (comment, commentId) => {
 				await fetchData(`/data/users/${comment.userId}`, ({ success, data }) => {
 					if (success) {
-						console.log(comment);
+						// console.log(comment);
 						document.querySelector('#comments').innerHTML =
-							`<div class="comment"><img src="${
-								data.profilePictureUrl || '/images/user.png'
-							}" onclick="window.location = \`/user/${
-								data.username
-							}\`" /><div class="text"> <a class="name" href="/user/${data.username}">${
-								data.firstName
-							} ${data.lastName} ${
-								Number(sessionStorage.getItem('userId')) === comment.userId ? '(YOU)' : ''
-							}</a>${
-								comment.comment
-							}<span class="commented-date" title="Commented on ${new Date(
-								comment.date
-							).toString()}">${timeFromNow(comment.date)}</span></div></div>` +
-							document.querySelector('#comments').innerHTML;
+							`<div class="comment">
+								<img src="${data.profilePictureUrl || '/images/user.png'}" 
+									onclick="window.location = \`/user/${data.username}\`" />
+								<div class="text">
+									<a class="name" href="/user/${data.username}">${data.firstName} ${data.lastName} 
+										${Number(sessionStorage.getItem('userId')) === comment.userId ? '(YOU)' : ''}
+									</a>
+									<span class="data">${comment.comment}</span>
+									<span class="stats">
+										<span class="commented-date" title="Commented on ${new Date(comment.date).toString()}">
+											${timeFromNow(comment.date)}
+										</span>
+										<span class="like-comment" data-comment-id="${commentId}">like</span>
+										<span class="reply-btn">Reply</span>
+									</span>
+								</div>
+							</div>` + document.querySelector('#comments').innerHTML;
 						document.querySelector('.no-comments').style.display = 'none';
 					} else {
 						document.querySelector('#comments').innerHTML =
-							`<div class="comment"><img src="/images/user.png" onclick="window.location = \`/user/unknownOrDeletedUser" /><div class="text"> <span class="name">${`Deleted User`}</span><span class="data">${
-								comment.comment
-							}</span><span class="commented-date">${comment.date}</span></div></div>` +
-							document.querySelector('#comments').innerHTML;
+							`<div class="comment">
+								<img src="/images/user.png" onclick="window.location = \`/user/unknownOrDeletedUser" />
+								<div class="text">
+									<span class="name">${`Deleted User`}</span>
+									<span class="data">${comment.comment}</span>
+									<span class="stats">
+										<span class="commented-date" title="Commented on ${new Date(comment.date).toString()}">
+											${timeFromNow(comment.date)}
+										</span>
+										<span class="like-comment" data-comment-id="${commentId}">like</span>
+										<span class="reply-btn">Reply</span>
+									</span>
+								</div>
+							</div>` + document.querySelector('#comments').innerHTML;
 						document.querySelector('.no-comments').style.display = 'none';
 					}
+				});
+				const commentLikeButtons = document.querySelectorAll('.stats > .like-comment');
+				commentLikeButtons.forEach((x) => {
+					x.addEventListener('click', (e) => {
+						if (e.target.classList.contains('liked')) {
+							fetchData(
+								`${requestingArticleName}?likeComment=false&userId=${sessionStorage.getItem(
+									'userId'
+								)}&commentId=${e.target.dataset.commentId}`,
+								(res) => {
+									console.log(res);
+									if (res.success) {
+										e.target.classList.remove('liked');
+										e.target.innerHTML = 'like';
+									} else console.log('Error occurred when liking comment .', res.message);
+								},
+								{
+									method: 'POST',
+									headers: {
+										'Content-Type': 'application/json',
+									},
+								}
+							);
+						} else {
+							fetchData(
+								`${requestingArticleName}?likeComment=true&userId=${sessionStorage.getItem(
+									'userId'
+								)}&commentId=${e.target.dataset.commentId}`,
+								(res) => {
+									console.log(res);
+									if (res.success) {
+										e.target.classList.add('liked');
+										e.target.innerHTML = 'liked';
+									} else console.log('Error occurred when liking comment .', res.message);
+								},
+								{
+									method: 'POST',
+									headers: {
+										'Content-Type': 'application/json',
+									},
+								}
+							);
+						}
+					});
 				});
 			});
 		}
@@ -179,7 +236,7 @@ comment.addEventListener('keyup', function (event) {
 
 function sendComment() {
 	if (comment.value !== '' && /\S/gi.test(comment.value)) {
-		fetch(`${requestingArticleName}`, {
+		fetch(`${requestingArticleName}?commentOnArticle=true`, {
 			method: 'POST',
 			body: JSON.stringify({
 				userId: sessionStorage.getItem('userId'),
@@ -193,15 +250,21 @@ function sendComment() {
 			.then((res) => {
 				if (res.success) {
 					commentContainer.innerHTML =
-						`<div class="comment"><img src="${
-							sessionStorage.getItem('userProfilePictureUrl') || '/images/user.png'
-						}" onclick="window.location = \`/user/${sessionStorage.getItem(
-							'username'
-						)}\`" /><div class="text">${
-							comment.value
-						}<span class="commented-date">${timeFromNow(
-							new Date().getTime()
-						)}</span></div></div>` + commentContainer.innerHTML;
+						`<div class="comment">
+							<img src="${sessionStorage.getItem('userProfilePictureUrl') || '/images/user.png'}" 
+								onclick="window.location = \`/user/${sessionStorage.getItem('username')}\`" />
+							<div class="text">
+								<span class="name">${sessionStorage.getItem('username').replace(/-/gi, ' ')} (you)</span>
+								<span class="data">${comment.value}</span>
+								<span class="stats">
+									<span class="commented-date" title="Commented on ${new Date(comment.date).toString()}">
+										${timeFromNow(new Date().getTime())}
+									</span>
+									<span class="like-comment" data-comment-id="${res.commentId}">like</span>
+									<span class="reply-btn">Reply</span>
+								</span>
+							</div>
+						</div>` + commentContainer.innerHTML;
 					comment.value = '';
 				} else alert(res.message);
 			});
