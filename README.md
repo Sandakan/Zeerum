@@ -18,10 +18,15 @@ This build uses,
   4. express-session
   5. mongoose
   6. connect-mongo
-  7. monggodb
+  7. mongoDB
   8. cors
-  9. express-ip
-  10. express-fileupload  
+  9. csurf
+  10. ejs
+  11. nodemailer
+  12. dotenv
+  13. express-rate-limit
+  14. express-ip
+  15. express-fileupload  
 
 
 
