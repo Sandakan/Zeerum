@@ -23,25 +23,9 @@
 			</div>
 		</div>
 
-		<div class="svg-container">
-			<svg
-				width="1920"
-				height="1080"
-				viewbox="0 0 1920 1080"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				class="background-blue-cover-1"
-			>
-				<path
-					d="M711 615C1007 -149 -5 15 -5 15V1075H1919V835C1919 835 415 1379 711 615Z"
-					fill="#3F93F7"
-				/>
-			</svg>
-		</div>
-
 		<div class="signup-container">
 			<div class="signup-description">
-				<img src="images/sign_up/sign-up.svg" alt="" />
+				<img src="images/sign_up/sign-up.png" alt="" />
 				<div class="description">
 					Sign up with us to receive articles around the world to your inbox. Engage with the
 					ZEERUM community to help each other and to share knowledge.
@@ -49,32 +33,35 @@
 			</div>
 			<form action="/signup" class="form" id="form" method="POST" target="_self" name="signup">
 				<div class="signup-heading">Join with Us</div>
-				<div class="first-name-container">
-					<input
-						type="text"
-						name="firstName"
-						id="first-name"
-						placeholder="First name"
-						required
-						aria-label="Enter your first name"
-					/>
-					<div class="data-error-container">
-						<i class="fas fa-exclamation-circle"></i>
-						<span class="data-error"></span>
+				<div class="name-container">
+					<div class="first-name-container">
+						<input
+							type="text"
+							name="firstName"
+							id="first-name"
+							placeholder="First name"
+							required
+							aria-label="Enter your first name"
+							autofocus
+						/>
+						<div class="data-error-container">
+							<i class="fas fa-exclamation-circle"></i>
+							<span class="data-error"></span>
+						</div>
 					</div>
-				</div>
-				<div class="last-name-container">
-					<input
-						type="text"
-						name="lastName"
-						id="last-name"
-						placeholder="Last name"
-						required
-						aria-label="Enter your last name"
-					/>
-					<div class="data-error-container">
-						<i class="fas fa-exclamation-circle"></i>
-						<span class="data-error"></span>
+					<div class="last-name-container">
+						<input
+							type="text"
+							name="lastName"
+							id="last-name"
+							placeholder="Last name"
+							required
+							aria-label="Enter your last name"
+						/>
+						<div class="data-error-container">
+							<i class="fas fa-exclamation-circle"></i>
+							<span class="data-error"></span>
+						</div>
 					</div>
 				</div>
 				<div class="birthday-container">

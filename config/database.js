@@ -19,7 +19,6 @@ const createUser = async (userDataObj, func) => {
 	const { firstName, lastName, birthday, email, password, country } = userDataObj;
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
-	// const collection = database.collection('users');
 	const count = await database
 		.collection('users')
 		.countDocuments()
