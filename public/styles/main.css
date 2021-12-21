@@ -620,6 +620,56 @@ a:hover {
 	-o-border-radius: 1.5em;
 }
 
+.search-results-container.loading {
+	border-top: 0.1em solid #ccc;
+}
+
+.search-results-container.loading::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: calc(52% - 1.5em);
+	width: 1.5em;
+	height: 1.5em;
+	border: 0.2em solid #ccc;
+	border-top: 0.2em solid #000;
+	border-radius: 3em;
+	transform: rotate(0deg);
+	animation: rotate 1s infinite linear;
+	-webkit-border-radius: 3em;
+	-moz-border-radius: 3em;
+	-ms-border-radius: 3em;
+	-o-border-radius: 3em;
+	-webkit-border-radius: 5em;
+	-webkit-animation: rotate 1s infinite linear;
+	-webkit-transform: rotate(0deg);
+	-moz-transform: rotate(0deg);
+	-ms-transform: rotate(0deg);
+	-o-transform: rotate(0deg);
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+		-webkit-transform: rotate(0deg);
+		-moz-transform: rotate(0deg);
+		-ms-transform: rotate(0deg);
+		-o-transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+		-webkit-transform: rotate(360deg);
+		-moz-transform: rotate(360deg);
+		-ms-transform: rotate(360deg);
+		-o-transform: rotate(360deg);
+	}
+}
+
+.search-results-container.loading
+	:is(.no-search-results-container, .search-description, .search-result) {
+	visibility: hidden;
+}
+
 .search-description {
 	border-top: 0.1em solid #ccc;
 	width: 100%;

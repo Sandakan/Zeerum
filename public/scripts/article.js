@@ -174,7 +174,10 @@ const renderData = (res) => {
 									if (res.success) {
 										e.target.classList.remove('liked');
 										e.target.innerHTML = 'like';
-									} else console.log('Error occurred when liking comment .', res.message);
+									} else {
+										alert(`Error occurred when liking comment . ${res.message}`);
+										console.log('Error occurred when liking comment .', res.message);
+									}
 								},
 								{
 									method: 'POST',
