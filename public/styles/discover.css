@@ -47,6 +47,13 @@
 	border-radius: 20px;
 }
 
+.discover-categories-container .discover-category.loading {
+	display: none;
+}
+.discover-categories-container.discover-tags-loading .discover-category.loading {
+	display: block;
+}
+
 .discover-category {
 	position: relative;
 	width: 350px;

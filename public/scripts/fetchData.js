@@ -6,7 +6,6 @@ export default async (url, func = () => true, fetchOptions = {}) => {
 			func(data);
 			resolve(data);
 		} catch (error) {
-			alert(error);
 			console.log(error);
 			func({ success: false, error: error });
 			resolve({ success: false, error: error });

@@ -180,9 +180,70 @@ fetchData('/data/profile', (res) => {
 			}
 			//settings pane
 			if (window.location.search.slice(1) === `popup=settings`) {
-				const popupData = `<h1>Settings</h1><div class="settings-container"><div class="setting-types"><ul><li>Setting</li><li>Setting</li><li>Setting</li><li>Setting</li></ul></div><div class="settings-content"></div></div>`;
+				const settingData = Object.entries({
+					account: `<h2>Account</h2>
+					<ul>
+						<li>Non est maiores repellat id accusantium expedita expedita aut.</li>
+						<li>Non incidunt qui soluta quod quasi sunt unde.</li>
+						<li>Fuga distinctio eveniet doloremque voluptatem et.</li>
+						<li>Illum beatae dolor maiores dolorum molestiae dolorum et.</li>
+						<li>Aut et voluptas neque magni sapiente quas.</li>
+					</ul>
+					`,
+					security: `<h2>Security</h2>
+					<ul>
+						<li>Eligendi quia qui vero ratione officia enim eum.</li>
+						<li>Vel consectetur laudantium rem ab minus exercitationem sunt.</li>
+						<li>Earum dolor quasi perferendis vel.</li>
+						<li>Nam eaque rerum enim.</li>
+						<li>Assumenda iure repellendus.</li>
+					</ul>
+					`,
+					notifications: `<h2>Notifications</h2>
+					<ul>
+						<li>Omnis earum molestias deserunt.</li>
+						<li>Incidunt doloribus sit minima quo.</li>
+						<li>Impedit magni magni doloribus id ullam dolorum repudiandae alias ad.</li>
+						<li>Facere sed quas iste facilis.</li>
+						<li>Voluptates qui enim velit.</li>
+					</ul>
+					`,
+					privacy: `<h2>Privacy</h2>
+					<ul>
+						<li>Culpa ab atque accusamus.</li>
+						<li>Perferendis omnis delectus et est et nobis.</li>
+						<li>Totam excepturi eos ut.</li>
+						<li>Consequatur id aut ut provident dolores ullam qui saepe assumenda.</li>
+						<li>Vero expedita esse.</li>
+					</ul>
+					`,
+				});
+				const popupData = `
+				<h1>Settings</h1>
+				<div class="settings-container">
+					<div class="setting-types">
+						<ul>
+							<li class="focused" data-setting-type="account">Account</li>
+							<li data-setting-type="security">Security</li>
+							<li data-setting-type="notifications">Notifications</li>
+							<li data-setting-type="privacy">Privacy</li>
+						</ul>
+					</div>
+					<div class="settings-content"></div>
+				</div>`;
 				togglePopup(popupData);
 				document.querySelector('.popup').classList.add('settings');
+				const settingTypes = document.querySelectorAll('.setting-types ul li');
+				settingTypes.forEach((x) => {
+					x.addEventListener('click', (e) => {
+						settingTypes.forEach((y) => y.classList.remove('focused'));
+						e.target.classList.add('focused');
+						for (const [settingType, settingContent] of settingData) {
+							if (e.target.dataset.settingType === settingType)
+								document.querySelector('.settings-content').innerHTML = settingContent;
+						}
+					});
+				});
 			}
 
 			document.querySelector(

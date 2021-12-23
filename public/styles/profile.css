@@ -80,7 +80,8 @@
 
 .change-user-type img {
 	margin: 20px 0 10px 0;
-	width: 200px;
+	width: 300px;
+	max-width: 100%;
 }
 
 .change-user-type p {
@@ -111,7 +112,6 @@
 	text-align: left;
 	padding: 0 1em 0.5em 1em;
 	margin-bottom: 0;
-	border-bottom: 0.1em solid var(--background-color-4);
 }
 
 .settings .settings-container {
@@ -120,12 +120,13 @@
 	width: 100%;
 	height: 100%;
 	margin: 0.5em auto;
+	border-top: 0.2em solid var(--background-color-4);
 }
 
 .settings .settings-container .setting-types {
-	width: 25%;
+	width: 20%;
 	padding-left: 1em;
-	border-right: 0.25em solid var(--background-color-4);
+	border-right: 0.2em solid #ccc;
 }
 
 .settings .settings-container .setting-types ul {
@@ -134,4 +135,63 @@
 .settings .settings-container .setting-types ul li {
 	font-size: 1.5em;
 	padding: 0.5em 1em;
+	cursor: pointer;
+	position: relative;
+}
+.settings .settings-container .setting-types ul li::after {
+	content: '';
+	position: absolute;
+	height: 75%;
+	width: 0.2em;
+	left: 0;
+	top: 50%;
+	border-radius: 1em;
+	opacity: 0;
+	transform: translate(0.25em, -50%);
+	background-color: var(--background-color-4);
+	-webkit-transform: translate(0.25em, -50%);
+	-moz-transform: translate(0.25em, -50%);
+	-ms-transform: translate(0.25em, -50%);
+	-o-transform: translate(0.25em, -50%);
+	transition: transform 0.2s linear, opacity 0.2s linear;
+	-webkit-transition: transform 0.2s linear, opacity 0.2s linear;
+	-moz-transition: transform 0.2s linear, opacity 0.2s linear;
+	-ms-transition: transform 0.2s linear, opacity 0.2s linear;
+	-o-transition: transform 0.2s linear, opacity 0.2s linear;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-ms-border-radius: 1em;
+	-o-border-radius: 1em;
+}
+.settings .settings-container .setting-types ul li.focused {
+	font-weight: 450;
+}
+.settings .settings-container .setting-types ul li.focused::after {
+	transform: translate(0, -50%);
+	-webkit-transform: translate(0, -50%);
+	-moz-transform: translate(0, -50%);
+	-ms-transform: translate(0, -50%);
+	-o-transform: translate(0, -50%);
+	opacity: 1;
+}
+
+.settings .settings-container .settings-content {
+	width: 80%;
+	padding: 1.5em 2.25em;
+	overflow-y: auto;
+}
+
+.settings .settings-container .settings-content h2 {
+	font-size: 2.25em;
+	font-weight: 400;
+}
+
+.settings .settings-container .settings-content ul {
+	margin-top: 1em;
+	padding-left: 2em;
+}
+
+.settings .settings-container .settings-content ul li {
+	font-size: 1.25em;
+	margin-bottom: 1em;
 }

@@ -10,10 +10,10 @@ window.onscroll = () => {
 		document
 			.querySelector('.user-profile-dropdown')
 			.classList.remove('user-profile-dropdown-active');
-		document.querySelector('.user-profile-img').classList.remove('active');
-		if (document.body.contains(document.querySelector('.author-information-container'))) {
+		if (document.body.contains(document.querySelector('.user-profile-img')))
+			document.querySelector('.user-profile-img').classList.remove('active');
+		if (document.body.contains(document.querySelector('.author-information-container')))
 			document.querySelector('.author-information-container').classList.remove('sticky');
-		}
 	} else {
 		navBar.classList.remove('hidden');
 		if (document.body.contains(document.querySelector('.author-information-container'))) {

@@ -9,7 +9,7 @@ if (window.location.pathname.split('/').at(1) === 'search') {
 	document.title = `ZEERUM \| You searched for ${searchPhrase}`;
 	document.querySelector('.highlight-tags').innerHTML = `\"${searchPhrase}\"`;
 
-	fetchData(`/data/search/${searchPhrase}`, ({ success, results }) => {
+	fetchData(`/data/search/${searchPhrase}`, async ({ success, results }) => {
 		if (success && results) {
 			const { articles, users, tags } = results;
 			let htmlData = ``;

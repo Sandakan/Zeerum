@@ -5,6 +5,7 @@ import fetchData from './fetchData.js';
 fetchData('/data/articles/', (res) => {
 	const { success, data } = res;
 	if (success) {
+		document.querySelector('.articles-container').classList.remove('articles-loading');
 		data.map((x) => {
 			document.querySelector(
 				'.articles-container'
@@ -37,17 +38,29 @@ fetchData('/data/articles/', (res) => {
 			}</span></div> <div class="article-tags-container">${x.tags
 				.map((y) => `<span class="tags"><a href="tags/${y}">#${y}</a></span>`)
 				.join('')}</div></div></div>`;
+			document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
 			document.querySelector(
 				'.navigate-through-links ul'
 			).innerHTML += `<li><a href="/articles/${x.urlSafeTitle}">${x.title}</a></li>`;
 		});
-	} else console.log('Error occurred when requesting article data.');
+	} else {
+		document.querySelector('.articles-container').innerHTML = `
+			<div class="no-articles-container">
+				<img src="/images/tags/no-articles.svg" alt="" />
+				<span class="no-articles">
+					Oops, seems like there's nothing to show at this moment.
+				</span>
+				<span class="no-search"></span>
+			</div>`;
+		console.log('Error occurred when requesting article data.', res.message);
+	}
 });
 
 fetchData(`/data/tags/`, (res) => {
 	const { success, data } = res;
 	// console.log(res);
 	if (success) {
+		document.querySelector('.search-through-tags').classList.remove('tags-loading');
 		document.querySelector('.search-through-tags').innerHTML = data
 			.map((x) => {
 				return `<span class="tags"> <a href="/tags/${x.name.toLowerCase()}">${

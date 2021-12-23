@@ -18,7 +18,7 @@ document.querySelector('body').addEventListener('click', () => {
 });
 
 document.querySelector('#search').addEventListener('input', () => {
-	document.querySelector('.search-results-container').classList.add('loading');
+	document.querySelector('.search-results-container').classList.add('results-loading');
 	setTimeout(() => {
 		let searchPhrase = document.querySelector('#search').value;
 		if (searchPhrase !== '') {
@@ -66,17 +66,21 @@ document.querySelector('#search').addEventListener('input', () => {
 								);
 						}
 					});
-					document.querySelector('.search-results-container').classList.remove('loading');
+					document
+						.querySelector('.search-results-container')
+						.classList.remove('results-loading');
 					document.querySelector('.search-results-container').innerHTML = temp.join('');
 				} else {
-					document.querySelector('.search-results-container').classList.remove('loading');
+					document
+						.querySelector('.search-results-container')
+						.classList.remove('results-loading');
 					document.querySelector(
 						'.search-results-container'
 					).innerHTML = `<div class="no-search-results-container"><img src="/images/error.png">We don't have anything with the name \" ${searchPhrase} \". Try seaching with different words.</div>`;
 				}
 			});
 		} else {
-			document.querySelector('.search-results-container').classList.remove('loading');
+			document.querySelector('.search-results-container').classList.remove('results-loading');
 			document.querySelector(
 				'.search-results-container'
 			).innerHTML = `<div class="search-description"><img src="/images/search.png" alt="A magnifying glass">Search for anything from here including articles, tags, authors, hot topics etc.</div>`;
