@@ -90,8 +90,23 @@
 	padding: 0 20px;
 }
 
+.change-user-type .features-benifits-disadvantages {
+	width: 100%;
+	padding: 1em 2em;
+}
+
+.change-user-type .features-benifits-disadvantages p {
+	text-align: left;
+	width: 100%;
+}
+
+.change-user-type .features-benifits-disadvantages ul {
+	margin: 0.5em 0 0 5em;
+	font-size: 1.25em;
+}
+
 .change-user-type :is(#submit-become-an-author, #submit-become-a-reader) {
-	position: absolute;
+	position: relative;
 	bottom: 20px;
 	margin-top: 20px;
 	padding: 10px 15px;

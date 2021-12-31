@@ -15,6 +15,7 @@ const MongoStore = require('connect-mongo');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const session = require('express-session');
+const csrf = require('csurf');
 require('dotenv').config();
 require('express-async-errors');
 // const passport = require('passport');
@@ -29,7 +30,6 @@ const data = require('./data/data');
 const authenticate = require('./middleware/authenticate');
 const errorHandler = require('./middleware/errorHandler');
 const { createAccountLimiter } = require('./middleware/rate-limit');
-const { csrfProtection } = require('./middleware/csrfProtection');
 const {
 	connectToDB,
 	createUser,
@@ -39,6 +39,7 @@ const {
 	updateData,
 } = require('./config/database');
 connectToDB();
+const csrfProtection = csrf({ cookie: true });
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
 
@@ -90,7 +91,6 @@ app.use(
 		}),
 	})
 );
-
 // ? /////////////////////////////////// MAIN ROUTES ///////////////////////////////////////////////
 
 app.get('/', csrfProtection, (req, res) => {
@@ -98,40 +98,47 @@ app.get('/', csrfProtection, (req, res) => {
 	res.render('index', { status: 'Development in progress.', csrfToken: req.csrfToken() });
 });
 
-app.get('/discover', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/discover.html'));
+app.get('/discover', csrfProtection, (req, res) => {
+	res.render('discover', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/discover.html'));
 });
 
-app.get('/write', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/write.html'));
+app.get('/write', csrfProtection, (req, res) => {
+	res.render('write', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/write.html'));
 });
-app.get('/about', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/about.html'));
+app.get('/about', csrfProtection, (req, res) => {
+	res.render('about', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/about.html'));
 });
 
-app.get('/login', (req, res) => {
+app.get('/login', csrfProtection, (req, res) => {
 	if (req.session.userId !== undefined || req.session.username)
 		res.status(307).redirect('/profile');
-	else res.status(200).sendFile(path.resolve(__dirname, './public/login.html'));
+	else res.render('login', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/login.html'));
 });
 
-app.get('/signup', (req, res) => {
+app.get('/signup', csrfProtection, (req, res) => {
 	if (req.session.username || req.session.userId !== undefined)
 		res.status(307).redirect('/profile');
-	else res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
+	else res.render('signup', { csrfToken: req.csrfToken() });
+	//  res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
 });
 
-app.get('/profile', authenticate, (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/profile.html'));
+app.get('/profile', csrfProtection, authenticate, (req, res) => {
+	res.render('profile', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/profile.html'));
 });
 
-app.get('/404', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/404.html'));
+app.get('/404', csrfProtection, (req, res) => {
+	res.render('404', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/404.html'));
 });
 
 app.get('/logout', (req, res) => {
 	req.session.destroy((err) => {
-		console.log(err);
+		if (err) console.log(err);
 		res.status(308).redirect('/');
 	});
 });
@@ -147,26 +154,27 @@ app.get('/logout', (req, res) => {
 // });
 
 //? //////////////////////////////////////////////////////////////////
-//? //////////////////////////////////////////////////////////////////
 /*
 .replace(/[^a-zA-Z0-9\s]/gm, '')
 				.replace(/\s/gm, '-')
 				.replace(/-$/gm, '')
 				.toLowerCase()
 */
-app.get('/articles/:article', async (req, res, next) => {
-	const article = isNaN(Number(req.params.article))
+app.get('/articles/:article', csrfProtection, async (req, res, next) => {
+	const articleId = isNaN(Number(req.params.article))
 		? req.params.article
 		: Number(req.params.article);
-	const articleData = isNaN(article)
-		? await requestData('articles', { urlSafeTitle: article })
-		: await requestData('articles', { articleData: article });
+	const articleData = isNaN(articleId)
+		? await requestData('articles', { urlSafeTitle: articleId })
+		: await requestData('articles', { articleId: articleId });
+	// console.log(articleId, articleData);
 	if (articleData.success && articleData.data.length !== 0)
-		res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
+		res.render('article', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
 	else next();
 });
 
-app.get('/tags/:tag', async (req, res, next) => {
+app.get('/tags/:tag', csrfProtection, async (req, res, next) => {
 	const tag = isNaN(Number(req.params.tag))
 		? req.params.tag.toLowerCase()
 		: Number(req.params.tag);
@@ -174,31 +182,34 @@ app.get('/tags/:tag', async (req, res, next) => {
 		? await requestData('tags', { name: { $regex: new RegExp(tag, 'i') } })
 		: await requestData('tags', { tagId: tag });
 	if (tagData.success && tagData.data.length !== 0)
-		res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
+		res.render('tag', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
 	else next();
 });
 
-app.get('/search/:searchItem', (req, res) => {
-	res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
+app.get('/search/:searchItem', csrfProtection, (req, res) => {
+	res.render('tag', { csrfToken: req.csrfToken() });
+	// res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
 });
 
-app.get('/user/:user', async (req, res, next) => {
-	const user = isNaN(Number(req.params.user)) ? req.params.user : Number(req.params.user);
+app.get('/user/:user', csrfProtection, async (req, res, next) => {
+	const userId = isNaN(Number(req.params.user)) ? req.params.user : Number(req.params.user);
 	if (
 		req.session.userId !== undefined &&
-		(req.session.userId === user || user.toString().toLowerCase() === req.session.username)
+		(req.session.userId === userId || userId.toString().toLowerCase() === req.session.username)
 	)
 		res.redirect('/profile');
 	else {
-		const userData = isNaN(user)
+		const userData = isNaN(userId)
 			? await checkUser({
-					firstName: user.split('-')[0].replace(/^\w/, (x) => x.toUpperCase()),
-					lastName: user.split('-')[1].replace(/^\w/, (x) => x.toUpperCase()),
+					firstName: userId.split('-')[0].replace(/^\w/, (x) => x.toUpperCase()),
+					lastName: userId.split('-')[1].replace(/^\w/, (x) => x.toUpperCase()),
 			  })
-			: await checkUser({ userId: user });
-		// console.log(user, userData);
+			: await checkUser({ userId: userId });
+		// console.log(userId, userData);
 		if (userData.success && userData.isThereAUser)
-			res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
+			res.render('user', { csrfToken: req.csrfToken() });
+		// res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
 		else next();
 	}
 });
@@ -206,7 +217,7 @@ app.get('/user/:user', async (req, res, next) => {
 
 app.get('/data/search/:searchPhrase', async (req, res, next) => {
 	const searchPhrase = req.params.searchPhrase;
-	console.log(searchPhrase);
+	// console.log(searchPhrase);
 	const articleData = await requestData('articles', {
 		title: { $regex: new RegExp(`${searchPhrase}`, 'i') },
 	});
@@ -245,15 +256,16 @@ app.get('/data/search/:searchPhrase', async (req, res, next) => {
 
 app.get(
 	'/data/articles',
+	// ? FOR ACCESSING ALL THE ARTICLES. ** CAN BE REMOVED IN THE FUTURE **
 	async (req, res, next) => {
 		if (Object.entries(req.query).length === 0) {
-			const { success, data } = await requestData('articles');
-			if (success)
+			const articleData = await requestData('articles');
+			if (articleData.success && articleData.data.length !== 0)
 				res.status(200).json({
 					success: true,
 					status: 200,
 					message: `Request successful.`,
-					data: data,
+					data: articleData.data,
 				});
 			else
 				res.status(404).json({
@@ -263,12 +275,13 @@ app.get(
 				});
 		} else next();
 	},
+	// ? FOR ACCESSING ARTICLES FILTERED BY THE AUTHOR ID
 	async (req, res, next) => {
 		if (req.query.authorUserId) {
 			const authorUserId = isNaN(Number(req.query.authorUserId))
 				? req.query.authorUserId
 				: Number(req.query.authorUserId);
-			const { success, data } = isNaN(authorUserId)
+			const articleData = isNaN(authorUserId)
 				? await requestData('articles', {
 						'author.name': `${authorUserId
 							.split('-')[0]
@@ -279,12 +292,12 @@ app.get(
 				: await requestData('articles', {
 						'author.userId': Number(authorUserId),
 				  });
-			if (success && data.length !== 0) {
+			if (articleData.success && articleData.data.length !== 0) {
 				res.status(200).json({
 					success: true,
 					status: 200,
 					message: `Request successful.`,
-					data: data,
+					data: articleData.data,
 				});
 			} else
 				res.status(404).json({
@@ -294,17 +307,24 @@ app.get(
 				});
 		} else next();
 	},
+	// ? FOR REQUESTING ARTICLES BOOKMARKED BY THE USER
 	async (req, res, next) => {
 		if (req.query.userBookmarked === 'true') {
-			const { success, data } = await requestData('articles', {
+			const articleData = await requestData('articles', {
 				'reactions.bookmarks': req.session.userId,
 			});
-			if (success && data.length > 0) {
-				res.json({ success: true, status: 200, message: 'Request successful.', data: data });
+			if (articleData.success && articleData.data.length > 0) {
+				res.json({
+					success: true,
+					status: 200,
+					message: 'Request successful.',
+					data: articleData.data,
+				});
 			} else
 				res.json({ success: false, status: 404, message: 'No user bookmarked articles found' });
 		} else next();
 	},
+	// ? ARTICLES FILTERED BY ITS' RESPECTIVE TAG
 	async (req, res, next) => {
 		if (req.query.tagId) {
 			const tag = isNaN(Number(req.query.tagId))
@@ -312,7 +332,7 @@ app.get(
 				: await requestData('tags', { tagId: 1 }, { tagId: false, pictureUrl: false }).then(
 						(x) => x.data[0].name
 				  );
-			console.log(tag);
+			// console.log(tag);
 			const articleData = await requestData('articles', {
 				tags: { $regex: RegExp(tag, 'i') },
 			});
@@ -336,138 +356,20 @@ app.get(
 		});
 	}
 );
-// GET request to request article data, store like, bookmark, share results.
+
+// ? GET REQUEST TO REQUEST ARTICLE DATA, AND STORE LIKE, BOOKMARK, SHARE RESULTS.
 app.get(
 	'/data/articles/:article',
-	//  LIKE ARTICLE
-	async (req, res, next) => {
-		if (req.query.likeArticle) {
-			// ? if you request to like the article
-			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
-				(res) => res.data[0]
-			);
-			if (req.query.likeArticle === 'true' && req.session.userId !== undefined) {
-				if (!article.reactions.likes.includes(Number(req.session.userId))) {
-					// ? if you haven't liked the same article before
-					article.reactions.likes.push(req.session.userId);
-					await updateData(
-						'articles',
-						{ urlSafeTitle: req.params.article },
-						{ 'reactions.likes': article.reactions.likes }
-					);
-					res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
-				} else {
-					// ? if you have liked the same article before
-					res.json({
-						success: false,
-						status: 400,
-						message: `You have already liked ${req.params.article}`,
-					});
-				}
-			} else if (req.query.likeArticle === 'false' && req.session.userId !== undefined) {
-				if (article.reactions.likes.includes(Number(req.session.userId))) {
-					// ? if you haven't liked the same article before
-					const likedIdPosition = article.reactions.likes.indexOf(req.session.userId);
-					article.reactions.likes.splice(likedIdPosition, 1);
-					await updateData(
-						'articles',
-						{ urlSafeTitle: req.params.article },
-						{ 'reactions.likes': article.reactions.likes }
-					);
-					res.json({
-						success: true,
-						status: 200,
-						message: `You disliked ${req.params.article}`,
-					});
-				} else {
-					// ? if you have liked the same article before
-					res.json({
-						success: false,
-						status: 400,
-						message: `You have already disliked ${req.params.article}`,
-					});
-				}
-			} else
-				res.json({
-					success: false,
-					status: 400,
-					message: `Invalid request to like ${req.params.article}`,
-				});
-		} else next();
-	},
-	// BOOKMARK ARTICLE
-	async (req, res, next) => {
-		if (req.query.bookmarkArticle) {
-			// ? If you request to share the article
-			const user = req.session.user;
-			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
-				(res) => res.data[0]
-			);
-			if (req.query.bookmarkArticle === 'true' && req.session.userId !== undefined) {
-				if (!article.reactions.bookmarks.includes(Number(req.session.userId))) {
-					// ? if you haven't bookmarked the same article before
-					article.reactions.bookmarks.push(Number(req.session.userId));
-					user.bookmarks.push(Number(article.articleId));
-					await updateData(
-						'articles',
-						{ urlSafeTitle: req.params.article },
-						{ 'reactions.bookmarks': article.reactions.bookmarks }
-					);
-					await updateUserData({ userId: req.session.userId }, { bookmarks: user.bookmarks });
-					req.session.user.bookmarks = user.bookmarks;
-					res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
-				} else {
-					// ? if you have bookmarked the same article before
-					res.json({
-						success: false,
-						status: 400,
-						message: `You have already bookmarked ${req.params.article}`,
-					});
-				}
-			} else if (req.query.bookmarkArticle === 'false' && req.session.userId !== undefined) {
-				if (article.reactions.bookmarks.includes(Number(req.session.userId))) {
-					// ? if you haven't un-bookmarked the same article before
-					const userBookmarkedIdPosition = user.bookmarks.indexOf(article.articleId);
-					const bookmarkedIdPosition = article.reactions.bookmarks.indexOf(req.session.userId);
-					article.reactions.bookmarks.splice(bookmarkedIdPosition, 1);
-					user.bookmarks.splice(userBookmarkedIdPosition, 1);
-					await updateData(
-						'articles',
-						{ urlSafeTitle: req.params.article },
-						{ 'reactions.bookmarks': article.reactions.bookmarks }
-					);
-					await updateUserData({ userId: req.session.userId }, { bookmarks: user.bookmarks });
-					req.session.user.bookmarks = user.bookmarks;
-					res.json({
-						success: true,
-						status: 200,
-						message: `You un-bookmarked ${req.params.article}`,
-					});
-				} else {
-					// ? if you have un-bookmarked the same article before
-					res.json({
-						success: false,
-						status: 400,
-						message: `You have already un-bookmarked ${req.params.article}`,
-					});
-				}
-			} else
-				res.json({
-					success: false,
-					message: `Invalid request to bookmark on ${req.params.article}`,
-				});
-		} else next();
-	},
 	// SHARE ARTICLE
 	async (req, res, next) => {
 		if (req.query.shareArticle === 'true') {
-			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
-				(res) => res.data[0]
-			);
+			const article = await requestData('articles', { urlSafeTitle: req.params.article })
+				.then((res) => res.data[0])
+				.catch((err) => next(err));
 			await updateData(
 				'articles',
 				{ urlSafeTitle: req.params.article },
-				{ 'reactions.shares': article.reactions.shares + 1 }
+				{ $set: { 'reactions.shares': article.reactions.shares + 1 } }
 			);
 			res.json({ success: true, status: 200, message: `You shared ${req.params.article}` });
 		} else if (req.query.shareArticle === 'false') {
@@ -496,16 +398,28 @@ app.get(
 				.toLowerCase() === article ||
 				articleData.data[0].articleId === article)
 		) {
-			const authorData = await requestData('users', {
-				userId: articleData.data[0].author.userId,
-			});
+			// const authorData = await requestData('users', {
+			// 	userId: articleData.data[0].author.userId,
+			// });
+			const { updatedData: authorData } = await updateUserData(
+				{ userId: articleData.data[0].author.userId },
+				{
+					$set: {
+						authorData: {
+							allTimeViews: articleData.data[0].views.allTime + 1,
+							allTimeLikes: articleData.data[0].reactions.likes.length,
+						},
+					},
+				},
+				true
+			);
 			const { updatedData: updatedArticleData } = await updateData(
 				'articles',
 				{ urlSafeTitle: req.params.article },
-				{ 'views.allTime': articleData.data[0].views.allTime + 1 },
+				{ $set: { 'views.allTime': articleData.data[0].views.allTime + 1 } },
 				true
 			);
-
+			// // ? FOR SORTING COMMENTS BY ITS CREATED DATE FROM LATEST TO OLDEST
 			// const comments = articleData.data[0].comments.sort(
 			// 	(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
 			// );
@@ -518,11 +432,11 @@ app.get(
 					data: {
 						article: updatedArticleData[0],
 						author: {
-							userId: authorData.data[0].userId,
-							firstName: authorData.data[0].firstName,
-							lastName: authorData.data[0].lastName,
-							fullName: `${authorData.data[0].firstName}-${authorData.data[0].lastName}`,
-							profilePictureUrl: authorData.data[0].profilePictureUrl,
+							userId: authorData.userId,
+							firstName: authorData.firstName,
+							lastName: authorData.lastName,
+							fullName: `${authorData.firstName}-${authorData.lastName}`,
+							profilePictureUrl: authorData.profilePictureUrl,
 						},
 						user: {
 							followers: req.session.user.followers || null,
@@ -537,11 +451,11 @@ app.get(
 					data: {
 						article: updatedArticleData[0],
 						author: {
-							userId: authorData.data[0].userId,
-							firstName: authorData.data[0].firstName,
-							lastName: authorData.data[0].lastName,
-							fullName: `${authorData.data[0].firstName}-${authorData.data[0].lastName}`,
-							profilePictureUrl: authorData.data[0].profilePictureUrl,
+							userId: authorData.userId,
+							firstName: authorData.firstName,
+							lastName: authorData.lastName,
+							fullName: `${authorData.firstName}-${authorData.lastName}`,
+							profilePictureUrl: authorData.profilePictureUrl,
 						},
 						user: undefined,
 					},
@@ -553,10 +467,136 @@ app.get(
 			});
 	}
 );
-// POST request to /data/articles/:article for adding comments, liking comments.
+// ? POST REQUEST TO /DATA/ARTICLES/:ARTICLE FOR LIKING ARTICLES, BOOKMARKING ARTICLES, ADDING COMMENTS, LIKING COMMENTS.
 app.post(
 	'/data/articles/:article',
 	authenticate,
+	// ?  LIKE ARTICLE
+	async (req, res, next) => {
+		if (req.query.likeArticle) {
+			// ? IF YOU REQUEST TO LIKE THE ARTICLE
+			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
+				(res) => res.data[0]
+			);
+			if (req.query.likeArticle === 'true' && req.session.userId !== undefined) {
+				if (!article.reactions.likes.includes(Number(req.session.userId))) {
+					// ? if you haven't liked the same article before
+					article.reactions.likes.push(req.session.userId);
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ $set: { 'reactions.likes': article.reactions.likes } }
+					);
+					res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
+				} else {
+					// ? if you have liked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already liked ${req.params.article}`,
+					});
+				}
+			} else if (req.query.likeArticle === 'false' && req.session.userId !== undefined) {
+				if (article.reactions.likes.includes(Number(req.session.userId))) {
+					// ? if you haven't liked the same article before
+					const likedIdPosition = article.reactions.likes.indexOf(req.session.userId);
+					article.reactions.likes.splice(likedIdPosition, 1);
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ $set: { 'reactions.likes': article.reactions.likes } }
+					);
+					res.json({
+						success: true,
+						status: 200,
+						message: `You disliked ${req.params.article}`,
+					});
+				} else {
+					// ? if you have liked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already disliked ${req.params.article}`,
+					});
+				}
+			} else
+				res.json({
+					success: false,
+					status: 400,
+					message: `Invalid request to like ${req.params.article}`,
+				});
+		} else next();
+	},
+	//? BOOKMARK ARTICLE
+	async (req, res, next) => {
+		if (req.query.bookmarkArticle) {
+			// ? If you request to share the article
+			const user = req.session.user;
+			const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
+				(res) => res.data[0]
+			);
+			if (req.query.bookmarkArticle === 'true' && req.session.userId !== undefined) {
+				if (!article.reactions.bookmarks.includes(Number(req.session.userId))) {
+					// ? if you haven't bookmarked the same article before
+					article.reactions.bookmarks.push(Number(req.session.userId));
+					user.bookmarks.push(Number(article.articleId));
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ $set: { 'reactions.bookmarks': article.reactions.bookmarks } }
+					);
+					await updateUserData(
+						{ userId: req.session.userId },
+						{ $set: { bookmarks: user.bookmarks } }
+					);
+					req.session.user.bookmarks = user.bookmarks;
+					res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
+				} else {
+					// ? if you have bookmarked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already bookmarked ${req.params.article}`,
+					});
+				}
+			} else if (req.query.bookmarkArticle === 'false' && req.session.userId !== undefined) {
+				if (article.reactions.bookmarks.includes(Number(req.session.userId))) {
+					// ? if you haven't un-bookmarked the same article before
+					const userBookmarkedIdPosition = user.bookmarks.indexOf(article.articleId);
+					const bookmarkedIdPosition = article.reactions.bookmarks.indexOf(req.session.userId);
+					article.reactions.bookmarks.splice(bookmarkedIdPosition, 1);
+					user.bookmarks.splice(userBookmarkedIdPosition, 1);
+					await updateData(
+						'articles',
+						{ urlSafeTitle: req.params.article },
+						{ $set: { 'reactions.bookmarks': article.reactions.bookmarks } }
+					);
+					await updateUserData(
+						{ userId: req.session.userId },
+						{ $set: { bookmarks: user.bookmarks } }
+					);
+					req.session.user.bookmarks = user.bookmarks;
+					res.json({
+						success: true,
+						status: 200,
+						message: `You un-bookmarked ${req.params.article}`,
+					});
+				} else {
+					// ? if you have un-bookmarked the same article before
+					res.json({
+						success: false,
+						status: 400,
+						message: `You have already un-bookmarked ${req.params.article}`,
+					});
+				}
+			} else
+				res.json({
+					success: false,
+					message: `Invalid request to bookmark on ${req.params.article}`,
+				});
+		} else next();
+	},
+	// ? FOR COMMENTING ON THE ARTICLE
 	async (req, res, next) => {
 		if (req.query.commentOnArticle && req.body.userId && req.body.commentContent) {
 			const { userId, commentContent } = req.body;
@@ -576,7 +616,7 @@ app.post(
 				await updateData(
 					'articles',
 					{ urlSafeTitle: req.params.article },
-					{ comments: article.comments }
+					{ $set: { comments: article.comments } }
 				).then((result) => {
 					if (result.success) {
 						res.json({
@@ -599,7 +639,7 @@ app.post(
 		// to like and unlike comments
 		if (req.query.likeComment) {
 			const { commentId, userId, likeComment } = req.query;
-			console.log('commentId', commentId, 'userId', userId, 'likeComment', likeComment);
+			// console.log('commentId', commentId, 'userId', userId, 'likeComment', likeComment);
 			if (!isNaN(Number(commentId)) && !isNaN(Number(userId)) && likeComment !== null) {
 				const article = await requestData('articles', {
 					urlSafeTitle: req.params.article,
@@ -611,7 +651,7 @@ app.post(
 						await updateData(
 							'articles',
 							{ urlSafeTitle: req.params.article },
-							{ comments: article.comments }
+							{ $set: { comments: article.comments } }
 						);
 						res.json({
 							success: true,
@@ -636,7 +676,7 @@ app.post(
 						await updateData(
 							'articles',
 							{ urlSafeTitle: req.params.article },
-							{ comments: article.comments }
+							{ $set: { comments: article.comments } }
 						);
 						res.json({
 							success: true,
@@ -725,7 +765,7 @@ app.get(
 	authenticate,
 	async (req, res, next) => {
 		if (req.query.followUser !== undefined && req.query.followingUserId) {
-			console.log(req.query.followUser, req.query.followingUserId);
+			// console.log(req.query.followUser, req.query.followingUserId);
 			let userData = await checkUser({ userId: req.session.userId });
 			const followingUserId = Number(req.query.followingUserId);
 			let followingUserData = await checkUser({ userId: followingUserId });
@@ -735,17 +775,17 @@ app.get(
 					if (!userData.userData[0].followings.includes(followingUserId)) {
 						userData.userData[0].followings.push(Number(followingUserId));
 						followingUserData.userData[0].followers.push(Number(req.session.userId));
-						console.log(
-							userData.userData[0].followings,
-							followingUserData.userData[0].followers
-						);
+						// console.log(
+						// 	userData.userData[0].followings,
+						// 	followingUserData.userData[0].followers
+						// );
 						await updateUserData(
 							{ userId: req.session.userId },
-							{ followings: userData.userData[0].followings }
+							{ $set: { followings: userData.userData[0].followings } }
 						);
 						await updateUserData(
 							{ userId: followingUserId },
-							{ followers: followingUserData.userData[0].followers }
+							{ $set: { followers: followingUserData.userData[0].followers } }
 						);
 						req.session.user = userData.userData[0];
 						//? if you haven't followed the same user before
@@ -775,17 +815,17 @@ app.get(
 						const positionFollowing = followingUserData.userData[0].followers.indexOf(
 							Number(req.session.userId)
 						);
-						console.log(userData.userData[0]);
+						// console.log(userData.userData[0]);
 						userData.userData[0].followings.splice(positionUser, 1);
 						followingUserData.userData[0].followers.splice(positionFollowing, 1);
 
 						await updateUserData(
 							{ userId: req.session.userId },
-							{ followings: userData.userData[0].followings }
+							{ $set: { followings: userData.userData[0].followings } }
 						);
 						await updateUserData(
 							{ userId: followingUserId },
-							{ followers: followingUserData.userData[0].followers }
+							{ $set: { followers: followingUserData.userData[0].followers } }
 						);
 						req.session.user = userData.userData[0];
 						res.json({
@@ -805,6 +845,7 @@ app.get(
 			}
 		} else next();
 	},
+	// ? CHANGE USER TYPE
 	async (req, res, next) => {
 		if (req.query.changeUserType) {
 			const user = req.session.user;
@@ -812,10 +853,18 @@ app.get(
 				user.userType = 'author';
 				const { updatedData } = await updateUserData(
 					{ userId: req.session.userId },
-					{ userType: 'author' },
+					{
+						$set: {
+							userType: 'author',
+							authorData: {
+								allTimeViews: 0,
+								allTimeLikes: 0,
+							},
+						},
+					},
 					true
 				);
-				console.log(`updated data`, updatedData);
+				// console.log(`updated data`, updatedData);
 				req.session.user = user;
 				res.json({
 					success: true,
@@ -824,10 +873,13 @@ app.get(
 				});
 			} else if (req.query.changeUserType === 'reader' && user.userType === 'author') {
 				user.userType = 'reader';
-				console.log(user);
+				// console.log(user);
 				const { updatedData } = await updateUserData(
 					{ userId: req.session.userId },
-					{ userType: 'reader' },
+					{
+						$set: { userType: 'reader' },
+						$unset: { authorData: 1 },
+					},
 					true
 				);
 				req.session.user = user;
@@ -857,30 +909,61 @@ app.get(
 			bookmarks,
 		} = req.session.user;
 
-		const articlesPublished = async (userId) => {
-			const articleData = await requestData('articles', { 'author.userId': userId });
-			if (articleData.success && articleData.data.length !== 0) return articleData.data.length;
-			else return 0;
-		};
+		// const articlesPublished = async (userId) => {
+		// 	const articleData = await requestData('articles', { 'author.userId': userId });
+		// 	if (articleData.success && articleData.data.length !== 0) return articleData.data.length;
+		// 	else return 0;
+		// };
+		const articleData = await requestData('articles', { 'author.userId': userId });
+		if (articleData.success && articleData.data.length !== 0) {
+			const { data } = await articleData;
+			let allTimeViews = 0;
+			let allTimeLikes = 0;
 
-		res.status(200).json({
-			success: true,
-			status: 200,
-			message: `Request successful.`,
-			data: {
-				userId: userId,
-				firstName: firstName,
-				lastName: lastName,
-				profilePictureUrl: profilePictureUrl,
-				followers: followers,
-				followings: followings,
-				registeredDate: registeredDate,
-				userType: userType,
-				country: country,
-				articlesPublished: await articlesPublished(userId),
-				bookmarks: bookmarks,
-			},
-		});
+			data.forEach((article) => {
+				allTimeLikes += article.reactions.likes.length;
+				allTimeViews += article.views.allTime;
+			});
+			res.status(200).json({
+				success: true,
+				status: 200,
+				message: `Request successful.`,
+				data: {
+					userId: userId,
+					firstName: firstName,
+					lastName: lastName,
+					profilePictureUrl: profilePictureUrl,
+					followers: followers,
+					followings: followings,
+					registeredDate: registeredDate,
+					userType: userType,
+					country: country,
+					articlesPublished: data.length,
+					bookmarks: bookmarks,
+					allTimeViews: allTimeViews,
+					allTimeLikes: allTimeLikes,
+				},
+			});
+		} else {
+			res.status(200).json({
+				success: true,
+				status: 200,
+				message: `Request successful.`,
+				data: {
+					userId: userId,
+					firstName: firstName,
+					lastName: lastName,
+					profilePictureUrl: profilePictureUrl,
+					followers: followers,
+					followings: followings,
+					registeredDate: registeredDate,
+					userType: userType,
+					country: country,
+					articlesPublished: 0,
+					bookmarks: bookmarks,
+				},
+			});
+		}
 	}
 );
 
@@ -909,7 +992,9 @@ app.post(
 				updateUserData(
 					{ userId: req.session.userId },
 					{
-						profilePictureUrl: `/images/users/${req.session.user.userType}s/${req.session.userId}/profilePicture.jpg`,
+						$set: {
+							profilePictureUrl: `/images/users/${req.session.user.userType}s/${req.session.userId}/profilePicture.jpg`,
+						},
 					}
 				).then(async ({ success }) => {
 					if (success) {
@@ -927,6 +1012,7 @@ app.post(
 // ? //////////////////////////////  Data POST FORM requests  ////////////////////////////////////
 app.post(
 	'/signup',
+	csrfProtection,
 	createAccountLimiter,
 	[
 		check('firstName').exists().withMessage('Name cannot be empty').trim().escape(),
@@ -956,7 +1042,7 @@ app.post(
 	],
 	async (req, res, next) => {
 		const validationErrors = validationResult(req);
-		console.log(req.body);
+		// console.log(req.body);
 		if (validationErrors.isEmpty()) {
 			let errObj = { isError: false, errors: [] };
 			const { firstName, lastName, email } = req.body;
@@ -992,7 +1078,7 @@ app.post(
 				req.body.password = hashedPassword;
 				createUser({ ...req.body, country: req.ipInfo.country }, (data) => {
 					const { success, userData } = data;
-					console.log(data);
+					// console.log(data);
 					if (success) {
 						req.session.userId = userData.userId;
 						req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
@@ -1010,6 +1096,7 @@ app.post(
 
 app.post(
 	'/log-in',
+	csrfProtection,
 	[
 		check('email')
 			.exists()
@@ -1026,16 +1113,18 @@ app.post(
 		// console.log(req.body);
 		if (validationErrors.isEmpty()) {
 			const data = await checkUser({ email });
-			console.log(data);
-			bcrypt.compare(password, data.userData[0].password, (err, result) => {
-				if (err) throw err;
-				if (result) {
-					req.session.userId = data.userData[0].userId;
-					req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
-					req.session.user = data.userData[0];
-					res.status(307).redirect(`/profile`);
-				} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
-			});
+			// console.log(data);
+			if (data.isThereAUser) {
+				bcrypt.compare(password, data.userData[0].password, (err, result) => {
+					if (err) throw err;
+					if (result) {
+						req.session.userId = data.userData[0].userId;
+						req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
+						req.session.user = data.userData[0];
+						res.status(307).redirect(`/profile`);
+					} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
+				});
+			} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
 		} else {
 			console.log(`Validation errors found.`);
 			res.status(400).json({

@@ -2,6 +2,14 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Zeerum is a community where you can share your ideas, experiences with the community."
+		/>
+		<meta name="keywords" content="Articles, Knowledge, Information, Blog" />
+		<meta name="author" content="Sandakan Nipunajith" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="csrf-token" content="<%= csrfToken %>" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Sign up to Zeerum</title>
 		<link rel="icon" href="/images/icon.png" type="image/png" />
@@ -32,6 +40,7 @@
 				</div>
 			</div>
 			<form action="/signup" class="form" id="form" method="POST" target="_self" name="signup">
+				<input type="hidden" name="_csrf" value="<%= csrfToken %>" />
 				<div class="signup-heading">Join with Us</div>
 				<div class="name-container">
 					<div class="first-name-container">

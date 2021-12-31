@@ -2,15 +2,23 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Zeerum is a community where you can share your ideas, experiences with the community."
+		/>
+		<meta name="keywords" content="Articles, Knowledge, Information, Blog" />
+		<meta name="author" content="Sandakan Nipunajith" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="csrf-token" content="<%= csrfToken %>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Write Articles - ZEERUM</title>
 		<link rel="icon" href="/images/icon.png" type="image/png" />
 		<link rel="stylesheet" href="/styles/main.css" />
+		<link rel="stylesheet" href="/styles/write.css" />
 		<link rel="stylesheet" href="/styles/animations.css" />
-		<link rel="stylesheet" href="/styles/user.css" />
-		<link rel="stylesheet" href="/styles/profile.css" />
 		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
-		<title>ZEERUM</title>
 	</head>
+
 	<body>
 		<nav class="nav-bar">
 			<a href="/" class="label-container">
@@ -30,27 +38,17 @@
 			<div class="user-profile-dropdown" id="user-profile-dropdown"></div>
 		</nav>
 
-		<div class="popup-container" id="popup-container">
-			<div class="popup"></div>
-		</div>
-
-		<div class="user-container">
-			<div class="user-img-container"></div>
-			<div class="user-data-container"></div>
-			<div class="statistics-container"></div>
-		</div>
-
-		<div class="page-heading-1">Articles</div>
-		<div class="other-content">
-			<div class="articles-container"></div>
-			<div class="achievements-container">
-				<img src="/images/medal.png" alt="A Medal" />
-				<div class="experience-container">
-					Lorem, ipsum dolor sit amet consectetur adipisicing elit. Atque officia rerum minus
-					eum ducimus distinctio amet autem vitae at assumenda!
+		<div class="banner-container">
+			<div class="banner">
+				<div class="banner-img"></div>
+				<div class="banner-elements-container">
+					<div class="banner-text"></div>
 				</div>
 			</div>
 		</div>
+
+		<!-- ? Below goes the footer -->
+
 		<div class="footer">
 			<div class="footer-label-and-move-to-top-container">
 				<a href="/" class="label-container">
@@ -93,7 +91,8 @@
 			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
 
-		<script async src="/scripts/scrollTop.js"></script>
+		<script src="/scripts/scrollTop.js"></script>
+		<script src="/scripts/write.js"></script>
 		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

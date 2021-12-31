@@ -1,5 +1,8 @@
 import fetchData from './fetchData.js';
 
+// Read the CSRF token from the <meta> tag
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 // ? Event Listeners ///////////////////////////////////////////
 document.querySelector('.search-bar').addEventListener('focusin', (e) => {
 	e.stopPropagation();

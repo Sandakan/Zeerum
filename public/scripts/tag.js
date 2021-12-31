@@ -1,6 +1,9 @@
 // jshint ignore:start
 import fetchData from '../scripts/fetchData.js';
 
+// Read the CSRF token from the <meta> tag
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 const noArticlesContainer = document.querySelector('.no-articles-container');
 
 if (window.location.pathname.split('/').at(1) === 'search') {
@@ -73,8 +76,12 @@ if (window.location.pathname.split('/').at(1) === 'search') {
 				htmlData += data;
 			});
 
+			// document.querySelector('.articles-container').classList.remove('articles-loading');
+			// document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
+			// document.querySelector('.search-through-tags').classList.remove('tags-loading');
 			document.querySelector('.articles-container').innerHTML = htmlData;
 		} else {
+			document.querySelector('.articles-container').classList.remove('articles-loading');
 			document.querySelector('.no-articles-container > img').src = '/images/tags/no-search.svg';
 			document.querySelector('.no-articles').style.display = 'none';
 			document.querySelector('.no-search').style.display = 'block';

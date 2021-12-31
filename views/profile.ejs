@@ -2,76 +2,63 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Zeerum is a community where you can share your ideas, experiences with the community."
+		/>
+		<meta name="keywords" content="Articles, Knowledge, Information, Blog" />
+		<meta name="author" content="Sandakan Nipunajith" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Log in to Zeerum</title>
+		<meta name="csrf-token" content="<%= csrfToken %>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" href="/images/icon.png" type="image/png" />
 		<link rel="stylesheet" href="/styles/main.css" />
-		<link rel="stylesheet" href="/styles/log-in.css" />
 		<link rel="stylesheet" href="/styles/animations.css" />
+		<link rel="stylesheet" href="/styles/user.css" />
+		<link rel="stylesheet" href="/styles/profile.css" />
 		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
+		<title>ZEERUM</title>
 	</head>
 	<body>
-		<div class="nav-bar">
-			<a href="/" class="label-container"><div class="label">zeerum</div></a>
+		<nav class="nav-bar">
+			<a href="/" class="label-container">
+				<div class="label">zeerum</div>
+			</a>
 			<div class="link-list">
 				<ul>
-					<li><a href="/">Home</a></li>
-					<li><a href="/discover">Discover</a></li>
-					<li><a href="/write">Write</a></li>
-					<li><a href="/about">About</a></li>
+					<li><a class="home" href="/">Home</a></li>
+					<li><a class="discover" href="/discover">Discover</a></li>
+					<li><a class="write" href="/write">Write</a></li>
+					<li id="get-started">
+						<a class="get-started" name="get-started" href="/signup">Get started</a>
+					</li>
+					<li id="user-profile" class="user-profile"></li>
 				</ul>
 			</div>
+			<div class="user-profile-dropdown" id="user-profile-dropdown"></div>
+		</nav>
+
+		<div class="popup-container" id="popup-container">
+			<div class="popup"></div>
 		</div>
 
-		<div class="log-in-container">
-			<form action="/log-in" class="form" id="form" method="POST" target="_self">
-				<div class="log-in-heading">Log In</div>
+		<div class="user-container">
+			<div class="user-img-container"></div>
+			<div class="user-data-container"></div>
+			<div class="statistics-container"></div>
+		</div>
 
-				<div class="email-container">
-					<input
-						type="email"
-						name="email"
-						id="email"
-						placeholder="Email"
-						required
-						autofocus
-						aria-label="Enter your email"
-					/>
-					<div class="data-error-container">
-						<i class="fas fa-exclamation-circle"></i>
-						<span class="data-error"></span>
-					</div>
-				</div>
-				<div class="password-container">
-					<input
-						type="password"
-						name="password"
-						id="password"
-						placeholder="Password"
-						required
-						aria-label="Enter your password"
-					/>
-					<div class="data-error-container">
-						<i class="fas fa-exclamation-circle"></i>
-						<span class="data-error"></span>
-					</div>
-				</div>
-
-				<input type="submit" id="submit" value="Log In" aria-label="submit the input" />
-
-				<a href="/signup" class="signup">You are not still with us? Then Sign up.</a>
-			</form>
-			<div class="login-description">
-				<img src="images/log_in/log-in.png" alt="" />
-				<div class="description">
-					Log in to your account to access your previous reads, save your current work, share
-					knowledge with others, change your settings etc.
+		<div class="page-heading-1">Articles</div>
+		<div class="other-content">
+			<div class="articles-container"></div>
+			<div class="achievements-container">
+				<img src="/images/medal.png" alt="A Medal" />
+				<div class="experience-container">
+					Lorem, ipsum dolor sit amet consectetur adipisicing elit. Atque officia rerum minus
+					eum ducimus distinctio amet autem vitae at assumenda!
 				</div>
 			</div>
 		</div>
-
-		<!-- ? Below goes the footer -->
-
 		<div class="footer">
 			<div class="footer-label-and-move-to-top-container">
 				<a href="/" class="label-container">
@@ -114,6 +101,7 @@
 			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
 
-		<script async type="module" src="/scripts/login.js"></script>
+		<script async src="/scripts/scrollTop.js"></script>
+		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

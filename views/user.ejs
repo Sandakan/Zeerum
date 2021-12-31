@@ -2,13 +2,21 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Zeerum is a community where you can share your ideas, experiences with the community."
+		/>
+		<meta name="keywords" content="Articles, Knowledge, Information, Blog" />
+		<meta name="author" content="Sandakan Nipunajith" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>404 - We couldn't find what you are looking for - ZEERUM</title>
+		<meta name="csrf-token" content="<%= csrfToken %>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" href="/images/icon.png" type="image/png" />
 		<link rel="stylesheet" href="/styles/main.css" />
-		<link rel="stylesheet" href="/styles/404.css" />
 		<link rel="stylesheet" href="/styles/animations.css" />
+		<link rel="stylesheet" href="/styles/user.css" />
 		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
+		<title>ZEERUM</title>
 	</head>
 	<body>
 		<nav class="nav-bar">
@@ -29,43 +37,26 @@
 			<div class="user-profile-dropdown" id="user-profile-dropdown"></div>
 		</nav>
 
-		<div class="banner-container" id="banner">
-			<div class="banner">
-				<div class="banner-img"></div>
-				<div class="banner-elements-container">
-					<div class="banner-text">
-						<div class="label-in-banner">
-							<span class="four-o-four">404</span>
-							<span class="not-found">#file not found</span>
-						</div>
-						<span class="server-error"></span>
-						<span>We couldn't find what you are looking for.</span>
-					</div>
-					<div class="search-bar-container">
-						<div class="search-bar">
-							<div class="search-results-container">
-								<div class="search-description">
-									<img src="/images/search.png" alt="A magnifying glass" />
-									Search for anything from here including articles, tags, authors, hot
-									topics etc.
-								</div>
-							</div>
-							<input
-								type="search"
-								name="search"
-								id="search"
-								placeholder="Search for Anything"
-							/>
-							<label for="search"></label>
-							<div class="search-btn">
-								<i class="fas fa-search"></i>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+		<div class="popup-container" id="popup-container">
+			<div class="popup"></div>
 		</div>
 
+		<div class="user-container">
+			<div class="user-img-container"></div>
+			<div class="user-data-container"></div>
+			<div class="statistics-container"></div>
+		</div>
+
+		<div class="page-heading-1">Articles</div>
+		<div class="other-content">
+			<div class="articles-container"></div>
+			<div class="achievements-container">
+				Dolorum vel dolorum dolorem facilis laborum fuga. Omnis asperiores natus deserunt
+				inventore fugit veritatis inventore. Necessitatibus pariatur at. Nostrum incidunt minima
+				id. Voluptatibus laborum molestias voluptatum magnam voluptatibus libero voluptas qui.
+				Vitae eligendi reprehenderit aut expedita recusandae dolore in est.
+			</div>
+		</div>
 		<div class="footer">
 			<div class="footer-label-and-move-to-top-container">
 				<a href="/" class="label-container">
@@ -107,7 +98,9 @@
 			</div>
 			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
 		</div>
-		<script type="module" src="/scripts/search.js"></script>
+
+		<script src="/scripts/user.js"></script>
+		<script async src="/scripts/scrollTop.js"></script>
 		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

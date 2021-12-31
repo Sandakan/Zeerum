@@ -2,6 +2,14 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Zeerum is a community where you can share your ideas, experiences with the community."
+		/>
+		<meta name="keywords" content="Articles, Knowledge, Information, Blog" />
+		<meta name="author" content="Sandakan Nipunajith" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="csrf-token" content="<%= csrfToken %>" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>ZEERUM</title>
 		<link rel="icon" href="/images/icon.png" type="image/png" />
@@ -34,13 +42,26 @@
 			<nav class="nav-box">
 				<div class="navigate-through-links">
 					<div class="trending-articles-heading">Trending Articles</div>
-					<ul></ul>
+					<ul class="links-loading">
+						<!-- <li class="loading"></li>
+						<li class="loading"></li>
+						<li class="loading"></li> -->
+					</ul>
 				</div>
 				<hr />
 				<div class="search-through-tags-heading">Search Through Tags</div>
-				<div class="search-through-tags"></div>
+				<div class="search-through-tags tags-loading">
+					<!-- <span class="tags loading"></span>
+					<span class="tags loading"></span>
+					<span class="tags loading"></span>
+					<span class="tags loading"></span>
+					<span class="tags loading"></span> -->
+				</div>
 			</nav>
-			<div class="articles-container">
+			<div class="articles-container articles-loading">
+				<!-- <div class="article loading"></div>
+				<div class="article loading"></div>
+				<div class="article loading"></div> -->
 				<div class="no-articles-container">
 					<img src="/images/tags/no-articles.svg" alt="" />
 					<span class="no-articles">

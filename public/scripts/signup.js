@@ -1,4 +1,8 @@
 import reportError from './formReportError.js';
+
+// Read the CSRF token from the <meta> tag
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 const queryErrors = document.location.search.split('?').at(-1);
 let isErrorInForm = {
 	name: null,

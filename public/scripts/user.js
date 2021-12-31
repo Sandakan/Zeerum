@@ -1,4 +1,7 @@
-let userId = window.location.pathname.split('/').at(-1);
+// Read the CSRF token from the <meta> tag
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+let userId = window.location.pathname.split('/').at(-1) || sessionStorage.getItem('userId');
 var articlesPublished = 0;
 
 fetch(`/data/articles?authorUserId=${userId}`)

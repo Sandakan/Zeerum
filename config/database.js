@@ -119,7 +119,7 @@ const updateUserData = async (query = {}, newValues = {}, returnUpdatedData = fa
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
-		database.collection('users').updateOne(query, { $set: newValues }, async (err, res) => {
+		database.collection('users').updateOne(query, newValues, async (err, res) => {
 			if (err) {
 				reject({ success: false });
 				throw err;
@@ -144,7 +144,7 @@ const updateData = async (collection, query = {}, newValues = {}, returnUpdatedD
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
-		database.collection(collection).updateMany(query, { $set: newValues }, async (err, res) => {
+		database.collection(collection).updateMany(query, newValues, async (err, res) => {
 			if (err) {
 				reject({ success: false, error: err });
 				throw err;

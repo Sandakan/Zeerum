@@ -1,3 +1,6 @@
+// Read the CSRF token from the <meta> tag
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 const testimonialData = [
 	{
 		name: 'Roberta Koepp',

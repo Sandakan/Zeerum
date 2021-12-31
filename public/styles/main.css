@@ -485,8 +485,8 @@ a:hover {
 }
 
 .popup .close-btn {
-	position: absolute;
 	font-size: 1.5rem;
+	position: absolute;
 	right: 0.5em;
 	top: 0.5em;
 	cursor: pointer;
@@ -512,16 +512,16 @@ a:hover {
 	overflow: hidden;
 	width: 100%;
 	height: 100%;
-	background-color: transparent;
-	-webkit-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
-	-moz-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
-	box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+	/* background-color: transparent; */
+	-webkit-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.7);
+	-moz-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0);
+	box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.7);
 }
 
 .banner .banner-img {
 	width: 100%;
 	height: 100%;
-	background-color: transparent;
+	/* background-color: transparent; */
 	position: absolute;
 	background-image: url('../images/banners/banner10.jpg');
 	/*
@@ -537,9 +537,11 @@ a:hover {
 .banner .banner-elements-container {
 	width: 100%;
 	height: 100%;
+	background-color: transparent;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	background: linear-gradient(0deg, transparent 0%, transparent 70%, rgba(0, 0, 0, 0.3) 100%);
 }
 
 .banner-text {
@@ -872,6 +874,12 @@ a:hover {
 	margin: 0.2em;
 	transform: scaleX(1);
 	transition: transform 0.4s ease;
+	animation: appearItems 0.2s linear forwards;
+	-webkit-animation: appearItems 0.2s linear forwards;
+	-webkit-transform: translateY(1em);
+	-moz-transform: translateY(1em);
+	-ms-transform: translateY(1em);
+	-o-transform: translateY(1em);
 	-webkit-border-radius: 0.5em;
 	-moz-border-radius: 0.5em;
 	-ms-border-radius: 0.5em;
@@ -918,6 +926,12 @@ a:hover {
 	margin-bottom: 0.4em;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
+	animation: appearItems 0.2s linear forwards;
+	-webkit-animation: appearItems 0.2s linear forwards;
+	-webkit-transform: translateY(1em);
+	-moz-transform: translateY(1em);
+	-ms-transform: translateY(1em);
+	-o-transform: translateY(1em);
 	-webkit-border-radius: 1.25em;
 	-moz-border-radius: 1.25em;
 	-ms-border-radius: 1.25em;
@@ -1006,10 +1020,39 @@ a:hover {
 	display: flex;
 	align-items: flex-start;
 	cursor: pointer;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(1em);
 	-webkit-border-radius: 0.7em;
 	-moz-border-radius: 0.7em;
 	-ms-border-radius: 0.7em;
 	-o-border-radius: 0.7em;
+	animation: appearItems 0.2s linear forwards;
+	-webkit-animation: appearItems 0.2s linear forwards;
+	-webkit-transform: translateY(1em);
+	-moz-transform: translateY(1em);
+	-ms-transform: translateY(1em);
+	-o-transform: translateY(1em);
+}
+
+@keyframes appearItems {
+	from {
+		opacity: 0;
+		transform: translateY(1em);
+		-webkit-transform: translateY(1em);
+		-moz-transform: translateY(1em);
+		-ms-transform: translateY(1em);
+		-o-transform: translateY(1em);
+	}
+	to {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		-webkit-transform: translateY(0);
+		-moz-transform: translateY(0);
+		-ms-transform: translateY(0);
+		-o-transform: translateY(0);
+	}
 }
 
 .articles-container .loading {

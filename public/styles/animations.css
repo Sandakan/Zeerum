@@ -1,118 +1,102 @@
 /* Transitions */
 
-    /*Transitions for HOME, DISCOVER, WRITE and ABOUT */
+/*Transitions for HOME, DISCOVER, WRITE and ABOUT */
 
 /*
 .nav-bar .link-list ul li:hover {
     background-color: rgba(0, 0, 0, 0.1);
 }
 */
-.nav-bar .link-list ul li[id="get-started"]:hover{
-    background: var(--background-color);
-    border: .15em solid var(--highlight-color);
+.nav-bar .link-list ul li[id='get-started']:hover {
+	background: var(--background-color);
+	border: 0.15em solid var(--highlight-color);
 }
 
 .nav-bar .link-list ul li:hover a {
-    color: var(--highlight-color);
+	color: var(--highlight-color);
 }
 
 .nav-bar .link-list ul li a:hover::after {
-    transform:translateX(-50%) scaleX(1) !important;
+	transform: translateX(-50%) scaleX(1) !important;
 }
 
 .banner:hover .banner-img {
-    transform: scale(1.1);
+	transform: scale(1.1);
 }
 
-.nav-box .navigate-through-links ul li:hover{
-    transform: scale(1.025);
-    -webkit-transform: scale(1.025);
-    -moz-transform: scale(1.025);
-    -ms-transform: scale(1.025);
-    -o-transform: scale(1.025);
+.nav-box .navigate-through-links ul li:hover {
+	transform: scale(1.025);
+	-webkit-transform: scale(1.025);
+	-moz-transform: scale(1.025);
+	-ms-transform: scale(1.025);
+	-o-transform: scale(1.025);
 }
 
 .nav-box .search-through-tags .tags:hover {
-    background-color: var(--highlight-color);
+	background-color: var(--highlight-color);
 }
 
 .article:hover {
-    box-shadow: 0px 25px 100px -15px rgba(0, 0, 0, 0.49);
-    -webkit-box-shadow: 0px 25px 100px -15px rgba(0, 0, 0, 0.49);
-    -moz-box-shadow: 0px 25px 100px -15px rgba(0, 0, 0, 0.450);
+	box-shadow: 0px 25px 100px -15px rgba(0, 0, 0, 0.49);
+	-webkit-box-shadow: 0px 25px 100px -15px rgba(0, 0, 0, 0.49);
+	-moz-box-shadow: 0px 25px 100px -15px rgba(0, 0, 0, 0.45);
 }
 
 .discover-category:hover {
-    box-shadow: 0px 24px 100px -15px rgba(0, 0, 0, 0.49);
-    -webkit-box-shadow: 0px 24px 100px -15px rgba(0, 0, 0, 0.49);
-    -moz-box-shadow: 0px 24px 100px -15px rgba(0, 0, 0, 0.49);
-    background: hsla(0, 0%, 0%, 0.5);
+	box-shadow: 0px 24px 100px -15px rgba(0, 0, 0, 0.49);
+	-webkit-box-shadow: 0px 24px 100px -15px rgba(0, 0, 0, 0.49);
+	-moz-box-shadow: 0px 24px 100px -15px rgba(0, 0, 0, 0.49);
+	background: hsla(0, 0%, 0%, 0.5);
 }
 
-.footer .footer-label-and-move-to-top-container >.move-to-top:hover, .footer > .footer-content > .main-links > ul > li > a:hover{
-    text-decoration: underline;
+.footer .footer-label-and-move-to-top-container > .move-to-top:hover,
+.footer > .footer-content > .main-links > ul > li > a:hover {
+	text-decoration: underline;
 }
 
 /*Transitions for SIGN-IN */
-input:not([type="submit"]):focus{
-    border-color: var(--highlight-color);
+input:not([type='submit']):focus {
+	border-color: var(--highlight-color);
 }
 
-.container > .form > input[id="submit"]:hover , .form > input[id="submit"]:hover{
-    background-color: var(--highlight-color);
-    border-color: var(--highlight-color);
-    color: #fff;
+.container > .form > input[id='submit']:hover,
+.form > input[id='submit']:hover {
+	background-color: var(--highlight-color);
+	border-color: var(--highlight-color);
+	color: #fff;
 }
 
-.container > .form > .log-in:hover, .form > a:hover{ /*? This transition is used both on SIGN-IN and LOG-IN websites. */
-    text-decoration: underline;
+.container > .form > .log-in:hover,
+.form > a:hover {
+	/*? This transition is used both on SIGN-IN and LOG-IN websites. */
+	text-decoration: underline;
 }
 
-/*? /////////////////////////////////////////// STYLING FOR ARTICLES /////////////////////////////////////////////*/  
+/*? /////////////////////////////////////////// STYLING FOR ARTICLES /////////////////////////////////////////////*/
 
-.article-img-and-heading-container:hover .article-img-container img{
-    transform:scale(1.1);
+.article-img-and-heading-container:hover .article-img-container img {
+	transform: scale(1.1);
 }
 
-/*? //////////////////////////////////////////////// MEDIA RULES /////////////////////////////////////////////////*/  
+/*? //////////////////////////////////////////////// MEDIA RULES /////////////////////////////////////////////////*/
 @media screen and (max-width: 700px) {
-    .banner:hover .banner-img {
-        transform: scale(1);
-    }
+	.banner:hover .banner-img {
+		transform: scale(1);
+	}
 }
 
 /* Animations */
 @keyframes logo-animation {
-    to {
-        background-position: 400%;
-    }
+	to {
+		background-position: 400%;
+	}
 }
 
 @keyframes line {
-    from {
-        transform: translateX(-50%) scaleX(0.0);
-    }
-    to {
-        transform: translateX(-50%) scaleX(0.3);
-    }
-}
-
-
-
-/* todo this is an experimental feature
-@supports (animation-timeline: works) {
-    @keyframes bar-animation {
-        from {
-            transform: scaleX(0);
-        }
-        to {
-            transform: scaleX(1);
-        }
-    }
-
-    @scroll-timeline bar-timeline {
-        source: selector(#banner);
-        scroll-offsets: 0, 1vh;
-        time-range: 5s;
-    }
+	from {
+		transform: translateX(-50%) scaleX(0);
+	}
+	to {
+		transform: translateX(-50%) scaleX(0.3);
+	}
 }

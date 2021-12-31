@@ -1,3 +1,6 @@
+// Read the CSRF token from the <meta> tag
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 if (sessionStorage.getItem('userType') === 'author')
 	document.querySelector('.banner-text').innerHTML = `<span
 							>This <span class="banner-highlighted-text">feature </span>will be <br />

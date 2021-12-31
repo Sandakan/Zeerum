@@ -60,12 +60,22 @@
 	height: 200px;
 	margin: 0 10px 25px 10px;
 	background-color: var(--background-color);
-	/* border: 2px solid var(--highlight-color); */
 	border-radius: 10px;
 	overflow: hidden;
 	cursor: pointer;
 	box-shadow: none;
 	transition: box-shadow 0.4s ease;
+	animation: appearItems 0.2s linear forwards;
+	transform: translateY(1em);
+	-webkit-animation: appearItems 0.2s linear forwards;
+	-webkit-transform: translateY(1em);
+	-moz-transform: translateY(1em);
+	-ms-transform: translateY(1em);
+	-o-transform: translateY(1em);
+	-webkit-transition: box-shadow 0.4s ease;
+	-moz-transition: box-shadow 0.4s ease;
+	-ms-transition: box-shadow 0.4s ease;
+	-o-transition: box-shadow 0.4s ease;
 }
 
 .discover-category .img-container {

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Zeerum is a community where you can share your ideas, experiences with the community."
+		/>
+		<meta name="keywords" content="Articles, Knowledge, Information, Blog" />
+		<meta name="author" content="Sandakan Nipunajith" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="csrf-token" content="<%= csrfToken %>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Log in to Zeerum</title>
+		<link rel="icon" href="/images/icon.png" type="image/png" />
+		<link rel="stylesheet" href="/styles/main.css" />
+		<link rel="stylesheet" href="/styles/log-in.css" />
+		<link rel="stylesheet" href="/styles/animations.css" />
+		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<div class="nav-bar">
+			<a href="/" class="label-container"><div class="label">zeerum</div></a>
+			<div class="link-list">
+				<ul>
+					<li><a href="/">Home</a></li>
+					<li><a href="/discover">Discover</a></li>
+					<li><a href="/write">Write</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="log-in-container">
+			<form action="/log-in" class="form" id="form" method="POST" target="_self">
+				<input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+				<div class="log-in-heading">Log In</div>
+
+				<div class="email-container">
+					<input
+						type="email"
+						name="email"
+						id="email"
+						placeholder="Email"
+						required
+						autofocus
+						aria-label="Enter your email"
+					/>
+					<div class="data-error-container">
+						<i class="fas fa-exclamation-circle"></i>
+						<span class="data-error"></span>
+					</div>
+				</div>
+				<div class="password-container">
+					<input
+						type="password"
+						name="password"
+						id="password"
+						placeholder="Password"
+						required
+						aria-label="Enter your password"
+					/>
+					<div class="data-error-container">
+						<i class="fas fa-exclamation-circle"></i>
+						<span class="data-error"></span>
+					</div>
+				</div>
+
+				<input type="submit" id="submit" value="Log In" aria-label="submit the input" />
+
+				<a href="/signup" class="signup">You are not still with us? Then Sign up.</a>
+			</form>
+			<div class="login-description">
+				<img src="images/log_in/log-in.png" alt="" />
+				<div class="description">
+					Log in to your account to access your previous reads, save your current work, share
+					knowledge with others, change your settings etc.
+				</div>
+			</div>
+		</div>
+
+		<!-- ? Below goes the footer -->
+
+		<div class="footer">
+			<div class="footer-label-and-move-to-top-container">
+				<a href="/" class="label-container">
+					<div class="label">zeerum</div>
+				</a>
+				<a href="#" class="move-to-top">Move to top</a>
+			</div>
+
+			<div class="footer-content">
+				<div class="description">
+					We are a community that shares ideas of beautiful minds. First started as a
+					tech-article website, now it grows as one of the most visited websites for ideas and
+					information to keep up with the world and to widen the horizon of creativity.
+					<br /><br />
+					<span class="made-with-love"
+						>Made with <span class="heart">❤</span> by Sandakan as a simple ICT project.</span
+					>
+				</div>
+				<div class="newsletter-description">
+					<ul>
+						<li>Our daily uploaded articles are now at your fingertips.</li>
+						<li>They are personalized to your reading too.</li>
+						<li>
+							We'll send an email containing popular, trending, and personalized articles
+							from the authors right to your inbox.
+						</li>
+					</ul>
+				</div>
+				<div class="main-links">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/discover">Discover</a></li>
+						<li><a href="/write">Write</a></li>
+						<li><a href="/about">About</a></li>
+						<li><a href="/signup">Sign up</a></li>
+						<li><a href="/login">Log in</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
+		</div>
+
+		<script async type="module" src="/scripts/login.js"></script>
+	</body>
+</html>

@@ -3,8 +3,11 @@ import timeFromNow from './timeFromNow.js';
 import togglePopup from './togglePopup.js';
 import valueRounder from './valueRounder.js';
 
-var requestingArticleName = `/data${window.location.pathname}`;
-var reactions = {
+// Read the CSRF token from the <meta> tag
+const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+const userId = sessionStorage.getItem('userId');
+let requestingArticleName = `/data${window.location.pathname}`;
+let reactions = {
 	liked: null,
 	bookmarked: null,
 };
@@ -38,12 +41,12 @@ const renderData = (res) => {
 		document.querySelector('.author > .author-data-container').innerHTML = `<img src="${
 			author.profilePictureUrl || '/images/user.png'
 		}" alt="" /><span class="name">${author.firstName} ${author.lastName} ${
-			Number(sessionStorage.getItem('userId')) === Number(author.userId) ? '(You)' : ''
+			userId && Number(userId) === Number(author.userId) ? '(You)' : ''
 		}</span>${
 			user !== undefined
 				? user.followings.includes(Number(author.userId))
 					? `<button class="follow-author-btn follow-author-btn-followed" title="Click to unfollow ${author.firstName}"><i class="fas fa-check"></i> Followed</button>`
-					: Number(author.userId) !== Number(sessionStorage.getItem('userId'))
+					: Number(author.userId) !== Number(userId)
 					? `<button class="follow-author-btn"><i class="fas fa-add" title="Click to follow ${author.firstName}"></i> Follow</button>`
 					: ''
 				: ''
@@ -61,7 +64,11 @@ const renderData = (res) => {
 						.querySelector('.follow-author-btn')
 						.classList.contains('follow-author-btn-followed')
 				) {
-					fetch(`/data/profile?followUser=false&followingUserId=${author.userId}`)
+					fetch(`/data/profile?followUser=false&followingUserId=${author.userId}`, {
+						headers: {
+							'CSRF-Token': token,
+						},
+					})
 						.then((res) => res.json())
 						.then((res) => {
 							console.log(res);
@@ -77,7 +84,11 @@ const renderData = (res) => {
 							} else alert(res.message);
 						});
 				} else {
-					fetch(`/data/profile?followUser=true&followingUserId=${author.userId}`)
+					fetch(`/data/profile?followUser=true&followingUserId=${author.userId}`, {
+						headers: {
+							'CSRF-Token': token,
+						},
+					})
 						.then((res) => res.json())
 						.then((res) => {
 							console.log(res);
@@ -102,28 +113,29 @@ const renderData = (res) => {
 		document.querySelector(
 			'.reaction-buttons-container > .bookmark > #bookmarked-number'
 		).innerHTML = valueRounder(article.reactions.bookmarks.length);
-		if (article.reactions.likes.includes(Number(sessionStorage.getItem('userId')))) {
+		if (userId !== null && article.reactions.likes.includes(Number(userId))) {
 			reactions.liked = true;
 			document.querySelector('.like').classList.add('liked');
 		} else reactions.liked = false;
 
-		if (article.reactions.bookmarks.includes(Number(sessionStorage.getItem('userId')))) {
+		if (userId !== null && article.reactions.bookmarks.includes(Number(userId))) {
 			reactions.bookmarked = true;
 			document.querySelector('.bookmark').classList.add('bookmarked');
 		} else reactions.bookmarked = false;
 
 		if (article.comments.length !== 0) {
-			article.comments.forEach(async (comment, commentId) => {
-				await fetchData(`/data/users/${comment.userId}`, ({ success, data }) => {
-					if (success) {
-						// console.log(comment);
-						document.querySelector('#comments').innerHTML =
-							`<div class="comment">
+			article.comments.forEach(
+				async (comment, commentId) => {
+					await fetchData(`/data/users/${comment.userId}`, ({ success, data }) => {
+						if (success) {
+							// console.log(comment);
+							document.querySelector('#comments').innerHTML =
+								`<div class="comment">
 								<img src="${data.profilePictureUrl || '/images/user.png'}" 
 									onclick="window.location = \`/user/${data.username}\`" />
 								<div class="text">
 									<a class="name" href="/user/${data.username}">${data.firstName} ${data.lastName} 
-										${Number(sessionStorage.getItem('userId')) === comment.userId ? '(YOU)' : ''}
+										${Number(userId) === comment.userId ? '(YOU)' : ''}
 									</a>
 									<span class="data">${comment.comment}</span>
 									<span class="stats">
@@ -131,9 +143,7 @@ const renderData = (res) => {
 											${timeFromNow(comment.date)}
 										</span>
 										${
-											comment.likedUsers.includes(
-												Number(sessionStorage.getItem('userId'))
-											)
+											comment.likedUsers.includes(Number(userId))
 												? `<span class="like-comment liked" data-comment-id="${commentId}">liked</span>`
 												: `<span class="like-comment" data-comment-id="${commentId}">like</span>`
 										}
@@ -141,13 +151,13 @@ const renderData = (res) => {
 									</span>
 								</div>
 							</div>` + document.querySelector('#comments').innerHTML;
-						document.querySelector('.no-comments').style.display = 'none';
-					} else {
-						document.querySelector('#comments').innerHTML =
-							`<div class="comment">
+							document.querySelector('.no-comments').style.display = 'none';
+						} else {
+							document.querySelector('#comments').innerHTML =
+								`<div class="comment">
 								<img src="/images/user.png" onclick="window.location = \`/user/unknownOrDeletedUser" />
 								<div class="text">
-									<span class="name">${`Deleted User`}</span>
+									<span class="name">Deleted User</span>
 									<span class="data">${comment.comment}</span>
 									<span class="stats">
 										<span class="commented-date" title="Commented on ${new Date(comment.date).toString()}">
@@ -158,62 +168,83 @@ const renderData = (res) => {
 									</span>
 								</div>
 							</div>` + document.querySelector('#comments').innerHTML;
-						document.querySelector('.no-comments').style.display = 'none';
-					}
-				});
-				const commentLikeButtons = document.querySelectorAll('.stats > .like-comment');
-				commentLikeButtons.forEach((x) => {
-					x.addEventListener('click', (e) => {
-						if (e.target.classList.contains('liked')) {
-							fetchData(
-								`${requestingArticleName}?likeComment=false&userId=${sessionStorage.getItem(
-									'userId'
-								)}&commentId=${e.target.dataset.commentId}`,
-								(res) => {
-									console.log(res);
-									if (res.success) {
-										e.target.classList.remove('liked');
-										e.target.innerHTML = 'like';
-									} else {
-										alert(`Error occurred when liking comment . ${res.message}`);
-										console.log('Error occurred when liking comment .', res.message);
-									}
-								},
-								{
-									method: 'POST',
-									headers: {
-										'Content-Type': 'application/json',
-									},
-								}
-							);
-						} else {
-							fetchData(
-								`${requestingArticleName}?likeComment=true&userId=${sessionStorage.getItem(
-									'userId'
-								)}&commentId=${e.target.dataset.commentId}`,
-								(res) => {
-									console.log(res);
-									if (res.success) {
-										e.target.classList.add('liked');
-										e.target.innerHTML = 'liked';
-									} else console.log('Error occurred when liking comment .', res.message);
-								},
-								{
-									method: 'POST',
-									headers: {
-										'Content-Type': 'application/json',
-									},
-								}
-							);
+							document.querySelector('.no-comments').style.display = 'none';
 						}
 					});
-				});
-			});
+					// ? FOR LIKING AND DISLIKING COMMENTS.
+					const commentLikeButtons = document.querySelectorAll('.stats > .like-comment');
+					commentLikeButtons.forEach((x) => {
+						x.addEventListener('click', (e) => {
+							if (userId !== null) {
+								if (e.target.classList.contains('liked')) {
+									fetchData(
+										`${requestingArticleName}?likeComment=false&userId=${sessionStorage.getItem(
+											'userId'
+										)}&commentId=${e.target.dataset.commentId}`,
+										(res) => {
+											console.log(res);
+											if (res.success) {
+												e.target.classList.remove('liked');
+												e.target.innerHTML = 'like';
+											} else {
+												alert(`Error occurred when liking comment . ${res.message}`);
+												console.log(
+													'Error occurred when liking comment .',
+													res.message
+												);
+											}
+										},
+										{
+											method: 'POST',
+											headers: {
+												'Content-Type': 'application/json',
+											},
+										}
+									);
+								} else {
+									fetchData(
+										`${requestingArticleName}?likeComment=true&userId=${sessionStorage.getItem(
+											'userId'
+										)}&commentId=${e.target.dataset.commentId}`,
+										(res) => {
+											console.log(res);
+											if (res.success) {
+												e.target.classList.add('liked');
+												e.target.innerHTML = 'liked';
+											} else
+												console.log(
+													'Error occurred when liking comment .',
+													res.message
+												);
+										},
+										{
+											method: 'POST',
+											headers: {
+												'Content-Type': 'application/json',
+											},
+										}
+									);
+								}
+							} else alert('You are not logged in.');
+						});
+					});
+				},
+				{
+					headers: {
+						'CSRF-Token': token,
+					},
+				}
+			);
 		}
 	} else console.log(`Error occurred when requesting article data. ${res.message}`);
 };
 console.log(requestingArticleName);
-if (requestingArticleName !== '/data/articles/') fetchData(requestingArticleName, renderData);
+if (requestingArticleName !== '/data/articles/')
+	fetchData(requestingArticleName, renderData, {
+		headers: {
+			'CSRF-Token': token,
+		},
+	});
 else console.log("You didn't request an article");
 
 // ? //////////////////////////////////////////////////////////////////////////////
@@ -251,11 +282,12 @@ function sendComment() {
 		fetch(`${requestingArticleName}?commentOnArticle=true`, {
 			method: 'POST',
 			body: JSON.stringify({
-				userId: sessionStorage.getItem('userId'),
+				userId: userId,
 				commentContent: comment.value,
 			}),
 			headers: {
 				'Content-Type': 'application/json',
+				'CSRF-Token': token,
 			},
 		})
 			.then((res) => res.json())
@@ -278,6 +310,7 @@ function sendComment() {
 							</div>
 						</div>` + commentContainer.innerHTML;
 					comment.value = '';
+					document.querySelector('.no-comments').style.display = 'none';
 				} else alert(res.message);
 			});
 	}
@@ -286,7 +319,12 @@ function sendComment() {
 const reactionsHandler = async (reaction) => {
 	if (reaction === 'like') {
 		if (!reactions.liked) {
-			await fetch(`${requestingArticleName}?likeArticle=true`)
+			await fetch(`${requestingArticleName}?likeArticle=true`, {
+				method: 'POST',
+				headers: {
+					'CSRF-Token': token,
+				},
+			})
 				.then((res) => res.json())
 				.then((res) => {
 					if (res.success) {
@@ -299,7 +337,12 @@ const reactionsHandler = async (reaction) => {
 					} else alert(res.message);
 				});
 		} else {
-			await fetch(`${requestingArticleName}?likeArticle=false`)
+			await fetch(`${requestingArticleName}?likeArticle=false`, {
+				method: 'POST',
+				headers: {
+					'CSRF-Token': token,
+				},
+			})
 				.then((res) => res.json())
 				.then((res) => {
 					if (res.success) {
@@ -330,7 +373,11 @@ const reactionsHandler = async (reaction) => {
 					document.querySelector(
 						'.share-popup'
 					).innerHTML += `<p class="copied-message">Copied to the clipboard.</p>`;
-					await fetch(`${requestingArticleName}?shareArticle=true`)
+					await fetch(`${requestingArticleName}?shareArticle=true`, {
+						headers: {
+							'CSRF-Token': token,
+						},
+					})
 						.then((res) => res.json())
 						.then((res) => {
 							if (res.success) {
@@ -350,7 +397,12 @@ const reactionsHandler = async (reaction) => {
 		});
 	} else if (reaction === 'bookmark') {
 		if (!reactions.bookmarked) {
-			await fetch(`${requestingArticleName}?bookmarkArticle=true`)
+			await fetch(`${requestingArticleName}?bookmarkArticle=true`, {
+				method: 'POST',
+				headers: {
+					'CSRF-Token': token,
+				},
+			})
 				.then((res) => res.json())
 				.then((res) => {
 					if (res.success) {
@@ -363,7 +415,12 @@ const reactionsHandler = async (reaction) => {
 					} else alert(res.message);
 				});
 		} else {
-			await fetch(`${requestingArticleName}?bookmarkArticle=false`)
+			await fetch(`${requestingArticleName}?bookmarkArticle=false`, {
+				method: 'POST',
+				headers: {
+					'CSRF-Token': token,
+				},
+			})
 				.then((res) => res.json())
 				.then((res) => {
 					if (res.success) {
