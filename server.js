@@ -716,7 +716,7 @@ app.get('/data/users/:user', async (req, res, next) => {
 				},
 				{ password: false }
 		  )
-		: await checkUser({ userId: user }, { password: false });
+		: await checkUser({ userId: user }, { email: false, password: false });
 
 	if (userData.isThereAUser)
 		res.status(200).json({

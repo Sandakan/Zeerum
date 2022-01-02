@@ -364,7 +364,6 @@ const reactionsHandler = async (reaction) => {
 		document.querySelector('.copy-btn').addEventListener('click', () => {
 			const href = document.location.href;
 			const type = 'text/plain';
-			console.log(href, typeof href);
 			const blob = new Blob([href], { type });
 			const data = [new ClipboardItem({ [type]: blob })];
 			navigator.clipboard.write(data).then(

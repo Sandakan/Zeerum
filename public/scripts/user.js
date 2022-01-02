@@ -2,7 +2,7 @@
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 let userId = window.location.pathname.split('/').at(-1) || sessionStorage.getItem('userId');
-var articlesPublished = 0;
+let articlesPublished = 0;
 
 fetch(`/data/articles?authorUserId=${userId}`)
 	.then((obj) => obj.json())
@@ -27,7 +27,13 @@ fetch(`/data/articles?authorUserId=${userId}`)
 					x.description
 				}<a class="more" href="/articles/${
 					x.urlSafeTitle
-				}">Read more.</a></p><div class="article-stats-container"> <span class="stat"><i class="fas fa-eye"></i> ${
+				}">Read more.</a></p><div class="article-author-container">By <a href="/user/${x.author.name
+					.replace(/[^a-zA-Z0-9\s]/gm, '')
+					.replace(/\s/gm, '-')
+					.replace(/-$/gm, '')
+					.toLowerCase()}">${
+					x.author.name
+				}</a></div> <div class="article-stats-container"> <span class="stat"><i class="fas fa-eye"></i> ${
 					x.views.allTime
 				}</span><span class="stat"><i class="fas fa-heart"></i> ${
 					x.reactions.likes.length
@@ -35,9 +41,9 @@ fetch(`/data/articles?authorUserId=${userId}`)
 					x.reactions.bookmarks.length
 				}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
 					x.reactions.shares
-				}</span></div><div class="article-tags-container">${x.tags.map(
-					(y) => `<span class="tags"><a href="tags/${y}">${y}</a></span>`
-				)}</div></div></div>`;
+				}</span></div> <div class="article-tags-container">${x.tags
+					.map((y) => `<span class="tags"><a href="tags/${y}">#${y}</a></span>`)
+					.join('')}</div></div></div>`;
 			});
 		} else {
 			document.querySelector(
@@ -75,9 +81,11 @@ fetch(`/data/users/${userId}`)
 			} followings</span>
 				<span class="articles-number">${articlesPublished} articles published</span>
 				${
-					data.followers.includes(Number(sessionStorage.getItem('userId')))
-						? '<button class="follow-btn followed"> <i class="fas fa-check"></i> Followed</button>'
-						: '<button class="follow-btn"> <i class="fas fa-add"></i> Follow</button>'
+					sessionStorage.getItem('userId') !== null
+						? data.followers.includes(Number(sessionStorage.getItem('userId')))
+							? '<button class="follow-btn followed"> <i class="fas fa-check"></i> Followed</button>'
+							: '<button class="follow-btn"> <i class="fas fa-add"></i> Follow</button>'
+						: ''
 				}`;
 			document.querySelector('.follow-btn').addEventListener('click', async () => {
 				if (document.querySelector('.follow-btn').classList.contains('followed')) {
