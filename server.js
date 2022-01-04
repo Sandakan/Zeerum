@@ -1050,13 +1050,19 @@ app.post(
 			const emailCheck = await checkUser({ email });
 			if (nameCheck.isThereAUser) {
 				errObj.isError = true;
-				errObj.errors.push('nameExists=true');
+				errObj.errors.push('nameExists');
 			}
 			if (emailCheck.isThereAUser) {
 				errObj.isError = true;
-				errObj.errors.push('emailExists=true');
+				errObj.errors.push('emailExists');
 			}
-			if (errObj.isError) res.status(307).redirect(`/signup?${errObj.errors.join('&')}`);
+			if (errObj.isError)
+				res.status(401).json({
+					success: false,
+					status: 401,
+					message: 'Error occurred when signing up.',
+					errors: errObj.errors,
+				});
 			else next();
 		} else {
 			console.log(`Validation errors found ${validationErrors.errors}`);
@@ -1083,7 +1089,11 @@ app.post(
 						req.session.userId = userData.userId;
 						req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
 						req.session.user = userData;
-						res.status(307).redirect('/profile');
+						res.status(200).json({
+							success: true,
+							status: 200,
+							message: 'Signed up successfully.',
+						});
 					} else
 						res.status(500).send(
 							`<h1>Error occurred when signing up. Please try again later.</h1>`
@@ -1121,10 +1131,27 @@ app.post(
 						req.session.userId = data.userData[0].userId;
 						req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
 						req.session.user = data.userData[0];
-						res.status(307).redirect(`/profile`);
-					} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
+						// res.status(307).redirect(`/profile`);
+						res.json({
+							success: true,
+							status: 200,
+							message: 'Successfully logged in.',
+						});
+					} else
+						res.json({
+							success: false,
+							status: 401,
+							message: 'Error occurred when logging in.',
+							errors: ['passwordMismatch'],
+						});
 				});
-			} else res.status(307).redirect('/login?emailOrPasswordMismatch=true');
+			} else
+				res.json({
+					success: false,
+					status: 401,
+					message: 'Error occurred when logging in.',
+					errors: ['noAccountFound'],
+				});
 		} else {
 			console.log(`Validation errors found.`);
 			res.status(400).json({
@@ -1140,8 +1167,8 @@ app.post(
 
 // ? ////////////////////////////// Handles unknown requests ////////////////////////////////
 
-app.all('*', (req, res) => {
-	res.status(404).sendFile(path.resolve(__dirname, './public/404.html'));
+app.all('*', csrfProtection, (req, res) => {
+	res.render('404', { csrfToken: req.csrfToken() });
 	console.log(
 		`Error : File not found. \n\tRequest method: ${req.method}\n\t${req.protocol}\:\/\/${
 			req.get('host') + req.originalUrl

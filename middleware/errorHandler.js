@@ -12,7 +12,6 @@ const errorHandler = (err, req, res, next) => {
 			status: 500,
 			isError: true,
 			message: 'Internal server error occurred. Please try again later.',
-			error: err,
 		});
 	}
 };

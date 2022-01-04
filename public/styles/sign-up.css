@@ -94,7 +94,8 @@ body {
 }
 
 .form
-	:is(.name-container, .email-container, .birthday-container, .password-container, .confirm-password-container) {
+	:is(.name-container, .name-container > .first-name-container, .name-container
+		> .last-name-container, .email-container, .birthday-container, .password-container, .confirm-password-container) {
 	position: relative;
 	padding-bottom: 0.5em;
 	margin-bottom: 0.5em;
@@ -161,6 +162,16 @@ input::placeholder {
 	transition: background-color 0.3s ease-out 0.1s, color 0.3s ease-out 0.1s,
 		border-color 0.3s ease-out 0.1s;
 }
+
+.form > input[id='submit'].submitting {
+	color: rgb(189, 189, 189);
+}
+.form > input[id='submit'].submitting:hover {
+	background-color: rgba(204, 204, 204, 0.5);
+	border-color: rgba(204, 204, 204, 0.5);
+	color: transparent;
+}
+
 .form > .log-in {
 	font-size: 1.15em;
 	text-align: center;

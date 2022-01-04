@@ -16,3 +16,41 @@ document.getElementById('email').addEventListener('change', (event) => {
 document.getElementById('password').addEventListener('change', (event) => {
 	reportError('password', 'remove');
 });
+
+document.getElementById('form').addEventListener('submit', (e) => {
+	e.preventDefault();
+	document.getElementById('submit').classList.add('submitting');
+	document.getElementById('submit').value = 'LOADING...';
+	fetch('/log-in', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json',
+			'CSRF-Token': token,
+		},
+		body: JSON.stringify({
+			email: document.getElementById('email').value,
+			password: document.getElementById('password').value,
+		}),
+	})
+		.then((res) => res.json())
+		.then((res) => {
+			document.getElementById('submit').classList.remove('submitting');
+			if (res.success) {
+				window.location.replace('/profile');
+			} else {
+				document.getElementById('submit').value = 'Log In';
+				res.errors.forEach((x) => {
+					switch (x) {
+						case 'passwordMismatch':
+							reportError('password', 'add', 'Incorrect password.');
+							break;
+
+						case 'noAccountFound':
+							reportError('email', 'add', 'No account available with provided credentials.');
+							break;
+					}
+				});
+			}
+		});
+});

@@ -124,14 +124,53 @@ document.getElementById('confirm-password').addEventListener('change', () => {
 	retypePasswordValidator('password', 'confirm-password');
 });
 
-document.getElementById('form').addEventListener('submit', (event) => {
+document.getElementById('form').addEventListener('submit', (e) => {
 	if (
 		isErrorInForm.name ||
 		isErrorInForm.email ||
 		isErrorInForm.password ||
 		isErrorInForm.confirmPassword
 	) {
-		event.preventDefault();
+		e.preventDefault();
+	} else {
+		e.preventDefault();
+		document.getElementById('submit').classList.add('submitting');
+		document.getElementById('submit').value = 'LOADING...';
+		fetch('/signup', {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				'CSRF-Token': token,
+			},
+			body: JSON.stringify({
+				firstName: document.getElementById('first-name').value,
+				lastName: document.getElementById('last-name').value,
+				birthday: document.getElementById('birthday').value,
+				email: document.getElementById('email').value,
+				password: document.getElementById('password').value,
+				confirmPassword: document.getElementById('confirm-password').value,
+			}),
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				document.getElementById('submit').classList.remove('submitting');
+				if (res.success) {
+					window.location.replace('/profile');
+				} else {
+					document.getElementById('submit').value = 'Sign Up';
+					res.errors.forEach((x) => {
+						switch (x) {
+							case 'emailExists':
+								reportError('email', 'add', 'Email exists.');
+								break;
+							case 'nameExists':
+								reportError('first-name', 'add', 'Name exists.');
+								reportError('last-name', 'add', 'Name exists.');
+						}
+					});
+				}
+			});
 	}
 });
 
