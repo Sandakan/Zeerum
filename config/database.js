@@ -15,19 +15,38 @@ const connectToDB = async () => {
 	}
 };
 
-const createUser = async (userDataObj, func) => {
+const countDocuments = async (collection, func = () => true) => {
+	await client.connect();
+	const database = client.db(process.env.DATABASE_NAME);
+	const promise = new Promise(async (resolve, reject) => {
+		try {
+			const noOfDocuments = await database
+				.collection(collection)
+				.countDocuments()
+				.then((res) => res);
+			func(noOfDocuments);
+			resolve(noOfDocuments);
+		} catch (err) {
+			reject(err);
+			throw err;
+		}
+	});
+	return promise;
+};
+
+const createUser = async (userDataObj, func = () => true) => {
 	const { firstName, lastName, birthday, email, password, country } = userDataObj;
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
-	const count = await database
+	const userId = await database
 		.collection('users')
 		.countDocuments()
 		.then((res) => res);
-	console.log(count + ' documents');
+	console.log('user id for recently created user is', userId);
 
 	database.collection('users').insertOne(
 		{
-			userId: count,
+			userId: userId,
 			firstName: firstName,
 			lastName: lastName,
 			username: `${firstName.toLowerCase()}-${lastName.toLowerCase()}`,
@@ -50,7 +69,7 @@ const createUser = async (userDataObj, func) => {
 				console.log(`User added successfully`, res);
 				const data = await database
 					.collection('users')
-					.findOne({ userId: count }, { projection: { password: false } });
+					.findOne({ userId: userId }, { projection: { password: false } });
 				func({
 					success: true,
 					message: `Account created successfully`,
@@ -182,12 +201,83 @@ const deleteData = async (collection, query = {}) => {
 	return promise;
 };
 
+const createArticle = async (articleData = {}, userData = {}, func = () => true) => {
+	await client.connect();
+	const database = client.db(process.env.DATABASE_NAME);
+
+	const tempRandomArticleName = () => {
+		const alphabet = 'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z'.split(',');
+		let tempName = '';
+		for (let x = 0; x < 20; x++) {
+			const val = Math.floor(Math.random() * (alphabet.length - 1) + 0);
+			tempName += alphabet[val];
+		}
+		return tempName;
+	};
+	const tempArticleName = tempRandomArticleName();
+
+	const promise = new Promise(async (resolve, reject) => {
+		database.collection('articles').insertOne(
+			{
+				articleId: articleData.articleId,
+				title: articleData.title || tempArticleName,
+				coverImg: articleData.coverImg || null,
+				coverImgUlt: articleData.coverImgUlt || null,
+				releasedDate: new Date(),
+				description: articleData.description || null,
+				author: {
+					userId: userData.userId,
+					name: `${userData.firstName} ${userData.lastName}`,
+				},
+				reactions: {
+					likes: [],
+					shares: 0,
+					bookmarks: [],
+				},
+				comments: [],
+				article: articleData.body || null,
+				footnotes: articleData.footnotes || null,
+				tags: articleData.tags || [],
+				urlSafeTitle:
+					articleData.title
+						.replace(/[^a-zA-Z0-9\s]/gm, '')
+						.replace(/\s/gm, '-')
+						.replace(/-$/gm, '')
+						.toLowerCase() || tempArticleName,
+				views: {
+					allTime: 0,
+				},
+			},
+			async (err, res) => {
+				if (err) {
+					console.log(err);
+					reject(err);
+					throw err;
+				} else {
+					console.log('Article added successfully.', res);
+					resolve({
+						success: true,
+						message: 'Article added successfully.',
+					});
+					func({
+						success: true,
+						message: 'Article added successfully.',
+					});
+				}
+			}
+		);
+	});
+	return promise;
+};
+
 module.exports = {
 	connectToDB,
+	countDocuments,
 	createUser,
 	checkUser,
 	requestData,
 	updateUserData,
 	updateData,
 	deleteData,
+	createArticle,
 };

@@ -3,7 +3,7 @@ const errorHandler = (err, req, res, next) => {
 		res.status(403).json({
 			success: false,
 			status: 403,
-			message: 'Access denied. Possible XSRF attack detected.',
+			message: 'Access denied. Missing/Invalid CSRF token OR Possible XSRF attack detected.',
 		});
 	} else if (err) {
 		console.log(err);
