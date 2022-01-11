@@ -32,14 +32,17 @@ const errorHandler = require('./middleware/errorHandler');
 const { createAccountLimiter } = require('./middleware/rate-limit');
 const {
 	connectToDB,
+	countDocuments,
 	createUser,
 	checkUser,
 	requestData,
 	updateUserData,
 	updateData,
+	createArticle,
 } = require('./config/database');
 connectToDB();
 const csrfProtection = csrf({ cookie: true });
+const validateFileExtensions = require('./middleware/validateFileExtensions');
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
 
@@ -58,17 +61,6 @@ app.use(cors());
 app.use(cookieParser());
 // sets ip-related information
 app.use(expressIp().getIpInfoMiddleware);
-// handles file uploads
-// app.use(
-// 	fileUpload({
-// 		useTempFiles: true,
-// 		tempFileDir: path.join(__dirname, './temp/'),
-// 		createParentPath: true,
-// 		preserveFilename: true,
-// 		preserveExtension: true,
-// 		debug: true,
-// 	})
-// );
 // handles sessions required for user authentication and authorization
 app.use(
 	session({
@@ -260,12 +252,17 @@ app.get(
 	async (req, res, next) => {
 		if (Object.entries(req.query).length === 0) {
 			const articleData = await requestData('articles');
+			// Sorts the data from latest to oldest
+			articleData.data.sort(
+				(a, b) => new Date(b.releasedDate).getTime() - new Date(a.releasedDate).getTime()
+			);
 			if (articleData.success && articleData.data.length !== 0)
 				res.status(200).json({
 					success: true,
 					status: 200,
 					message: `Request successful.`,
 					data: articleData.data,
+					ipInfo: req.ipInfo,
 				});
 			else
 				res.status(404).json({
@@ -968,7 +965,18 @@ app.get(
 );
 
 app.post(
-	'/data/upload',
+	'/data/upload/write/add-new-article',
+	authenticate,
+	// For validating if the user is an author.
+	(req, res, next) => {
+		if (req.session.user.userType !== 'author') {
+			res.json({
+				success: false,
+				status: 401,
+				message: 'Unauthorized. You need to be an author to write articles.',
+			});
+		} else next();
+	},
 	fileUpload({
 		useTempFiles: true,
 		tempFileDir: path.join(__dirname, './temp/'),
@@ -977,6 +985,134 @@ app.post(
 		preserveExtension: true,
 		debug: true,
 	}),
+	// for validating if the uploaded files have accepted mimetypes/extensions.
+	validateFileExtensions(['image/jpeg', 'image/png', 'image/webp']),
+	async (req, res, next) => {
+		if (
+			req.body.articleTitle &&
+			req.body.articleDescription &&
+			req.body.articleFootnotes &&
+			req.body.articleBody
+		) {
+			let { articleTitle, articleDescription, articleFootnotes, articleBody } = req.body;
+			const articleId = await countDocuments('articles');
+			if (req.files) {
+				let imageLocations = {
+					articleCoverImg: '',
+					articleImages: [],
+				};
+				const location = `./public/images/articles/${articleId}`;
+				fs.mkdir(location, (err) => {
+					if (err) console.log(err);
+				});
+				if (req.files.articleCoverImg) {
+					const articleCoverImg = req.files.articleCoverImg;
+					articleCoverImg.mv(
+						`${location}/articleCoverImg.${articleCoverImg.name.split('.').at(-1)}`,
+						async (err) => {
+							if (err) return next(err);
+							imageLocations.articleCoverImg = `/images/articles/${articleId}/articleCoverImg.${articleCoverImg.name
+								.split('.')
+								.at(-1)}`;
+						}
+					);
+				}
+				if (req.files.articleImages) {
+					const articleImages = req.files.articleImages;
+					if (articleImages.constructor === Array) {
+						for (const articleImg of articleImages) {
+							articleImg.mv(`${location}/${articleImg.name}`, (err) => {
+								if (err) return next(err);
+							});
+							articleBody = articleBody.replace(
+								new RegExp(articleImg.name, 'm'),
+								`/images/articles/${articleId}/${articleImg.name}`
+							);
+						}
+					} else {
+						articleImages.mv(`${location}/${articleImages.name}`, (err) => {
+							if (err) return next(err);
+						});
+						articleBody = articleBody.replace(
+							new RegExp(`src="${articleImages.name}"`, 'm'),
+							`src="/images/articles/${articleId}/${articleImages.name}"`
+						);
+					}
+				}
+
+				createArticle(
+					{
+						articleId: articleId,
+						title: articleTitle,
+						description: articleDescription,
+						body: articleBody,
+						footnotes: articleFootnotes,
+						coverImg: `/images/articles/${articleId}/articleCoverImg.${req.files.articleCoverImg.name
+							.split('.')
+							.at(-1)}`,
+					},
+					req.session.user
+				).then((result) => {
+					if (result.success) {
+						res.json({
+							success: true,
+							status: 200,
+							message: 'Successfully added your article.',
+						});
+					} else
+						res.json({
+							success: false,
+							status: 500,
+							message: 'Error occurred when adding your article.',
+						});
+				});
+			} else {
+				createArticle(
+					{
+						articleId: articleId,
+						title: articleTitle,
+						description: articleDescription,
+						body: articleBody,
+						footnotes: articleFootnotes,
+					},
+					req.session.user
+				).then((result) => {
+					if (result.success) {
+						res.json({
+							success: true,
+							status: 200,
+							message: 'Successfully added your article.',
+						});
+					} else
+						res.json({
+							success: false,
+							status: 500,
+							message: 'Error occurred when adding your article.',
+						});
+				});
+			}
+		} else
+			res.json({
+				success: false,
+				status: 400,
+				message: 'Error occurred when adding your article. Missing data in the request.',
+			});
+	}
+);
+
+app.post(
+	'/data/upload/profile/user-profile-picture',
+	authenticate,
+	fileUpload({
+		useTempFiles: true,
+		tempFileDir: path.join(__dirname, './temp/'),
+		createParentPath: true,
+		preserveFilename: true,
+		preserveExtension: true,
+		debug: true,
+	}),
+	// for validating if the uploaded files have accepted mimetypes/extensions.
+	validateFileExtensions(['image/jpeg', 'image/png']),
 	(req, res, next) => {
 		// for uploading profile pictures of the users.
 		if (!req.files || Object.keys(req.files).length === 0) {
@@ -1057,9 +1193,9 @@ app.post(
 				errObj.errors.push('emailExists');
 			}
 			if (errObj.isError)
-				res.status(401).json({
+				res.status(400).json({
 					success: false,
-					status: 401,
+					status: 400,
 					message: 'Error occurred when signing up.',
 					errors: errObj.errors,
 				});
@@ -1140,7 +1276,7 @@ app.post(
 					} else
 						res.json({
 							success: false,
-							status: 401,
+							status: 400,
 							message: 'Error occurred when logging in.',
 							errors: ['passwordMismatch'],
 						});
@@ -1148,7 +1284,7 @@ app.post(
 			} else
 				res.json({
 					success: false,
-					status: 401,
+					status: 400,
 					message: 'Error occurred when logging in.',
 					errors: ['noAccountFound'],
 				});
