@@ -242,6 +242,10 @@
 	-moz-border-radius: 0.5em;
 	-ms-border-radius: 0.5em;
 	-o-border-radius: 0.5em;
+	-webkit-transform: translateX(-50%);
+	-moz-transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	-o-transform: translateX(-50%);
 }
 
 .article-data img:hover {
@@ -378,6 +382,7 @@
 	margin: 0 15px;
 	font-size: 1.2rem;
 	cursor: pointer;
+	text-align: center;
 }
 .author .author-data-container .follow-author-btn {
 	padding: 0.5em 1em;
@@ -723,11 +728,16 @@
 
 @media screen and (max-width: 600px) {
 	.article-data :is(p, span, ul, ol) {
-		padding: 1em 2em 0.625em 1.5em;
+		padding: 1em 1em 0.625em 1em;
+		text-align: justify;
 	}
 
 	.article-data :is(h3, h2, h1) {
-		padding: 1em 2em 0.625em 1em;
+		padding: 1em 1em 0.625em 0.75em;
+	}
+
+	.article-data-container > .article-data > .end {
+		left: 1.5em;
 	}
 }
 

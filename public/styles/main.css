@@ -439,7 +439,13 @@ a:hover {
 	-o-transition: visibility 0.25s ease-in-out, opacity 0.25s ease-in-out;
 }
 
-.popup-container-active {
+.popup-container * {
+	opacity: 0;
+	visibility: hidden;
+}
+
+.popup-container-active,
+.popup-container-active * {
 	opacity: 1;
 	visibility: visible;
 }
@@ -1071,7 +1077,7 @@ a:hover {
 }
 
 .article .article-image {
-	min-width: 150px;
+	min-width: 100px;
 	width: 25%;
 	aspect-ratio: 4/3;
 	max-width: 100%;
@@ -1110,13 +1116,20 @@ a:hover {
 .article .article-info-container .article-description {
 	font-size: 1.2rem;
 	position: relative;
-	padding: 0 0.7em;
+	padding: 0 0.7em 1em 0.7em;
+	max-height: 10vh;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .article .article-info-container .article-description .more {
+	width: 100%;
 	font-size: 1em;
 	display: block;
 	color: var(--highlight-color);
+	position: absolute;
+	bottom: 0;
 }
 
 .article .article-info-container .article-author-container {
@@ -1131,11 +1144,11 @@ a:hover {
 .article .article-info-container .article-stats-container {
 	margin: 0.7em 0 0 0.7em;
 	color: rgb(141, 140, 140);
-	word-spacing: 0.2em;
 }
 
 .article .article-info-container .article-stats-container > .stat {
 	margin-right: 0.8em;
+	text-transform: uppercase;
 }
 
 .article .article-info-container .article-tags-container {
@@ -1421,6 +1434,9 @@ a:hover {
 /** //////////////////////////////////////////////////////////////   @ MEDIA QUERIES   /////////////////////////////////////////////////////////////*/
 
 @media screen and (max-width: 920px) {
+	.search-bar-focused {
+		width: 22em;
+	}
 	.other-content > .nav-box {
 		display: none;
 	}
@@ -1485,10 +1501,10 @@ a:hover {
 	}
 
 	.other-content > .articles-container > .article .article-image {
-		display: none;
+		width: 20%;
 	}
 	.other-content > .articles-container > .article .article-info-container {
-		width: 100%;
+		width: 80%;
 	}
 
 	.get-started-container {
@@ -1502,6 +1518,29 @@ a:hover {
 	}
 	.nav-bar .link-list ul li:last-child {
 		display: block;
+	}
+
+	.banner-text {
+		font-size: 3rem;
+	}
+
+	.page-heading-1 {
+		text-align: center;
+	}
+	.page-heading-1::before {
+		left: 50%;
+		transform: translateX(-50%);
+		-webkit-transform: translateX(-50%);
+		-moz-transform: translateX(-50%);
+		-ms-transform: translateX(-50%);
+		-o-transform: translateX(-50%);
+	}
+
+	.other-content > .articles-container > .article .article-image {
+		display: none;
+	}
+	.other-content > .articles-container > .article .article-info-container {
+		width: 100%;
 	}
 }
 

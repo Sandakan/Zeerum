@@ -16,6 +16,17 @@
 			"request": "launch",
 			"type": "vscode-edge-devtools.debug",
 			"url": "" // Provide your project's url to finish configuring
+		},
+		{
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"name": "nodemon npm test",
+			"program": "${workspaceFolder}/server.js",
+			"request": "launch",
+			"restart": true,
+			"runtimeExecutable": "nodemon",
+			"skipFiles": ["<node_internals>/**"],
+			"type": "pwa-node"
 		}
 	]
 }

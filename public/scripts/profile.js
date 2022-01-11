@@ -7,7 +7,7 @@ const token = document.querySelector('meta[name="csrf-token"]').getAttribute('co
 
 fetchData('/data/profile', (res) => {
 	const { success, data } = res;
-	console.log(res);
+	// console.log(res);
 	if (res && success) {
 		if (typeof Storage !== 'undefined') {
 			sessionStorage.setItem(
@@ -276,21 +276,10 @@ if (window.location.pathname.split('/').pop() === 'profile') {
 	}
 }
 
-if (document.body.contains(document.getElementById('popup-container'))) {
-	document.getElementById('popup-container').addEventListener('click', (e) => {
-		e.stopPropagation();
-		document.querySelector('.popup-container').classList.remove('popup-container-active');
-		document.querySelector('body').style.overflowY = 'visible';
-	});
-	document.querySelector('.popup').addEventListener('click', (e) => {
-		e.stopPropagation();
-	});
-}
-
 // ? ///////////////////////////////////  FUNCTIONS  ///////////////////////////////////////////////////
 // ? Data for popup 'edit-profile-picture' goes here.
 const changeProfilePicture = () => {
-	const popUpData = ` <h1 class="heading">Edit your Profile Picture</h1><form action="/data/upload" encType="multipart/form-data" name="upload-profile-picture-form" id="upload-profile-picture-form" method="post"><label for="file"><img src="${sessionStorage.getItem(
+	const popUpData = ` <h1 class="heading">Edit your Profile Picture</h1><form action="/data/upload/profile/user-profile-picture" encType="multipart/form-data" name="upload-profile-picture-form" id="upload-profile-picture-form" method="post"><label for="file"><img src="${sessionStorage.getItem(
 		'userProfilePictureUrl'
 	)}" alt="" /><i class="upload-icon fas fa-arrow-up"></i></label><input type="file" name="profilePicture" id="file" accept=".png,.jpeg,.jpg" /><p>Change your profile picture to stand out from other users. Supports PNG, JPG and JPEG images.<br /> Note that authors are mandatory to  upload a profile picture for better recognition and security. <br/><br/> Click on the above image to upload.</p><input type="submit" id="submit-profile-picture" value="Save changes" disabled/></form>`;
 	togglePopup(popUpData);

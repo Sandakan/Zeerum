@@ -1,5 +1,6 @@
 // jshint ignore:start
 import fetchData from './fetchData.js';
+import timeFromNow from './timeFromNow.js';
 
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content') + 'foo';
@@ -11,7 +12,7 @@ fetchData(
 		const { success, data } = res;
 		if (success) {
 			document.querySelector('.articles-container').classList.remove('articles-loading');
-			data.map((x) => {
+			data.map((x, index) => {
 				document.querySelector(
 					'.articles-container'
 				).innerHTML += `<div class="article" onclick="window.location = '/articles/${
@@ -40,13 +41,20 @@ fetchData(
 					x.reactions.bookmarks.length
 				}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
 					x.reactions.shares
-				}</span></div> <div class="article-tags-container">${x.tags
+				}</span><span class="stat" title="${new Date(
+					x.releasedDate
+				).toString()}"><i class="fas fa-clock"></i> ${timeFromNow(
+					x.releasedDate
+				)}</span></div> <div class="article-tags-container">${x.tags
 					.map((y) => `<span class="tags"><a href="tags/${y}">#${y}</a></span>`)
 					.join('')}</div></div></div>`;
 				document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
-				document.querySelector(
-					'.navigate-through-links ul'
-				).innerHTML += `<li><a href="/articles/${x.urlSafeTitle}">${x.title}</a></li>`;
+				// Only displays the latest 5 articles in the .navigate-through-links panel.
+				if (index < 5) {
+					document.querySelector(
+						'.navigate-through-links ul'
+					).innerHTML += `<li><a href="/articles/${x.urlSafeTitle}">${x.title}</a></li>`;
+				}
 			});
 		} else {
 			document.querySelector('.articles-container').classList.remove('articles-loading');

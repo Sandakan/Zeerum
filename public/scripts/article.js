@@ -32,7 +32,7 @@ const renderData = (res) => {
 		document.querySelector('.article-data-container > .article-data').innerHTML = `${
 			article.article
 		}<div class="end"></div><div class="footnotes">${
-			article.footnotes
+			article.footnotes || ''
 		}</div><div class="tags">${article.tags
 			.map((x) => {
 				return `<a href="/tags/${x.toLowerCase()}"><span class="tag">#${x}</span></a>`;
