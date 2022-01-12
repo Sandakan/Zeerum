@@ -1,4 +1,4 @@
-<img src="https://github.com/Sandakan/Zeerum/blob/master/public/images/icon-full.webp " alt="Zeerum Logo" title="Zeerum Logo" width="100" height="100"/>
+<img src="https://github.com/Sandakan/Zeerum/blob/master/public/images/icon-full.webp " alt="Zeerum Logo" title="Zeerum Logo" width="425" height="100"/>
 
 # ZEERUM - _A place to share your knowledge._
 
