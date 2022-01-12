@@ -8,12 +8,12 @@ if (sessionStorage.getItem('userType') === 'author')
 else if (sessionStorage.getItem('userType') === 'reader') {
 	document.querySelector(
 		'.banner-text'
-	).innerHTML = `<span>You need to <a href="/profile?changeUserType=author">be an author</a> <br />to use this feature. <br /><h6>\*This feature is still under development and not available right now.</h6> </span>`;
+	).innerHTML = `<span>You need to <a href="/profile?changeUserType=author">be an author</a> <br />to use this feature. <br /><h6>\*This feature is still under development and might not be available to all the users right now.</h6> </span>`;
 	document.querySelector('body').classList.add('logged-out');
 } else {
 	document.querySelector(
 		'.banner-text'
-	).innerHTML = `<span>You need to be logged in and be an author to use this feature. <br /><h6>\*This feature is still under development and not available right now.</h6> </span>`;
+	).innerHTML = `<span>You need to be logged in and be an author to use this feature. <br /><h6>\*This feature is still under development and might not be available to all the users right now.</h6> </span>`;
 	document.querySelector('body').classList.add('logged-out');
 }
 
@@ -43,7 +43,6 @@ let articleCoverImg;
 
 const storeArticleImages = (id, imgTitle, imgAlt, img, imgExtension) => {
 	articleImages.push({ id, imgTitle, imgAlt, img, imgExtension });
-	console.log(articleImages);
 };
 
 const addElementToPreview = (string = '') => {
@@ -52,7 +51,6 @@ const addElementToPreview = (string = '') => {
 };
 
 previewContainer.addEventListener('input', (e) => {
-	console.log(e.target.innerHTML);
 	if (e.target.contains(document.querySelector('.article-heading'))) {
 		articleHeading.classList.add('disabled');
 	} else {
@@ -211,37 +209,34 @@ const finalizeArticle = () => {
 	link.href = '/styles/article.css';
 	htmlHead.appendChild(link);
 
-	let articleTitle = '';
-	let articleBody = '';
 	if (previewContainer.innerText.trim() === '') {
 		alert('Article body cannot be empty.');
 	} else {
+		let articleTitle = '';
+		let articleBody = '';
 		let children = previewContainer.children;
+		console.log(children);
 		for (let x = 0; x < children.length; x++) {
-			switch (children[x].className) {
-				case 'article-heading':
-					articleTitle = children[x].innerText;
-					break;
-				case 'heading-1':
-					articleBody += `<h1>${children[x].innerHTML}</h1>`;
-					break;
-				case 'heading-2':
-					articleBody += `<h2>${children[x].innerHTML}</h1>`;
-					break;
-				case 'paragraph':
-					articleBody += `<p>${children[x].innerHTML}</p>`;
-					break;
-				case 'image':
-					const imgAlt = children[x].children[0].getAttribute('alt');
-					const imgId = children[x].children[0].getAttribute('data-id');
-					const imgFileExtension = children[x].children[0].getAttribute('data-file-extension');
-					articleBody += `<img src="${imgId}.${imgFileExtension}" alt="${imgAlt}" title="${imgAlt}" data-id="${imgId}">`;
-					break;
-
-				default:
-					break;
+			if (children[x].classList.contains('article-heading')) {
+				articleTitle = children[x].innerText;
+			}
+			if (children[x].classList.contains('heading-1')) {
+				articleBody += `<h1>${children[x].innerText}</h1>`;
+			}
+			if (children[x].classList.contains('heading-2')) {
+				articleBody += `<h2>${children[x].innerText}</h2>`;
+			}
+			if (children[x].classList.contains('paragraph')) {
+				articleBody += `<p>${children[x].innerText}</p>`;
+			}
+			if (children[x].classList.contains('image')) {
+				const imgAlt = children[x].children[0].getAttribute('alt');
+				const imgId = children[x].children[0].getAttribute('data-id');
+				const imgFileExtension = children[x].children[0].getAttribute('data-file-extension');
+				articleBody += `<img src="${imgId}.${imgFileExtension}" alt="${imgAlt}" title="${imgAlt}" data-id="${imgId}">`;
 			}
 		}
+
 		let articleBodyAlt = articleBody;
 		articleImages.forEach((x) => {
 			articleBodyAlt = articleBodyAlt.replace(
@@ -249,6 +244,7 @@ const finalizeArticle = () => {
 				`src="${URL.createObjectURL(x.img)}"`
 			);
 		});
+		console.log(articleBody, articleBodyAlt);
 		document.querySelector(
 			'.article-preview .article-data-container .article-img-and-heading-container .article-heading-and-stats-container .article-heading'
 		).innerHTML = articleTitle;

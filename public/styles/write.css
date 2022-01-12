@@ -148,6 +148,7 @@ body.logged-in .banner-container {
 .write-content .write-preview .article-heading::before {
 	content: 'Main Article Heading';
 	width: 100%;
+	height: fit-content;
 	position: absolute;
 	top: 0;
 	color: #ccc;
