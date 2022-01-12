@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="description"
+			content="Zeerum is a community where you can share your ideas, experiences with the community."
+		/>
+		<meta name="keywords" content="Articles, Knowledge, Information, Blog" />
+		<meta name="author" content="Sandakan Nipunajith" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="csrf-token" content="<%= csrfToken %>" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>ZEERUM</title>
+		<link rel="icon" href="/images/icon.webp" type="image/png" />
+		<link rel="stylesheet" href="/styles/main.css" />
+		<link rel="stylesheet" href="/styles/categories.css" />
+		<link rel="stylesheet" href="/styles/animations.css" />
+		<script src="https://kit.fontawesome.com/080e99810e.js" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<nav class="nav-bar">
+			<a href="/" class="label-container">
+				<div class="label">zeerum</div>
+			</a>
+			<div class="link-list">
+				<ul>
+					<li><a class="home" href="/">Home</a></li>
+					<li><a class="discover" href="/discover">Discover</a></li>
+					<li><a class="write" href="/write">Write</a></li>
+					<li id="get-started">
+						<a class="get-started" name="get-started" href="/signup">Get started</a>
+					</li>
+					<li id="user-profile" class="user-profile"></li>
+				</ul>
+			</div>
+			<div class="user-profile-dropdown" id="user-profile-dropdown"></div>
+		</nav>
+
+		<div class="page-heading-1">
+			You searched of for <span class="highlight-categories"></span>
+		</div>
+		<div class="other-content">
+			<nav class="nav-box">
+				<div class="navigate-through-links">
+					<div class="trending-articles-heading">Trending Articles</div>
+					<ul class="links-loading">
+						<!-- <li class="loading"></li>
+						<li class="loading"></li>
+						<li class="loading"></li> -->
+					</ul>
+				</div>
+				<hr />
+				<div class="search-through-categories-heading">Search Through Tags</div>
+				<div class="search-through-categories categories-loading">
+					<!-- <span class="categories loading"></span>
+					<span class="categories loading"></span>
+					<span class="categories loading"></span>
+					<span class="categories loading"></span>
+					<span class="categories loading"></span> -->
+				</div>
+			</nav>
+			<div class="articles-container articles-loading">
+				<!-- <div class="article loading"></div>
+				<div class="article loading"></div>
+				<div class="article loading"></div> -->
+				<div class="no-articles-container">
+					<img src="/images/categories/no-articles.svg" alt="" />
+					<span class="no-articles">
+						Oops, seems like there's nothing to show at this moment.
+					</span>
+					<span class="no-search"></span>
+				</div>
+			</div>
+		</div>
+
+		<!-- ? Below goes the footer -->
+
+		<div class="footer">
+			<div class="footer-label-and-move-to-top-container">
+				<a href="/" class="label-container">
+					<div class="label">zeerum</div>
+				</a>
+				<a href="#" class="move-to-top">Move to top</a>
+			</div>
+
+			<div class="footer-content">
+				<div class="description">
+					We are a community that shares ideas of beautiful minds. First started as a
+					tech-article website, now it grows as one of the most visited websites for ideas and
+					information to keep up with the world and to widen the horizon of creativity.
+					<br /><br />
+					<span class="made-with-love"
+						>Made with <span class="heart">❤</span> by Sandakan as a simple ICT project.</span
+					>
+				</div>
+				<div class="newsletter-description">
+					<ul>
+						<li>Our daily uploaded articles are now at your fingertips.</li>
+						<li>They are personalized to your reading too.</li>
+						<li>
+							We'll send an email containing popular, trending, and personalized articles
+							from the authors right to your inbox.
+						</li>
+					</ul>
+				</div>
+				<div class="main-links">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/discover">Discover</a></li>
+						<li><a href="/write">Write</a></li>
+						<li><a href="/about">About</a></li>
+						<li><a href="/signup">Sign up</a></li>
+						<li><a href="/login">Log in</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="copyright">&copy; 2021 Zeerum. All right reserved.</div>
+		</div>
+
+		<script type="module" src="/scripts/categories.js"></script>
+		<script type="module" src="/scripts/profile.js"></script>
+	</body>
+</html>

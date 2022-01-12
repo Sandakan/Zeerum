@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const { articleData, users, tags } = require('./data/data');
+const { articleData, users, categories } = require('./data/data');
 require('dotenv').config();
 
 const data = articleData;

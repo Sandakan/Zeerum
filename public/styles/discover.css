@@ -12,7 +12,7 @@
 
 .banner-img {
 	position: relative;
-	background-image: url('/images/banners/banner12.jpg') !important;
+	background-image: url('/images/banners/banner12.webp') !important;
 }
 
 .banner-elements-container {
@@ -50,7 +50,7 @@
 .discover-categories-container .discover-category.loading {
 	display: none;
 }
-.discover-categories-container.discover-tags-loading .discover-category.loading {
+.discover-categories-container.discover-categories-loading .discover-category.loading {
 	display: block;
 }
 

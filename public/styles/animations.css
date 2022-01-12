@@ -32,7 +32,7 @@
 	-o-transform: scale(1.025);
 }
 
-.nav-box .search-through-tags .tags:hover {
+.nav-box .search-through-categories .categories:hover {
 	background-color: var(--highlight-color);
 }
 

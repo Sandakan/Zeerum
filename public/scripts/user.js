@@ -41,15 +41,15 @@ fetch(`/data/articles?authorUserId=${userId}`)
 					x.reactions.bookmarks.length
 				}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
 					x.reactions.shares
-				}</span></div> <div class="article-tags-container">${x.tags
-					.map((y) => `<span class="tags"><a href="tags/${y}">#${y}</a></span>`)
+				}</span></div> <div class="article-categories-container">${x.categories
+					.map((y) => `<span class="categories"><a href="categories/${y}">#${y}</a></span>`)
 					.join('')}</div></div></div>`;
 			});
 		} else {
 			document.querySelector(
 				'.articles-container'
 			).innerHTML = `<div class="no-articles-container" style="display:flex;">
-					<img src="/images/tags/no-articles.svg" alt="" />
+					<img src="/images/categories/no-articles.svg" alt="" />
 					<span class="no-articles">
 						Oops, seems like there's nothing to show at this moment.
 					</span>
@@ -68,7 +68,7 @@ fetch(`/data/users/${userId}`)
 		if (success) {
 			document.title = `ZEERUM \- ${data.firstName}\'s Profile`;
 			document.querySelector('.user-img-container').innerHTML = `<img src="${
-				data.profilePictureUrl || '/images/user.png'
+				data.profilePictureUrl || '/images/user.webp'
 			}" alt="" />`;
 			document.querySelector('.user-data-container').innerHTML = `<span class="name">${
 				data.firstName

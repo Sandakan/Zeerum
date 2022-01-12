@@ -86,46 +86,38 @@ app.use(
 // ? /////////////////////////////////// MAIN ROUTES ///////////////////////////////////////////////
 
 app.get('/', csrfProtection, (req, res) => {
-	// res.status(200).sendFile(path.resolve(__dirname, './public/index.html'));
 	res.render('index', { status: 'Development in progress.', csrfToken: req.csrfToken() });
 });
 
 app.get('/discover', csrfProtection, (req, res) => {
 	res.render('discover', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/discover.html'));
 });
 
 app.get('/write', csrfProtection, (req, res) => {
 	res.render('write', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/write.html'));
 });
 app.get('/about', csrfProtection, (req, res) => {
 	res.render('about', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/about.html'));
 });
 
 app.get('/login', csrfProtection, (req, res) => {
 	if (req.session.userId !== undefined || req.session.username)
 		res.status(307).redirect('/profile');
 	else res.render('login', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/login.html'));
 });
 
 app.get('/signup', csrfProtection, (req, res) => {
 	if (req.session.username || req.session.userId !== undefined)
 		res.status(307).redirect('/profile');
 	else res.render('signup', { csrfToken: req.csrfToken() });
-	//  res.status(200).sendFile(path.resolve(__dirname, './public/signup.html'));
 });
 
 app.get('/profile', csrfProtection, authenticate, (req, res) => {
 	res.render('profile', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/profile.html'));
 });
 
 app.get('/404', csrfProtection, (req, res) => {
 	res.render('404', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/404.html'));
 });
 
 app.get('/logout', (req, res) => {
@@ -134,16 +126,6 @@ app.get('/logout', (req, res) => {
 		res.status(308).redirect('/');
 	});
 });
-// app.get('/user', (req, res) => {
-// 	res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
-// });
-
-// app.get('/articles', (req, res) => {
-// 	res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
-// });
-// app.get('/tags', (req, res) => {
-// 	res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
-// });
 
 //? //////////////////////////////////////////////////////////////////
 /*
@@ -162,26 +144,23 @@ app.get('/articles/:article', csrfProtection, async (req, res, next) => {
 	// console.log(articleId, articleData);
 	if (articleData.success && articleData.data.length !== 0)
 		res.render('article', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/article.html'));
 	else next();
 });
 
-app.get('/tags/:tag', csrfProtection, async (req, res, next) => {
-	const tag = isNaN(Number(req.params.tag))
-		? req.params.tag.toLowerCase()
-		: Number(req.params.tag);
-	const tagData = isNaN(tag)
-		? await requestData('tags', { name: { $regex: new RegExp(tag, 'i') } })
-		: await requestData('tags', { tagId: tag });
-	if (tagData.success && tagData.data.length !== 0)
-		res.render('tag', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
+app.get('/categories/:category', csrfProtection, async (req, res, next) => {
+	const category = isNaN(Number(req.params.category))
+		? req.params.category.toLowerCase()
+		: Number(req.params.category);
+	const categoryData = isNaN(category)
+		? await requestData('categories', { name: { $regex: new RegExp(category, 'i') } })
+		: await requestData('categories', { categoryId: category });
+	if (categoryData.success && categoryData.data.length !== 0)
+		res.render('categories', { csrfToken: req.csrfToken() });
 	else next();
 });
 
 app.get('/search/:searchItem', csrfProtection, (req, res) => {
-	res.render('tag', { csrfToken: req.csrfToken() });
-	// res.status(200).sendFile(path.resolve(__dirname, './public/tag.html'));
+	res.render('categories', { csrfToken: req.csrfToken() });
 });
 
 app.get('/user/:user', csrfProtection, async (req, res, next) => {
@@ -201,7 +180,6 @@ app.get('/user/:user', csrfProtection, async (req, res, next) => {
 		// console.log(userId, userData);
 		if (userData.success && userData.isThereAUser)
 			res.render('user', { csrfToken: req.csrfToken() });
-		// res.status(200).sendFile(path.resolve(__dirname, './public/user.html'));
 		else next();
 	}
 });
@@ -213,7 +191,7 @@ app.get('/data/search/:searchPhrase', async (req, res, next) => {
 	const articleData = await requestData('articles', {
 		title: { $regex: new RegExp(`${searchPhrase}`, 'i') },
 	});
-	const tagData = await requestData('tags', {
+	const categoryData = await requestData('categories', {
 		name: { $regex: new RegExp(`${searchPhrase}`, 'i') },
 	});
 	const userData = await checkUser(
@@ -222,12 +200,16 @@ app.get('/data/search/:searchPhrase', async (req, res, next) => {
 		},
 		{ _id: false, password: false }
 	);
-	if (articleData.success || tagData.success || userData.success) {
-		if (articleData.data.length !== 0 || tagData.data.length !== 0 || userData.isThereAUser) {
+	if (articleData.success || categoryData.success || userData.success) {
+		if (
+			articleData.data.length !== 0 ||
+			categoryData.data.length !== 0 ||
+			userData.isThereAUser
+		) {
 			const results = {
 				articles: articleData.data || [],
 				users: userData.userData || [],
-				tags: tagData.data || [],
+				categories: categoryData.data || [],
 			};
 			// console.log(searchPhrase, results);
 			res.status(200).json({
@@ -323,23 +305,25 @@ app.get(
 	},
 	// ? ARTICLES FILTERED BY ITS' RESPECTIVE TAG
 	async (req, res, next) => {
-		if (req.query.tagId) {
-			const tag = isNaN(Number(req.query.tagId))
-				? req.query.tagId
-				: await requestData('tags', { tagId: 1 }, { tagId: false, pictureUrl: false }).then(
-						(x) => x.data[0].name
-				  );
-			// console.log(tag);
+		if (req.query.categoryId) {
+			const category = isNaN(Number(req.query.categoryId))
+				? req.query.categoryId
+				: await requestData(
+						'categories',
+						{ categoryId: 1 },
+						{ categoryId: false, pictureUrl: false }
+				  ).then((x) => x.data[0].name);
+			// console.log(category);
 			const articleData = await requestData('articles', {
-				tags: { $regex: RegExp(tag, 'i') },
+				categories: { $regex: RegExp(category, 'i') },
 			});
-			// console.log(tag, articleData);
+			// console.log(category, articleData);
 			if (articleData.success && articleData.data.length !== 0) {
 				res.json({
 					success: true,
 					status: 200,
 					message: `Request successful.`,
-					tag: tag,
+					category: category,
 					data: articleData,
 				});
 			} else next();
@@ -395,9 +379,6 @@ app.get(
 				.toLowerCase() === article ||
 				articleData.data[0].articleId === article)
 		) {
-			// const authorData = await requestData('users', {
-			// 	userId: articleData.data[0].author.userId,
-			// });
 			const { updatedData: authorData } = await updateUserData(
 				{ userId: articleData.data[0].author.userId },
 				{
@@ -729,31 +710,37 @@ app.get('/data/users/:user', async (req, res, next) => {
 		});
 });
 
-app.get('/data/tags', async (req, res) => {
-	const tagData = await requestData('tags');
-	if (tagData.success)
+app.get('/data/categories', async (req, res) => {
+	const categoryData = await requestData('categories');
+	if (categoryData.success)
 		res.status(200).json({
 			success: true,
 			status: 200,
 			message: `Request successful.`,
-			data: tagData.data,
+			data: categoryData.data,
 		});
 	else
-		res.json({ success: false, status: 404, message: 'No tags found. Please try again later.' });
+		res.json({
+			success: false,
+			status: 404,
+			message: 'No categories found. Please try again later.',
+		});
 });
 
-app.get('/data/tags/:tag', async (req, res) => {
-	const tag = isNaN(Number(req.params.tag)) ? req.params.tag : Number(req.params.tag);
-	const tagData = isNaN(tag)
-		? await requestData('tags', { name: tag.replace(/^\w/, (x) => x.toUpperCase()) })
-		: await requestData('tags', { tagId: tag });
-	if (tagData.success && tagData.data.length !== 0)
-		res.status(200).json({ success: true, status: 200, data: tagData.data });
+app.get('/data/categories/:category', async (req, res) => {
+	const category = isNaN(Number(req.params.category))
+		? req.params.category
+		: Number(req.params.category);
+	const categoryData = isNaN(category)
+		? await requestData('categories', { name: category.replace(/^\w/, (x) => x.toUpperCase()) })
+		: await requestData('categories', { categoryId: category });
+	if (categoryData.success && categoryData.data.length !== 0)
+		res.status(200).json({ success: true, status: 200, data: categoryData.data });
 	else
 		res.status(404).json({
 			success: false,
 			status: 404,
-			message: `There is no tag/tagId named ${req.params.tag}`,
+			message: `There is no category/categoryId named ${req.params.category}`,
 		});
 });
 
@@ -1112,7 +1099,7 @@ app.post(
 		debug: true,
 	}),
 	// for validating if the uploaded files have accepted mimetypes/extensions.
-	validateFileExtensions(['image/jpeg', 'image/png']),
+	validateFileExtensions(['image/jpeg', 'image/png', 'image/webp']),
 	(req, res, next) => {
 		// for uploading profile pictures of the users.
 		if (!req.files || Object.keys(req.files).length === 0) {
@@ -1123,13 +1110,13 @@ app.post(
 			fs.mkdir(location, (err) => {
 				if (err) console.log(err);
 			});
-			profilePicture.mv(`${location}/profilePicture.jpg`, (err) => {
+			profilePicture.mv(`${location}/profilePicture.webp`, (err) => {
 				if (err) return next(err);
 				updateUserData(
 					{ userId: req.session.userId },
 					{
 						$set: {
-							profilePictureUrl: `/images/users/${req.session.user.userType}s/${req.session.userId}/profilePicture.jpg`,
+							profilePictureUrl: `/images/users/${req.session.user.userType}s/${req.session.userId}/profilePicture.webp`,
 						},
 					}
 				).then(async ({ success }) => {

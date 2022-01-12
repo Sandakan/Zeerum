@@ -54,7 +54,7 @@ const createUser = async (userDataObj, func = () => true) => {
 			email: email,
 			password: password,
 			userType: 'reader',
-			profilePictureUrl: null,
+			profilePictureUrl: '/images/user.webp',
 			registeredDate: new Date(),
 			country: country,
 			followers: [],
@@ -237,7 +237,7 @@ const createArticle = async (articleData = {}, userData = {}, func = () => true)
 				comments: [],
 				article: articleData.body || null,
 				footnotes: articleData.footnotes || null,
-				tags: articleData.tags || [],
+				categories: articleData.categories || [],
 				urlSafeTitle:
 					articleData.title
 						.replace(/[^a-zA-Z0-9\s]/gm, '')

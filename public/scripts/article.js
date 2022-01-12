@@ -33,13 +33,13 @@ const renderData = (res) => {
 			article.article
 		}<div class="end"></div><div class="footnotes">${
 			article.footnotes || ''
-		}</div><div class="tags">${article.tags
+		}</div><div class="categories">${article.categories
 			.map((x) => {
-				return `<a href="/tags/${x.toLowerCase()}"><span class="tag">#${x}</span></a>`;
+				return `<a href="/categories/${x.toLowerCase()}"><span class="category">#${x}</span></a>`;
 			})
 			.join('')}</div>`;
 		document.querySelector('.author > .author-data-container').innerHTML = `<img src="${
-			author.profilePictureUrl || '/images/user.png'
+			author.profilePictureUrl || '/images/user.webp'
 		}" alt="" /><span class="name">${author.firstName} ${author.lastName} ${
 			userId && Number(userId) === Number(author.userId) ? '(You)' : ''
 		}</span>${
@@ -131,7 +131,7 @@ const renderData = (res) => {
 							// console.log(comment);
 							document.querySelector('#comments').innerHTML =
 								`<div class="comment">
-								<img src="${data.profilePictureUrl || '/images/user.png'}" 
+								<img src="${data.profilePictureUrl || '/images/user.webp'}" 
 									onclick="window.location = \`/user/${data.username}\`" />
 								<div class="text">
 									<a class="name" href="/user/${data.username}">${data.firstName} ${data.lastName} 
@@ -155,7 +155,7 @@ const renderData = (res) => {
 						} else {
 							document.querySelector('#comments').innerHTML =
 								`<div class="comment">
-								<img src="/images/user.png" onclick="window.location = \`/user/unknownOrDeletedUser" />
+								<img src="/images/user.webp" onclick="window.location = \`/user/unknownOrDeletedUser" />
 								<div class="text">
 									<span class="name">Deleted User</span>
 									<span class="data">${comment.comment}</span>
@@ -295,7 +295,7 @@ function sendComment() {
 				if (res.success) {
 					commentContainer.innerHTML =
 						`<div class="comment">
-							<img src="${sessionStorage.getItem('userProfilePictureUrl') || '/images/user.png'}" 
+							<img src="${sessionStorage.getItem('userProfilePictureUrl') || '/images/user.webp'}" 
 								onclick="window.location = \`/user/${sessionStorage.getItem('username')}\`" />
 							<div class="text">
 								<span class="name">${sessionStorage.getItem('username').replace(/-/gi, ' ')} (you)</span>
@@ -357,7 +357,7 @@ const reactionsHandler = async (reaction) => {
 		}
 	} else if (reaction === 'share') {
 		togglePopup(
-			`<img src="/images/next.png" alt="Share icon" title="Share this article"/> <h1>Share</h1><p>Share this article with your friends to share the knowledge you gained from this article. This encourages authors to write more as they know they will always have your support for them.</p> <div class="copy-container">${document.location.href}<span class="copy-btn"><i class="far fa-clipboard"></i></span></div> `,
+			`<img src="/images/next.webp" alt="Share icon" title="Share this article"/> <h1>Share</h1><p>Share this article with your friends to share the knowledge you gained from this article. This encourages authors to write more as they know they will always have your support for them.</p> <div class="copy-container">${document.location.href}<span class="copy-btn"><i class="far fa-clipboard"></i></span></div> `,
 			'share-popup'
 		);
 

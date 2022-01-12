@@ -271,7 +271,7 @@
 	text-decoration: underline;
 }
 
-.article-data-container > .article-data > .tags {
+.article-data-container > .article-data > .categories {
 	width: 90%;
 	height: fit-content;
 	position: relative;
@@ -281,12 +281,12 @@
 	display: flex;
 	flex-wrap: wrap;
 }
-.article-data-container > .article-data > .tags a {
+.article-data-container > .article-data > .categories a {
 	text-decoration: none;
 	color: #fff;
 	outline: none;
 }
-.article-data-container > .article-data > .tags a .tag {
+.article-data-container > .article-data > .categories a .category {
 	width: -moz-fit-content;
 	width: fit-content;
 	height: -moz-fit-content;

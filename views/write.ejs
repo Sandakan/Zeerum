@@ -12,7 +12,7 @@
 		<meta name="csrf-token" content="<%= csrfToken %>" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Write Articles - ZEERUM</title>
-		<link rel="icon" href="/images/icon.png" type="image/png" />
+		<link rel="icon" href="/images/icon.webp" type="image/png" />
 		<link rel="stylesheet" href="/styles/main.css" />
 		<link rel="stylesheet" href="/styles/write.css" />
 		<link rel="stylesheet" href="/styles/animations.css" />
@@ -38,12 +38,39 @@
 			<div class="user-profile-dropdown" id="user-profile-dropdown"></div>
 		</nav>
 
+		<div class="popup-container" id="popup-container">
+			<div class="popup" id="popup"></div>
+		</div>
+
 		<div class="banner-container">
 			<div class="banner">
 				<div class="banner-img"></div>
 				<div class="banner-elements-container">
 					<div class="banner-text"></div>
 				</div>
+			</div>
+		</div>
+
+		<div class="write-content">
+			<div class="write-preview" contenteditable="plaintext-only" id="write-preview"></div>
+			<div class="write-elements">
+				<div class="elements-container">
+					<span class="element article-heading-element">
+						<i class="fas fa-heading"></i> Article Heading
+					</span>
+					<span class="element h1-element"> <i class="fas fa-heading"></i> Heading 1</span>
+					<span class="element h2-element"> <i class="fas fa-heading"></i> Heading 2</span>
+					<span class="element img-element"> <i class="far fa-image"></i> Image</span>
+					<span class="element p-element"> <i class="fas fa-paragraph"></i> Paragraph</span>
+					<span class="element ul-element">
+						<i class="fas fa-list-ul"></i> Unordered List</span
+					>
+					<span class="element ol-element"> <i class="fas fa-list-ol"></i> Ordered List</span>
+					<span class="element section-element"> <i class="far fa-square"></i> Section</span>
+				</div>
+			</div>
+			<div class="finalize-article-btn-container next-btn">
+				<button disabled>Finalize the Article <i class="fas fa-chevron-right"></i></button>
 			</div>
 		</div>
 
@@ -92,7 +119,7 @@
 		</div>
 
 		<script src="/scripts/scrollTop.js"></script>
-		<script src="/scripts/write.js"></script>
+		<script type="module" src="/scripts/write.js"></script>
 		<script type="module" src="/scripts/profile.js"></script>
 	</body>
 </html>

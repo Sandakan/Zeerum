@@ -28,7 +28,7 @@ document.querySelector('#search').addEventListener('input', () => {
 			fetchData(`/data/search/${encodeURIComponent(searchPhrase.toLowerCase())}`, (res) => {
 				console.log(res);
 				if (res.success) {
-					const { articles, users, tags } = res.results;
+					const { articles, users, categories } = res.results;
 					let temp = [];
 					articles.forEach((x) => {
 						if (articles.length !== 0) {
@@ -38,7 +38,7 @@ document.querySelector('#search').addEventListener('input', () => {
 							);
 							if (temp.length < 3)
 								temp.push(
-									`<a href="/articles/${x.urlSafeTitle}" class="search-result"><img src="/images/article.png" alt="" /> <span class="text">${searchedPhraseHighlightedText}</span> </a>`
+									`<a href="/articles/${x.urlSafeTitle}" class="search-result"><img src="/images/article.webp" alt="" /> <span class="text">${searchedPhraseHighlightedText}</span> </a>`
 								);
 						}
 					});
@@ -52,20 +52,20 @@ document.querySelector('#search').addEventListener('input', () => {
 							if (temp.length < 3)
 								temp.push(
 									`<a href="/user/${x.username}" class="search-result"><img src="${
-										x.profilePictureUrl || '/images/user.png'
+										x.profilePictureUrl || '/images/user.webp'
 									}" alt="" /> <span class="text">${searchedPhraseHighlightedText}</span> </a>`
 								);
 						}
 					});
-					tags.forEach((x) => {
-						if (tags.length !== 0) {
+					categories.forEach((x) => {
+						if (categories.length !== 0) {
 							const searchedPhraseHighlightedText = x.name.replaceAll(
 								new RegExp(searchPhrase, 'gi'),
 								(match) => `<span class="searched-phrase-highlight">${match}</span>`
 							);
 							if (temp.length < 3)
 								temp.push(
-									`<a href="/tags/${x.name.toLowerCase()}" class="search-result"><img src="/images/tag.png" alt="" /> <span class="text">${searchedPhraseHighlightedText}</span> </a>`
+									`<a href="/categories/${x.name.toLowerCase()}" class="search-result"><img src="/images/category.webp" alt="" /> <span class="text">${searchedPhraseHighlightedText}</span> </a>`
 								);
 						}
 					});
@@ -79,14 +79,14 @@ document.querySelector('#search').addEventListener('input', () => {
 						.classList.remove('results-loading');
 					document.querySelector(
 						'.search-results-container'
-					).innerHTML = `<div class="no-search-results-container"><img src="/images/error.png">We don't have anything with the name \" ${searchPhrase} \". Try seaching with different words.</div>`;
+					).innerHTML = `<div class="no-search-results-container"><img src="/images/error.webp">We don't have anything with the name \" ${searchPhrase} \". Try seaching with different words.</div>`;
 				}
 			});
 		} else {
 			document.querySelector('.search-results-container').classList.remove('results-loading');
 			document.querySelector(
 				'.search-results-container'
-			).innerHTML = `<div class="search-description"><img src="/images/search.png" alt="A magnifying glass">Search for anything from here including articles, tags, authors, hot topics etc.</div>`;
+			).innerHTML = `<div class="search-description"><img src="/images/search.webp" alt="A magnifying glass">Search for anything from here including articles, categories, authors, hot topics etc.</div>`;
 		}
 	}, 500);
 });

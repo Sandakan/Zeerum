@@ -45,8 +45,8 @@ fetchData(
 					x.releasedDate
 				).toString()}"><i class="fas fa-clock"></i> ${timeFromNow(
 					x.releasedDate
-				)}</span></div> <div class="article-tags-container">${x.tags
-					.map((y) => `<span class="tags"><a href="tags/${y}">#${y}</a></span>`)
+				)}</span></div> <div class="article-categories-container">${x.categories
+					.map((y) => `<span class="categories"><a href="categories/${y}">#${y}</a></span>`)
 					.join('')}</div></div></div>`;
 				document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
 				// Only displays the latest 5 articles in the .navigate-through-links panel.
@@ -62,7 +62,7 @@ fetchData(
 			document.querySelector('.navigate-through-links').style.display = 'none';
 			document.querySelector('.articles-container').innerHTML = `
 			<div class="no-articles-container">
-				<img src="/images/tags/no-articles.svg" alt="" />
+				<img src="/images/categories/no-articles.svg" alt="" />
 				<span class="no-articles">
 					Oops, seems like there's nothing to show at this moment.
 				</span>
@@ -80,20 +80,20 @@ fetchData(
 	}
 );
 
-fetchData(`/data/tags/`, (res) => {
+fetchData(`/data/categories/`, (res) => {
 	const { success, data } = res;
 	// console.log(res);
 	if (success) {
-		document.querySelector('.search-through-tags').classList.remove('tags-loading');
-		document.querySelector('.search-through-tags').innerHTML = data
+		document.querySelector('.search-through-categories').classList.remove('categories-loading');
+		document.querySelector('.search-through-categories').innerHTML = data
 			.map((x) => {
-				return `<span class="tags"> <a href="/tags/${x.name.toLowerCase()}">${
+				return `<span class="categories"> <a href="/categories/${x.name.toLowerCase()}">${
 					x.name
 				}</a></span>`;
 			})
 			.join('');
 	} else {
-		document.querySelector('.search-through-tags').classList.remove('tags-loading');
-		console.log(`Error occurred when requesting tag data.${res.message}`);
+		document.querySelector('.search-through-categories').classList.remove('categories-loading');
+		console.log(`Error occurred when requesting category data.${res.message}`);
 	}
 });

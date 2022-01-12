@@ -11,7 +11,7 @@
 }
 
 .banner-img {
-	background-image: url('/images/banners/banner15.jpg') !important;
+	background-image: url('/images/banners/banner15.webp') !important;
 }
 
 .banner-text {
@@ -108,7 +108,7 @@
 	justify-content: center;
 	padding: 20px 0;
 	box-sizing: content-box;
-	background-image: url('../images/banners/banner1.jpg');
+	background-image: url('../images/banners/banner1.webp');
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 }

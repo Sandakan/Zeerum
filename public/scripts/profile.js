@@ -12,7 +12,7 @@ fetchData('/data/profile', (res) => {
 		if (typeof Storage !== 'undefined') {
 			sessionStorage.setItem(
 				'userProfilePictureUrl',
-				data.profilePictureUrl || `/images/user.png`
+				data.profilePictureUrl || `/images/user.webp`
 			);
 			sessionStorage.setItem('userId', data.userId);
 			sessionStorage.setItem(
@@ -28,11 +28,11 @@ fetchData('/data/profile', (res) => {
 		if (document.body.contains(document.getElementById('logout')))
 			document.getElementById('logout').addEventListener('click', (e) => sessionStorage.clear());
 		document.getElementById('user-profile').innerHTML = `
-			<img class="user-profile-img" src="${data.profilePictureUrl || '/images/user.png'}"
+			<img class="user-profile-img" src="${data.profilePictureUrl || '/images/user.webp'}"
 			alt="${data.firstName}\'s profile picture">`;
 		document.getElementById('user-profile-dropdown').innerHTML = `
 			<div class="user-data-container">
-				<img src="${data.profilePictureUrl || '/images/user.png'}" 
+				<img src="${data.profilePictureUrl || '/images/user.webp'}" 
 					alt="${data.firstName}\'s profile picture" 
 				/>
 				<a href="/profile" class="name">${data.firstName} ${data.lastName}</a>
@@ -91,7 +91,7 @@ fetchData('/data/profile', (res) => {
 			document.title = `ZEERUM \- ${data.firstName}\'s Profile`;
 			// ? User data goes here
 			document.querySelector('.user-img-container').innerHTML = `
-				<img src="${data.profilePictureUrl || '/images/user.png'}" alt="" />
+				<img src="${data.profilePictureUrl || '/images/user.webp'}" alt="" />
 				<span class="edit-profile-picture"><i class="fas fa-pen"></i></span>`;
 			// ? statistics data goes here
 			document.querySelector('.statistics-container').innerHTML = `<div class="stats followers">
@@ -202,15 +202,15 @@ if (window.location.pathname.split('/').pop() === 'profile') {
 							x.reactions.bookmarks.length
 						}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
 							x.reactions.shares
-						}</span></div><div class="article-tags-container">${x.tags.map(
-							(y) => `<span class="tags"><a href="tags/${y}">${y}</a></span>`
+						}</span></div><div class="article-categories-container">${x.categories.map(
+							(y) => `<span class="categories"><a href="categories/${y}">${y}</a></span>`
 						)}</div></div></div>`;
 					});
 				} else {
 					document.querySelector(
 						'.articles-container'
 					).innerHTML = `<div class="no-articles-container" style="display:flex;">
-					<img src="/images/tags/no-articles.svg" alt="" />
+					<img src="/images/categories/no-articles.svg" alt="" />
 					<span class="no-articles">
 						Seems like there's nothing to show at this moment.
 					</span>
@@ -256,15 +256,17 @@ if (window.location.pathname.split('/').pop() === 'profile') {
 							x.reactions.bookmarks.length
 						}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
 							x.reactions.shares
-						}</span></div> <div class="article-tags-container">${x.tags
-							.map((y) => `<span class="tags"><a href="tags/${y}">#${y}</a></span>`)
+						}</span></div> <div class="article-categories-container">${x.categories
+							.map(
+								(y) => `<span class="categories"><a href="categories/${y}">#${y}</a></span>`
+							)
 							.join('')}</div></div></div>`;
 					});
 				} else {
 					document.querySelector(
 						'.articles-container'
 					).innerHTML = `<div class="no-articles-container" style="display:flex;">
-					<img src="/images/tags/no-articles.svg" alt="" />
+					<img src="/images/categories/no-articles.svg" alt="" />
 					<span class="no-articles">
 						Seems like there's nothing to show at this moment.
 					</span>
@@ -281,7 +283,7 @@ if (window.location.pathname.split('/').pop() === 'profile') {
 const changeProfilePicture = () => {
 	const popUpData = ` <h1 class="heading">Edit your Profile Picture</h1><form action="/data/upload/profile/user-profile-picture" encType="multipart/form-data" name="upload-profile-picture-form" id="upload-profile-picture-form" method="post"><label for="file"><img src="${sessionStorage.getItem(
 		'userProfilePictureUrl'
-	)}" alt="" /><i class="upload-icon fas fa-arrow-up"></i></label><input type="file" name="profilePicture" id="file" accept=".png,.jpeg,.jpg" /><p>Change your profile picture to stand out from other users. Supports PNG, JPG and JPEG images.<br /> Note that authors are mandatory to  upload a profile picture for better recognition and security. <br/><br/> Click on the above image to upload.</p><input type="submit" id="submit-profile-picture" value="Save changes" disabled/></form>`;
+	)}" alt="" /><i class="upload-icon fas fa-arrow-up"></i></label><input type="file" name="profilePicture" id="file" accept=".png,.jpeg,.jpg,.webp" /><p>Change your profile picture to stand out from other users. Supports PNG, JPG and JPEG images.<br /> Note that authors are mandatory to  upload a profile picture for better recognition and security. <br/><br/> Click on the above image to upload.</p><input type="submit" id="submit-profile-picture" value="Save changes" disabled/></form>`;
 	togglePopup(popUpData);
 	document.querySelector('.popup').classList.add('change-profile-picture');
 	document.getElementById('upload-profile-picture-form').addEventListener('submit', (e) => {
@@ -313,7 +315,7 @@ const changeProfilePicture = () => {
 const changeUserType = (data) => {
 	if (data.userType !== 'author') {
 		const popUpData = `
-						<img src="/images/profile/becomeAnAuthor.png" alt="A pencil with a line drawn by it." />
+						<img src="/images/profile/becomeAnAuthor.webp" alt="A pencil with a line drawn by it." />
 						<h1 class="heading">Let\'s become an Author</h1> 
 						<p>Become an author to share your knowledge with others while gaining reputation from the community. </p> 
 						<div class="features-benifits-disadvantages">
@@ -346,7 +348,7 @@ const changeUserType = (data) => {
 				});
 		});
 	} else {
-		const popUpData = `<img src="/images/profile/becomeAnAuthor.png" alt="A pencil with a line drawn by it." /><h1 class="heading">Change usertype from Author a Reader</h1> <p>Quis blanditiis pariatur officia corrupti qui velit quisquam quia. Reiciendis aut provident sit voluptatem quod qui odit ipsum. Et non fuga eum facilis rerum. Qui aut odit ullam assumenda nihil. Voluptatum earum voluptatem consequatur. Vitae veritatis ut eum.</p><button id="submit-become-a-reader">Become a Reader</button>`;
+		const popUpData = `<img src="/images/profile/becomeAnAuthor.webp" alt="A pencil with a line drawn by it." /><h1 class="heading">Change usertype from Author a Reader</h1> <p>Quis blanditiis pariatur officia corrupti qui velit quisquam quia. Reiciendis aut provident sit voluptatem quod qui odit ipsum. Et non fuga eum facilis rerum. Qui aut odit ullam assumenda nihil. Voluptatum earum voluptatem consequatur. Vitae veritatis ut eum.</p><button id="submit-become-a-reader">Become a Reader</button>`;
 		togglePopup(popUpData);
 		document.querySelector('.popup').classList.add('change-user-type');
 		document.getElementById('submit-become-a-reader').addEventListener('click', (e) => {

@@ -1,5 +1,5 @@
 body {
-	background: url('/images/sign_up/sign-up-background.jpg');
+	background: url('/images/sign_up/sign-up-background.webp');
 	background-repeat: no-repeat;
 	background-size: cover;
 }
@@ -12,7 +12,7 @@ body {
 	top: 0;
 	bottom: 0;
 	z-index: -1;
-	background: url('/images/log_in/log-in-background.jpg');
+	background: url('/images/log_in/log-in-background.webp');
 	background-repeat: no-repeat;
 	background-size: cover;
 } */
