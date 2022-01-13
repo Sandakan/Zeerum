@@ -500,6 +500,33 @@ body.logged-in .banner-container {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	transition: border-color 0.2s ease-in-out;
+	-webkit-transition: border-color 0.2s ease-in-out;
+	-moz-transition: border-color 0.2s ease-in-out;
+	-ms-transition: border-color 0.2s ease-in-out;
+	-o-transition: border-color 0.2s ease-in-out;
+}
+.popup.add-article-cover-img
+	.add-article-cover-img-container
+	> #article-cover-img-form
+	label::after {
+	content: 'Click the image to change it.';
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	top: 50%;
+	transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	color: rgb(160, 160, 160);
+	bottom: 0.25em;
+	transition: color 0.2s ease-in-out;
+	-webkit-transition: color 0.2s ease-in-out;
+	-moz-transition: color 0.2s ease-in-out;
+	-ms-transition: color 0.2s ease-in-out;
+	-o-transition: color 0.2s ease-in-out;
 }
 
 .popup.add-article-cover-img
@@ -507,29 +534,25 @@ body.logged-in .banner-container {
 	> #article-cover-img-form
 	label:empty::after {
 	content: 'Click here to add a banner image to the article.';
-	position: absolute;
-	width: 100%;
-	text-align: center;
-	top: 50%;
-	bottom: unset;
-	transform: translateY(-50%);
-	-webkit-transform: translateY(-50%);
-	-moz-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
-	-o-transform: translateY(-50%);
 	font-size: 1.75rem;
 	color: #ccc;
+	bottom: unset;
 }
 
 .popup.add-article-cover-img
 	.add-article-cover-img-container
 	> #article-cover-img-form
-	label::after {
-	content: 'Click the image to change it.';
-	position: absolute;
-	bottom: 0.25em;
-	color: rgb(160, 160, 160);
+	label:hover {
+	border-color: rgb(177, 177, 177);
 }
+
+.popup.add-article-cover-img
+	.add-article-cover-img-container
+	> #article-cover-img-form
+	label:hover:empty::after {
+	color: rgb(130, 130, 130);
+}
+
 .popup.add-article-cover-img .add-article-cover-img-container > #article-cover-img-form label img {
 	max-width: 100%;
 	max-height: 100%;
@@ -663,4 +686,49 @@ body.logged-in .banner-container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: space-around;
+}
+
+.popup.article-added .success-heading {
+	font-size: 2.5em;
+	padding: 0.5em 0;
+}
+
+.popup.article-added .success-img {
+	max-width: 100%;
+	width: 15%;
+	margin: 1em 0;
+}
+
+.popup.article-added .success-description {
+	margin: 1em 0;
+	font-size: 1.25em;
+}
+
+.popup.article-added .go-to-my-article-btn {
+	padding: 0.75em 2em;
+	font-size: 1.5em;
+	background-color: #3498db;
+	color: #fff;
+	outline: none;
+	margin-top: 1em;
+	border: 3px solid transparent;
+	border-radius: 1.75em;
+	-webkit-border-radius: 1.75em;
+	-moz-border-radius: 1.75em;
+	-ms-border-radius: 1.75em;
+	-o-border-radius: 1.75em;
+	cursor: pointer;
+	box-shadow: none;
+	transition: box-shadow 0.2s linear;
+	-webkit-transition: box-shadow 0.2s linear;
+	-moz-transition: box-shadow 0.2s linear;
+	-ms-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
+}
+
+.popup.article-added .go-to-my-article-btn:hover {
+	box-shadow: 3px 32px 84px 16px rgba(0, 0, 0, 0.39);
+	-webkit-box-shadow: 3px 32px 84px 16px rgba(0, 0, 0, 0.39);
+	-moz-box-shadow: 3px 32px 84px 16px rgba(0, 0, 0, 0.39);
 }

@@ -217,6 +217,12 @@ const createArticle = async (articleData = {}, userData = {}, func = () => true)
 	const tempArticleName = tempRandomArticleName();
 
 	const promise = new Promise(async (resolve, reject) => {
+		const articleUrlSafeTitle =
+			articleData.title
+				.replace(/[^a-zA-Z0-9\s]/gm, '')
+				.replace(/\s/gm, '-')
+				.replace(/-$/gm, '')
+				.toLowerCase() || tempArticleName;
 		database.collection('articles').insertOne(
 			{
 				articleId: articleData.articleId,
@@ -238,12 +244,7 @@ const createArticle = async (articleData = {}, userData = {}, func = () => true)
 				article: articleData.body || null,
 				footnotes: articleData.footnotes || null,
 				categories: articleData.categories || [],
-				urlSafeTitle:
-					articleData.title
-						.replace(/[^a-zA-Z0-9\s]/gm, '')
-						.replace(/\s/gm, '-')
-						.replace(/-$/gm, '')
-						.toLowerCase() || tempArticleName,
+				urlSafeTitle: articleUrlSafeTitle,
 				views: {
 					allTime: 0,
 				},
@@ -258,6 +259,7 @@ const createArticle = async (articleData = {}, userData = {}, func = () => true)
 					resolve({
 						success: true,
 						message: 'Article added successfully.',
+						articleUrl: `/articles/${articleUrlSafeTitle}`,
 					});
 					func({
 						success: true,

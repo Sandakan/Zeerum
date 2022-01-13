@@ -26,6 +26,14 @@ const createRandomString = () => {
 	return randomString.join('');
 };
 
+const preventLeavingSite = (e) => {
+	if (previewContainer.innerText !== '' && !isArticlePosted) {
+		e.preventDefault();
+		console.log('innerText', previewContainer.innerText);
+		e.returnValue = `Are you sure you want to leave the page without saving the article? Changes won't be saved.`;
+	}
+};
+
 // EDITOR RELATED CONTENT  / / / / / / / / / / / / / / / / / / / / / / / / /
 const previewContainer = document.getElementById('write-preview');
 const articleHeading = document.querySelector('.article-heading-element');
@@ -38,6 +46,7 @@ const ul = document.querySelector('.ul-element');
 const section = document.querySelector('.section-element');
 const saveBtn = document.querySelector('.save-btn');
 const nextBtn = document.querySelector('.next-btn');
+let isArticlePosted = false;
 let articleImages = [];
 let articleCoverImg;
 
@@ -142,13 +151,7 @@ nextBtn.addEventListener('click', (e) => {
 
 // / / / / / / / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / // / / / / / / / / / / / /
 
-window.addEventListener('beforeunload', (e) => {
-	if (previewContainer.innerText !== '') {
-		e.preventDefault();
-		console.log('innerText', previewContainer.innerText);
-		e.returnValue = `Are you sure you want to leave the page without saving the article? Changes won't be saved.`;
-	}
-});
+window.addEventListener('beforeunload', (e) => preventLeavingSite(e));
 
 // / / / / / / / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / // / / / / / / / / / / / /
 const addCoverImgToArticle = () => {
@@ -209,11 +212,11 @@ const finalizeArticle = () => {
 	link.href = '/styles/article.css';
 	htmlHead.appendChild(link);
 
+	let articleTitle = '';
+	let articleBody = '';
 	if (previewContainer.innerText.trim() === '') {
 		alert('Article body cannot be empty.');
 	} else {
-		let articleTitle = '';
-		let articleBody = '';
 		let children = previewContainer.children;
 		console.log(children);
 		for (let x = 0; x < children.length; x++) {
@@ -293,23 +296,22 @@ const finalizeArticle = () => {
 			.then((res) => res.json())
 			.then((res) => {
 				if (res && res.success) {
+					isArticlePosted = true;
 					alert(res.message);
 					const popupData = `
 								<div class="success-heading">Article added successfully.</div>
-								<img src="/images/search.webp" class="success-img">
+								<img src="/images/success.webp" class="success-img">
 								<div class="success-description">
-									You have successfully added your article and can be viewed at the site.
+									You have successfully added your article and can be viewed at the site. <br>
+									You can view your articles in your profile page. 
 								</div>
-								<button class="go-to-my-article-btn"Go to the article</button>
+								<button class="go-to-my-article-btn">Go to the article</button>
 							`;
 					togglePopup(popupData, 'article-added', true);
-					window.removeEventListener('beforeunload', (e) => {
-						if (previewContainer.innerText !== '') {
-							e.preventDefault();
-							console.log('innerText', previewContainer.innerText);
-							e.returnValue = `Are you sure you want to leave the page without saving the article? Changes won't be saved.`;
-						}
-					});
+					document
+						.querySelector('.go-to-my-article-btn')
+						.addEventListener('click', () => window.location.replace(res.articleUrl));
+					window.removeEventListener('beforeunload', (e) => preventLeavingSite(e));
 				} else {
 					alert(res.message);
 					console.log(res.message);

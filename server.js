@@ -1045,6 +1045,7 @@ app.post(
 							success: true,
 							status: 200,
 							message: 'Successfully added your article.',
+							articleUrl: result.articleUrl,
 						});
 					} else
 						res.json({
