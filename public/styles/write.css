@@ -514,12 +514,6 @@ body.logged-in .banner-container {
 	position: absolute;
 	width: 100%;
 	text-align: center;
-	top: 50%;
-	transform: translateY(-50%);
-	-webkit-transform: translateY(-50%);
-	-moz-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
-	-o-transform: translateY(-50%);
 	color: rgb(160, 160, 160);
 	bottom: 0.25em;
 	transition: color 0.2s ease-in-out;
@@ -536,6 +530,12 @@ body.logged-in .banner-container {
 	content: 'Click here to add a banner image to the article.';
 	font-size: 1.75rem;
 	color: #ccc;
+	top: 50%;
+	transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
 	bottom: unset;
 }
 

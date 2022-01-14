@@ -166,8 +166,15 @@ const addCoverImgToArticle = () => {
 			</div>
 		`;
 	togglePopup(popupData, 'add-article-cover-img', false);
+	// if (articleCoverImg.file && articleCoverImg.elementString) {
+	// 	document.querySelector(
+	// 		'label[for="article-cover-img"]'
+	// 	).innerHTML = articleCoverImg.elementString;
+	// 	document.querySelector('#article-cover-img-form > input[type="submit"]').disabled = false;
+	// }
+
 	document.querySelector('#article-cover-img').addEventListener('change', (e) => {
-		if (e.target.files) {
+		if (e.target.files[0] !== undefined) {
 			document.querySelector('#article-cover-img-form > input[type="submit"]').disabled = false;
 			document.querySelector(
 				'#article-cover-img-form > label'
