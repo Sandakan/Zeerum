@@ -55,6 +55,7 @@
 	cursor: pointer;
 	position: relative;
 	bottom: 0;
+	color: #fff;
 }
 
 .change-profile-picture form input[type='submit']:disabled {

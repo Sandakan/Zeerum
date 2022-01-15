@@ -721,6 +721,9 @@
 }
 
 @media screen and (max-width: 700px) {
+	.article-elements-container > .article-data-container > .article-img-and-heading-container {
+		height: 50vh;
+	}
 	.author-information-container {
 		width: 95%;
 	}

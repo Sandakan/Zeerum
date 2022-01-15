@@ -21,7 +21,7 @@ document.getElementById('form').addEventListener('submit', (e) => {
 	e.preventDefault();
 	document.getElementById('submit').classList.add('submitting');
 	document.getElementById('submit').value = 'LOADING...';
-	fetch('/log-in', {
+	fetch('/login', {
 		method: 'POST',
 		headers: {
 			Accept: 'application/json',

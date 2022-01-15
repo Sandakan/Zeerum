@@ -6,4 +6,4 @@ const createAccountLimiter = rateLimit({
 	message: 'Too many accounts created from this IP. Please try again later.',
 });
 
-module.exports = { createAccountLimiter };
+module.exports = createAccountLimiter;
