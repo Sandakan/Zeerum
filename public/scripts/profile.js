@@ -6,9 +6,8 @@ import togglePopup from './togglePopup.js';
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 fetchData('/data/profile', (res) => {
-	const { success, data } = res;
-	// console.log(res);
-	if (res && success) {
+	if (res && res.success) {
+		const { success, data } = res;
 		if (typeof Storage !== 'undefined') {
 			sessionStorage.setItem(
 				'userProfilePictureUrl',
@@ -23,8 +22,7 @@ fetchData('/data/profile', (res) => {
 		} else {
 			console.log('Sorry! No Web Storage support..');
 		}
-		document.getElementById('get-started').style.display = 'none';
-		document.getElementById('user-profile').style.display = 'block';
+		document.querySelector('body').classList.add('logged-in');
 		if (document.body.contains(document.getElementById('logout')))
 			document.getElementById('logout').addEventListener('click', (e) => sessionStorage.clear());
 		document.getElementById('user-profile').innerHTML = `
@@ -66,9 +64,6 @@ fetchData('/data/profile', (res) => {
 		document
 			.querySelector('.user-profile-dropdown > .user-data-container > img')
 			.addEventListener('click', () => (location.href = '/profile'));
-		if (document.querySelector('.get-started-container')) {
-			document.querySelector('.get-started-container').style.display = 'none';
-		}
 		document.getElementById('user-profile').addEventListener('click', (e) => {
 			e.stopPropagation();
 			e.target.classList.toggle('active');
@@ -163,10 +158,19 @@ fetchData('/data/profile', (res) => {
 				<span class="articles-number">${data.articlesPublished} articles published</span>`;
 		}
 	} else {
-		document.getElementById('get-started').style.display = 'block';
+		document.querySelector('body').classList.add('logged-out');
+		// document.getElementById('get-started').style.display = 'block';
 		console.log(`Error occurred when requesting profile data.`, res.message);
 		sessionStorage.clear();
 	}
+});
+if (sessionStorage.getItem('theme') === 'dark')
+	document.querySelector('body').classList.add('dark-mode');
+document.querySelector('.made-with-love .heart').addEventListener('click', (e) => {
+	if (sessionStorage.getItem('theme') === 'dark' || sessionStorage.getItem('theme') === undefined)
+		sessionStorage.setItem('theme', 'light');
+	else sessionStorage.setItem('theme', 'dark');
+	document.querySelector('body').classList.toggle('dark-mode');
 });
 
 //? User specific articles
@@ -321,7 +325,7 @@ const changeUserType = (data) => {
 						<div class="features-benifits-disadvantages">
 							<p >Changing your usertype from reader to author will change some of your account settings including, 
 								<ul>
-									<li>Change your usertype to AUTHOR.</li>
+									<li>Change your usertype from READER to AUTHOR.</li>
 									<li>lorem</li>
 									<li>epsum</li>
 								</ul>
@@ -429,4 +433,5 @@ const changeSettings = () => {
 			}
 		});
 	});
+	document.querySelector('li[data-setting-type="account"]').click();
 };

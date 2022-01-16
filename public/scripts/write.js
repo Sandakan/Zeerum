@@ -4,17 +4,15 @@ import togglePopup from './togglePopup.js';
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 if (sessionStorage.getItem('userType') === 'author')
-	document.querySelector('body').classList.add('logged-in');
+	document.querySelector('body').classList.add('author');
 else if (sessionStorage.getItem('userType') === 'reader') {
 	document.querySelector(
 		'.banner-text'
 	).innerHTML = `<span>You need to <a href="/profile?changeUserType=author">be an author</a> <br />to use this feature. <br /><h6>\*This feature is still under development and might not be available to all the users right now.</h6> </span>`;
-	document.querySelector('body').classList.add('logged-out');
 } else {
 	document.querySelector(
 		'.banner-text'
 	).innerHTML = `<span>You need to be logged in and be an author to use this feature. <br /><h6>\*This feature is still under development and might not be available to all the users right now.</h6> </span>`;
-	document.querySelector('body').classList.add('logged-out');
 }
 
 const createRandomString = () => {
@@ -283,6 +281,9 @@ const finalizeArticle = () => {
 
 	document.finalizeArticleForm.addEventListener('submit', (e) => {
 		e.preventDefault();
+		document.querySelector('#finalize-article-form .save-btn').value = 'uploading...';
+		document.querySelector('#finalize-article-form .save-btn').disabled = 'true';
+		document.querySelector('#finalize-article-form .save-btn').classList.add('uploading');
 		const articleForm = new FormData(document.finalizeArticleForm);
 		articleForm.append('articleBody', articleBody);
 		articleForm.append('articleCoverImg', articleCoverImg);
@@ -304,7 +305,6 @@ const finalizeArticle = () => {
 			.then((res) => {
 				if (res && res.success) {
 					isArticlePosted = true;
-					alert(res.message);
 					const popupData = `
 								<div class="success-heading">Article added successfully.</div>
 								<img src="/images/success.webp" class="success-img">
@@ -320,6 +320,7 @@ const finalizeArticle = () => {
 						.addEventListener('click', () => window.location.replace(res.articleUrl));
 					window.removeEventListener('beforeunload', (e) => preventLeavingSite(e));
 				} else {
+					document.querySelector('#finalize-article-form .save-btn').disabled = 'false';
 					alert(res.message);
 					console.log(res.message);
 				}

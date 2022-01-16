@@ -1,7 +1,7 @@
 body.logged-out .write-content {
 	display: none;
 }
-body.logged-in .banner-container {
+body.logged-in.author .banner-container {
 	display: none;
 }
 
@@ -51,7 +51,7 @@ body.logged-in .banner-container {
 .write-content {
 	width: 95%;
 	height: fit-content;
-	border: 5px solid #ccc;
+	border: 5px solid var(--background-color-200);
 	margin: 6em auto 0;
 	border-radius: 1em;
 	-webkit-border-radius: 1em;
@@ -61,13 +61,13 @@ body.logged-in .banner-container {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	background: #ccc;
+	background: var(--background-color-200);
 }
 
 .write-content .write-preview {
 	width: 100%;
 	min-height: 60vh;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	position: relative;
 	border-radius: 1em;
 	-webkit-border-radius: 1em;
@@ -93,7 +93,7 @@ body.logged-in .banner-container {
 	-o-transform: translate(-50%, -50%);
 	font-size: 3rem;
 	text-align: center;
-	color: #ccc;
+	color: var(--background-color-300);
 }
 
 .write-content
@@ -107,6 +107,7 @@ body.logged-in .banner-container {
 	position: relative;
 	padding: 0.75em 2em 0.1em 0.5em;
 	margin-top: 0.5em;
+	color: var(--text-color);
 }
 
 .write-content .write-preview .article-heading {
@@ -151,14 +152,14 @@ body.logged-in .banner-container {
 	height: fit-content;
 	position: absolute;
 	top: 0;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 500;
 	font-size: 1rem;
 }
 .write-content .write-preview .article-heading:empty::after {
 	content: 'Main Article Heading';
 	width: 100%;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 500;
 	position: absolute;
 	bottom: 0;
@@ -169,14 +170,14 @@ body.logged-in .banner-container {
 	width: 100%;
 	position: absolute;
 	top: 0;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 400;
 	font-size: 1rem;
 }
 .write-content .write-preview .heading-1:empty::after {
 	content: 'Heading 1';
 	width: 100%;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 500;
 	position: absolute;
 	bottom: 0;
@@ -186,14 +187,14 @@ body.logged-in .banner-container {
 	width: 100%;
 	position: absolute;
 	top: 0;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 400;
 	font-size: 1rem;
 }
 .write-content .write-preview .heading-2:empty::after {
 	content: 'Heading 2';
 	width: 100%;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 500;
 	position: absolute;
 	bottom: 0;
@@ -203,14 +204,14 @@ body.logged-in .banner-container {
 	width: 100%;
 	position: absolute;
 	top: 0;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 400;
 	font-size: 1rem;
 }
 .write-content .write-preview .paragraph:empty::after {
 	content: 'Paragraph';
 	width: 100%;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 500;
 	position: absolute;
 	bottom: 0;
@@ -220,14 +221,14 @@ body.logged-in .banner-container {
 	width: 100%;
 	position: absolute;
 	top: 0;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 400;
 	font-size: 1rem;
 }
 .write-content .write-preview .section:empty::after {
 	content: 'Empty Section';
 	width: 100%;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 500;
 	position: absolute;
 	bottom: 0;
@@ -237,15 +238,15 @@ body.logged-in .banner-container {
 	content: 'Image';
 	position: absolute;
 	top: 0;
-	color: #ccc;
+	color: var(--background-color-400);
 	font-weight: 400;
 	font-size: 1rem;
 }
 
 .write-content .write-elements {
 	width: 100%;
-	background-color: #ccc;
-	box-shadow: -10px 0 20px rgb(135, 135, 135);
+	background-color: var(--background-color-200);
+	box-shadow: -10px 0 20px var(--box-shadow);
 	position: relative;
 	display: flex;
 	flex-direction: row;
@@ -259,6 +260,7 @@ body.logged-in .banner-container {
 	content: 'Click above buttons to add elements.';
 	position: absolute;
 	bottom: 0.5em;
+	color: var(--text-color);
 }
 
 .write-content .write-elements > div {
@@ -282,7 +284,7 @@ body.logged-in .banner-container {
 	height: fit-content;
 	padding: 0.5em 1em;
 	font-size: 1.25rem;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	border-radius: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -295,6 +297,7 @@ body.logged-in .banner-container {
 	-moz-transition: box-shadow 0.2s linear, color 0.2s linear;
 	-ms-transition: box-shadow 0.2s linear, color 0.2s linear;
 	-o-transition: box-shadow 0.2s linear, color 0.2s linear;
+	color: var(--text-color);
 }
 
 .write-content .write-elements .elements-container .element.disabled {
@@ -306,7 +309,7 @@ body.logged-in .banner-container {
 }
 
 .write-content .write-elements .elements-container .element:hover {
-	box-shadow: 0 10px 20px rgb(135, 135, 135);
+	box-shadow: 0 10px 20px var(--box-shadow);
 	color: var(--highlight-color);
 }
 
@@ -324,8 +327,8 @@ body.logged-in .banner-container {
 }
 .write-content .finalize-article-btn-container button {
 	padding: 0.5em 1em;
-	background-color: #3498db;
-	color: #fff;
+	background-color: var(--highlight-color-2);
+	color: var(--text-color-white);
 	font-size: 1.5em;
 	border-radius: 1.5em;
 	-webkit-border-radius: 1.5em;
@@ -337,9 +340,9 @@ body.logged-in .banner-container {
 	cursor: pointer;
 }
 .write-content .finalize-article-btn-container button:disabled {
-	color: #fff;
+	color: var(--background-color-100);
 	background-color: transparent;
-	border-color: #fff;
+	border-color: var(--background-color-100);
 	cursor: not-allowed;
 }
 .write-content .finalize-article-btn-container button i {
@@ -353,12 +356,14 @@ body.logged-in .banner-container {
 .popup.add-image-to-article {
 	display: flex;
 	flex-direction: row;
+	padding: 2em;
 }
 
 .popup.add-image-to-article .img-container {
 	width: 70%;
-	background-color: rgb(228, 228, 228);
-	border: 0.5em solid #ccc;
+	background-color: var(--background-color-100);
+	border: 0.5em solid var(--background-color-300);
+	border-radius: 1em 0 0 1em;
 	position: relative;
 	cursor: pointer;
 	padding: 1em 2em;
@@ -373,6 +378,10 @@ body.logged-in .banner-container {
 	-moz-transition: border-color 0.2s ease-in-out;
 	-ms-transition: border-color 0.2s ease-in-out;
 	-o-transition: border-color 0.2s ease-in-out;
+	-webkit-border-radius: 1em 0 0 1em;
+	-moz-border-radius: 1em 0 0 1em;
+	-ms-border-radius: 1em 0 0 1em;
+	-o-border-radius: 1em 0 0 1em;
 }
 
 .popup.add-image-to-article .img-container img {
@@ -393,7 +402,7 @@ body.logged-in .banner-container {
 	-o-transform: translateY(-50%);
 	text-align: center;
 	font-size: 2rem;
-	color: rgb(174, 174, 174);
+	color: var(--background-color-300);
 	transition: color 0.2s ease-in-out;
 	-webkit-transition: color 0.2s ease-in-out;
 	-moz-transition: color 0.2s ease-in-out;
@@ -401,34 +410,45 @@ body.logged-in .banner-container {
 	-o-transition: color 0.2s ease-in-out;
 }
 .popup.add-image-to-article .img-container:hover {
-	border-color: rgb(177, 177, 177);
+	border-color: var(--background-color-400);
 }
 .popup.add-image-to-article .img-container:hover::after {
-	color: rgb(130, 130, 130);
+	color: var(--background-color-400);
 }
 
 .popup.add-image-to-article .img-settings-container {
 	width: 30%;
-	background-color: #ccc;
+	background-color: var(--background-color-200);
 	/* box-shadow: -10px 0 20px rgb(135, 135, 135); */
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: space-between;
 	padding: 1.5em 1em;
+	overflow: hidden;
 }
 .popup.add-image-to-article .img-settings-container .done-btn {
 	width: 95%;
-	background-color: #3498db;
+	background-color: var(--highlight-color-2);
 	text-align: center;
 	padding: 1em 2em;
-	color: #fff;
+	color: var(--text-color-white);
 	border-radius: 1.5em;
 	-webkit-border-radius: 1.5em;
 	-moz-border-radius: 1.5em;
 	-ms-border-radius: 1.5em;
 	-o-border-radius: 1.5em;
 	cursor: pointer;
+	transition: box-shadow 0.2s linear;
+	-webkit-transition: box-shadow 0.2s linear;
+	-moz-transition: box-shadow 0.2s linear;
+	-ms-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
+}
+.popup.add-image-to-article .img-settings-container .done-btn:hover {
+	box-shadow: 3px 32px 84px 16px var(--box-shadow);
+	-webkit-box-shadow: 3px 32px 84px 16px var(--box-shadow);
+	-moz-box-shadow: 3px 32px 84px 16px var(--box-shadow);
 }
 
 .popup.add-image-to-article .img-settings-container .article-images-form {
@@ -450,9 +470,11 @@ body.logged-in .banner-container {
 	-moz-border-radius: 1.5em;
 	-ms-border-radius: 1.5em;
 	-o-border-radius: 1.5em;
+	background-color: var(--background-color-300);
+	color: var(--text-color);
 }
 .popup.add-image-to-article .img-settings-container .article-images-form input::placeholder {
-	color: #ccc;
+	color: var(--text-color-1);
 }
 
 .popup.add-image-to-article
@@ -473,7 +495,6 @@ body.logged-in .banner-container {
 	width: 100%;
 	text-align: center;
 	padding: 0.5em 0;
-	border: 1px solid #ccc;
 }
 
 .popup.add-article-cover-img .add-article-cover-img-container > #article-cover-img-form {
@@ -493,7 +514,7 @@ body.logged-in .banner-container {
 .popup.add-article-cover-img .add-article-cover-img-container > #article-cover-img-form label {
 	width: 100%;
 	height: 60vh;
-	border: 5px solid #ccc;
+	border: 5px solid var(--background-color-200);
 	padding: 2em;
 	position: relative;
 	cursor: pointer;
@@ -505,6 +526,11 @@ body.logged-in .banner-container {
 	-moz-transition: border-color 0.2s ease-in-out;
 	-ms-transition: border-color 0.2s ease-in-out;
 	-o-transition: border-color 0.2s ease-in-out;
+	border-radius: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-ms-border-radius: 1em;
+	-o-border-radius: 1em;
 }
 .popup.add-article-cover-img
 	.add-article-cover-img-container
@@ -514,7 +540,7 @@ body.logged-in .banner-container {
 	position: absolute;
 	width: 100%;
 	text-align: center;
-	color: rgb(160, 160, 160);
+	color: var(--background-color-400);
 	bottom: 0.25em;
 	transition: color 0.2s ease-in-out;
 	-webkit-transition: color 0.2s ease-in-out;
@@ -529,7 +555,7 @@ body.logged-in .banner-container {
 	label:empty::after {
 	content: 'Click here to add a banner image to the article.';
 	font-size: 1.75rem;
-	color: #ccc;
+	color: var(--background-color-300);
 	top: 50%;
 	transform: translateY(-50%);
 	-webkit-transform: translateY(-50%);
@@ -543,14 +569,14 @@ body.logged-in .banner-container {
 	.add-article-cover-img-container
 	> #article-cover-img-form
 	label:hover {
-	border-color: rgb(177, 177, 177);
+	border-color: var(--background-color-400);
 }
 
 .popup.add-article-cover-img
 	.add-article-cover-img-container
 	> #article-cover-img-form
 	label:hover:empty::after {
-	color: rgb(130, 130, 130);
+	color: var(--background-color-400);
 }
 
 .popup.add-article-cover-img .add-article-cover-img-container > #article-cover-img-form label img {
@@ -567,8 +593,8 @@ body.logged-in .banner-container {
 	padding: 0.5em 1em;
 	margin-top: 1em;
 	border: 3px solid transparent;
-	background-color: #3498db;
-	color: #fff;
+	background-color: var(--highlight-color-2);
+	color: var(--text-color-white);
 	border-radius: 1.5em;
 	-webkit-border-radius: 1.5em;
 	-moz-border-radius: 1.5em;
@@ -582,8 +608,8 @@ body.logged-in .banner-container {
 	> #article-cover-img-form
 	input[type='submit']:disabled {
 	background-color: transparent;
-	color: #ccc;
-	border-color: #ccc;
+	color: var(--background-color-300);
+	border-color: var(--background-color-300);
 	cursor: not-allowed;
 }
 
@@ -594,7 +620,7 @@ body.logged-in .banner-container {
 .popup.finalize-article .finalize-article-container {
 	display: flex;
 	flex-direction: row;
-	background-color: #ccc;
+	background-color: var(--background-color-200);
 	margin: 1.5em;
 	height: 70vh;
 	border-radius: 1em;
@@ -603,12 +629,12 @@ body.logged-in .banner-container {
 	-ms-border-radius: 1em;
 	-o-border-radius: 1em;
 	overflow: hidden;
-	border: 4px solid #ccc;
+	border: 4px solid var(--background-color-200);
 }
 
 .popup.finalize-article .finalize-article-container .article-preview {
 	width: 70%;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	padding: 1em;
 	overflow: auto;
 }
@@ -631,7 +657,7 @@ body.logged-in .banner-container {
 	flex-direction: column;
 	align-items: center;
 	order: 0;
-	box-shadow: -10px 0 20px 0 rgb(130, 130, 130);
+	box-shadow: -10px 0 20px 0 var(--box-shadow);
 	position: relative;
 }
 
@@ -648,12 +674,14 @@ body.logged-in .banner-container {
 	-o-border-radius: 2em;
 	border: none;
 	outline: none;
+	background-color: var(--background-color-300);
+	color: var(--text-color);
 }
 .popup.finalize-article
 	.finalize-article-container
 	#finalize-article-form
 	:is(input, textarea)::placeholder {
-	color: rgb(165, 165, 165);
+	color: var(--text-color-1);
 }
 .popup.finalize-article .finalize-article-container #finalize-article-form textarea {
 	height: fit-content;
@@ -678,8 +706,27 @@ body.logged-in .banner-container {
 	-ms-border-radius: 1.5em;
 	-o-border-radius: 1.5em;
 	cursor: pointer;
-	background-color: #3498db;
-	color: #fff;
+	background-color: var(--highlight-color-2);
+	color: var(--text-color-white);
+	transition: box-shadow 0.2s linear;
+	-webkit-transition: box-shadow 0.2s linear;
+	-moz-transition: box-shadow 0.2s linear;
+	-ms-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
+}
+.popup.finalize-article .finalize-article-container #finalize-article-form .save-btn:disabled {
+	cursor: not-allowed;
+	box-shadow: none;
+}
+.popup.finalize-article .finalize-article-container #finalize-article-form .save-btn:hover {
+	box-shadow: 3px 32px 84px 16px var(--box-shadow);
+	-webkit-box-shadow: 3px 32px 84px 16px var(--box-shadow);
+	-moz-box-shadow: 3px 32px 84px 16px var(--box-shadow);
+}
+.popup.finalize-article .finalize-article-container #finalize-article-form .save-btn.uploading {
+	text-transform: uppercase;
+	background-color: var(--background-color-100);
+	color: var(--text-color-1);
 }
 
 .popup.article-added {
@@ -703,6 +750,7 @@ body.logged-in .banner-container {
 .popup.article-added .success-description {
 	margin: 1em 0;
 	font-size: 1.25em;
+	text-align: center;
 }
 
 .popup.article-added .go-to-my-article-btn {
@@ -728,7 +776,7 @@ body.logged-in .banner-container {
 }
 
 .popup.article-added .go-to-my-article-btn:hover {
-	box-shadow: 3px 32px 84px 16px rgba(0, 0, 0, 0.39);
-	-webkit-box-shadow: 3px 32px 84px 16px rgba(0, 0, 0, 0.39);
-	-moz-box-shadow: 3px 32px 84px 16px rgba(0, 0, 0, 0.39);
+	box-shadow: 3px 32px 84px 16px var(--box-shadow);
+	-webkit-box-shadow: 3px 32px 84px 16px var(--box-shadow);
+	-moz-box-shadow: 3px 32px 84px 16px var(--box-shadow);
 }

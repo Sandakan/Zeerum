@@ -6,16 +6,36 @@
 
 /* * //////////////////// GLOBAL CSS ELEMENT STYLES //////////////////// */
 :root {
-	--background-color: hsl(208, 52%, 95%);
-	--background-color-1: hsl(204, 8%, 76%);
-	--background-color-2: hsl(190, 13%, 34%);
-	--background-color-3: hsl(190, 17%, 52%);
-	--background-color-4: hsl(210, 29%, 24%);
+	--background-color-white: hsl(0, 0%, 100%);
+	--background-color-100: hsl(0, 0%, 90%);
+	--background-color-200: hsl(0, 0%, 80%);
+	--background-color-300: hsl(0, 0%, 70%);
+	--background-color-400: hsl(0, 0%, 60%);
+	--background-color-500: hsl(0, 0%, 50%);
+	--background-color-600: hsl(0, 0%, 40%);
+	--background-color-700: hsl(0, 0%, 30%);
+	--background-color-800: hsl(0, 0%, 20%);
+	--background-color-900: hsl(0, 0%, 10%);
+	--background-color-black: hsl(0, 0%, 0%);
+	--navbar-background-color: hsla(208, 52%, 95%, 50%);
+	--popup-container-background-color: hsla(211, 35%, 24%, 0.5);
 	--highlight-color: hsl(360, 67%, 51%);
-	--highlight-color-2: hsl(44, 96%, 59%);
-	--highlight-color-3: hsl(213, 92%, 61%);
 	--highlight-color-variant: hsl(243, 39%, 36%);
-	--article-text-color: hsl(0, 0%, 0%);
+	--highlight-color-1: hsl(44, 96%, 59%);
+	--highlight-color-2: hsl(213, 92%, 61%);
+	--searched-phrase-highlight: hsl(60, 100%, 50%);
+	--text-color-white: #fff;
+	--text-color-black: #000;
+	--text-color: hsl(0, 0%, 0%);
+	--text-color-variant: hsl(0, 0%, 100%);
+	--text-color-1: hsl(0, 0%, 50%);
+	--box-shadow: hsla(0, 0%, 0%, 0.5);
+	/* UNUSED CSS COLOR VARIABLES */
+	/* --background-color-1: hsl(204, 8%, 76%); */
+	/* --background-color-variant: hsl(208, 52%, 85%); */
+	/* --background-color-2: hsl(190, 13%, 34%); */
+	/* --background-color-3: hsl(190, 17%, 52%); */
+	/* --background-color-4: hsl(210, 29%, 24%); */
 	/* Using vw for root font size - Responsive to screen sizes but some elements like search-bar responds weirdly */
 	/* font-size: 1vw; */
 	font-size: 14px;
@@ -29,9 +49,10 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	-moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: inset 0 0 6px var(--box-shadow);
+	-moz-box-shadow: inset 0 0 6px var(--box-shadow);
+	box-shadow: inset 0 0 6px var(--box-shadow);
+	background: var(--background-color-200);
 }
 
 /* Handle */
@@ -40,14 +61,14 @@
 	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
-	background: rgb(156, 156, 156);
-	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+	background: var(--background-color-400);
+	-webkit-box-shadow: inset 0 0 6px var(--box-shadow);
+	-moz-box-shadow: inset 0 0 6px var(--box-shadow);
+	box-shadow: inset 0 0 6px var(--box-shadow);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: rgb(136, 136, 136);
+	background: var(--background-color-500);
 }
 
 html {
@@ -59,21 +80,39 @@ html {
 	padding: 0;
 	box-sizing: border-box;
 	font-family: 'Rubik', sans-serif;
+	transition: background-color 0.2s ease;
+	-webkit-transition: background-color 0.2s ease;
+	-moz-transition: background-color 0.2s ease;
+	-ms-transition: background-color 0.2s ease;
+	-o-transition: background-color 0.2s ease;
+}
+/* DARK MODE SETTINGS GOES HERE */
+body.dark-mode {
+	--background-color-100: hsl(206, 21%, 15%);
+	--background-color-200: hsl(206, 21%, 25%);
+	--background-color-300: hsl(206, 21%, 35%);
+	--background-color-400: hsl(206, 21%, 45%);
+	--background-color-500: hsl(206, 21%, 55%);
+	--text-color: hsl(0, 0%, 100%);
+	--text-color-variant: hsl(0, 0%, 0%);
+	--navbar-background-color: hsla(206, 21%, 15%, 0.75);
+	--text-color-1: hsl(0, 0%, 60%);
+	--searched-phrase-highlight: hsl(60, 100%, 20%);
 }
 
 body {
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 }
 
 input {
 	caret-color: var(--highlight-color);
 }
 input::placeholder {
-	color: #000;
+	color: var(--text-color-black);
 }
 
 a {
-	color: #000;
+	color: var(--text-color-black);
 	text-decoration: none;
 }
 
@@ -101,7 +140,7 @@ a:hover {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background: #dae0e1ce;
+	background: var(--background-color-100);
 	transform: translateX(-100%);
 	background: -webkit-gradient(
 		linear,
@@ -136,13 +175,13 @@ a:hover {
 	justify-content: space-between;
 	align-items: center;
 	z-index: 10;
-	background-color: hsla(208, 52%, 95%, 0.8);
+	background-color: var(--navbar-background-color);
 	padding: 0.7em 1.5em;
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
-	-webkit-box-shadow: 0px 40px 50px -20px rgba(0, 0, 0, 0.49);
-	-moz-box-shadow: 0px 40px 50px -20px rgba(0, 0, 0, 0.49);
-	box-shadow: 0px 40px 50px -20px rgba(0, 0, 0, 0.49);
+	-webkit-box-shadow: 0px 40px 50px -20px var(--box-shadow);
+	-moz-box-shadow: 0px 40px 50px -20px var(--box-shadow);
+	box-shadow: 0px 40px 50px -20px var(--box-shadow);
 	transform: translateY(0);
 	transition: transform 0.3s ease-in-out;
 	-webkit-transition: transform 0.3s ease-in-out;
@@ -219,11 +258,6 @@ a:hover {
 	animation: logo-animation 30s ease infinite;
 }
 
-/* .nav-bar .link-list {
-	position: relative;
-	right: 1.5em;
-} */
-
 .nav-bar .link-list ul {
 	list-style: none;
 	display: flex;
@@ -243,7 +277,7 @@ a:hover {
 }
 
 .nav-bar .link-list ul li a {
-	color: #000;
+	color: var(--text-color);
 	font-size: 1.4rem;
 	text-transform: uppercase;
 	padding: 0 0.5em;
@@ -265,25 +299,36 @@ a:hover {
 	transition: transform 0.4s ease-in-out 0.1s;
 }
 
-.nav-bar .link-list ul li[id='get-started'] {
-	background: var(--highlight-color);
+.nav-bar .link-list ul li#get-started {
+	background-color: var(--highlight-color);
 	border: 0.15em solid transparent;
-	transition: background 0.2s linear, border 0.2s linear;
-	color: #fff;
+	transition: background-color 0.2s linear, border-color 0.2s linear;
+	color: var(--text-color-variant);
+	-webkit-transition: background-color 0.2s linear, border-color 0.2s linear;
+	-moz-transition: background-color 0.2s linear, border-color 0.2s linear;
+	-ms-transition: background-color 0.2s linear, border-color 0.2s linear;
+	-o-transition: background-color 0.2s linear, border-color 0.2s linear;
+}
+body.logged-out .nav-bar .link-list ul li#get-started {
+	display: block;
 }
 
-.nav-bar .link-list ul li[id='get-started'] a {
+.nav-bar .link-list ul li#get-started a {
 	padding: 0.5em 0.25em;
-	color: #fff;
+	color: var(--text-color-white);
 	transition: color 0.2s ease;
 }
-.nav-bar .link-list ul li[id='get-started'] a:after {
+.nav-bar .link-list ul li#get-started a:after {
 	display: none;
 }
 
 #user-profile {
 	padding: 0;
 	margin: 0;
+}
+
+body.logged-in .nav-bar .link-list ul #user-profile {
+	display: block;
 }
 
 .user-profile > .user-profile-img {
@@ -307,10 +352,10 @@ a:hover {
 	min-width: 250px;
 	width: fit-content;
 	position: absolute;
-	background-color: hsl(208, 52%, 95%);
+	background-color: var(--background-color-100);
 	right: 0.5em;
 	top: 3.5em;
-	color: #000;
+	color: var(--text-color);
 	padding: 0 0 0.7em 0;
 	z-index: 1;
 	font-size: 1.5rem;
@@ -352,15 +397,15 @@ a:hover {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	border-bottom: 0.1em solid #ccc;
+	border-bottom: 0.1em solid var(--background-color-200);
 	padding: 1em 0;
-	background: var(--background-color-4);
+	background: var(--background-color-500);
 }
 .user-profile-dropdown > .user-data-container > img {
 	width: 4.5em;
 	max-width: 100%;
 	padding: 0.25em;
-	border: 0.15em solid #fff;
+	border: 0.15em solid var(--background-color-100);
 	border-radius: 4em;
 	-webkit-border-radius: 4em;
 	-moz-border-radius: 4em;
@@ -370,7 +415,7 @@ a:hover {
 }
 .user-profile-dropdown > .user-data-container > .name {
 	cursor: pointer;
-	color: #fff;
+	color: var(--text-color-variant);
 }
 
 .user-profile-dropdown > ul {
@@ -384,7 +429,7 @@ a:hover {
 .user-profile-dropdown ul li {
 	margin: 0.25em 0.3em;
 	padding: 0.5em 0;
-	border-bottom: 0.05em solid #ccc;
+	border-bottom: 0.05em solid var(--background-color-300);
 	transition: border-bottom-color 0.2s linear;
 	-webkit-transition: border-bottom-color 0.2s linear;
 	-moz-transition: border-bottom-color 0.2s linear;
@@ -392,20 +437,12 @@ a:hover {
 	-o-transition: border-bottom-color 0.2s linear;
 }
 .user-profile-dropdown ul li:hover {
-	border-bottom-color: var(--background-color-4);
+	border-bottom-color: var(--background-color-100-4);
 }
 .user-profile-dropdown ul li a {
 	display: block;
 	text-decoration: none;
-	color: rgba(0, 0, 0, 0.8);
-	transition: color 0.2s linear;
-	-webkit-transition: color 0.2s linear;
-	-moz-transition: color 0.2s linear;
-	-ms-transition: color 0.2s linear;
-	-o-transition: color 0.2s linear;
-}
-.user-profile-dropdown ul li:hover a {
-	color: rgba(0, 0, 0, 1);
+	color: var(--text-color);
 }
 
 .user-profile-dropdown ul li a i {
@@ -413,8 +450,7 @@ a:hover {
 	margin: 0 0.4em 0 0;
 }
 
-.nav-bar .link-list ul li[id='get-started'],
-.nav-bar .link-list ul li[id='user-profile'] {
+.nav-bar .link-list ul :is(li#get-started, li.user-profile) {
 	display: none;
 }
 
@@ -424,7 +460,7 @@ a:hover {
 	z-index: 11;
 	width: 100%;
 	height: 100vh;
-	background-color: hsla(211, 35%, 24%, 0.5);
+	background-color: var(--popup-container-background-color);
 	backdrop-filter: blur(1em);
 	display: flex;
 	flex-direction: column;
@@ -453,7 +489,7 @@ a:hover {
 .popup {
 	width: 80vw;
 	height: 85vh;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	border-radius: 1.5em;
 	position: relative;
 	overflow-y: auto;
@@ -478,6 +514,7 @@ a:hover {
 	-o-transition: transform 0.25s ease-in-out, visibility 0.25s ease-in-out,
 		opacity 0.25s ease-in-out;
 	visibility: hidden;
+	color: var(--text-color);
 }
 
 .popup-container.popup-container-active .popup {
@@ -496,7 +533,7 @@ a:hover {
 	right: 0.5em;
 	top: 0.5em;
 	cursor: pointer;
-	color: rgb(134, 134, 134);
+	color: var(--text-color);
 }
 
 .popup h1 {
@@ -527,17 +564,18 @@ a:hover {
 .banner .banner-img {
 	width: 100%;
 	height: 100%;
-	/* background-color: transparent; */
 	position: absolute;
 	background-image: url('../images/banners/banner10.webp');
-	/*
-    background-image: -webkit-image-set(url('../images/banner10-low-res.webp') 1x, url('../images/banner10.webp') 2x);  Chrome/Edge/Opera/Samsung, Safari will fallback to this as well 
-    background-image: image-set('../images/banner10-low-res.webp' 1x, '../images/banner10.webp' 2x); Standard use */
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: 50% 50%;
 	transition: transform 1s 0.15s ease;
+}
+
+body.dark-mode .banner .banner-img {
+	filter: brightness(0.9);
+	-webkit-filter: brightness(0.9);
 }
 
 .banner .banner-elements-container {
@@ -552,7 +590,6 @@ a:hover {
 
 .banner-text {
 	width: 50vw;
-	/*font-size: calc(25px + 23 * ((100vw - 320px) / 680));*/
 	font-size: 4rem;
 	position: relative;
 	left: 0.9em;
@@ -561,7 +598,7 @@ a:hover {
 
 .banner-text > span {
 	width: 100%;
-	color: #fff;
+	color: var(--text-color-white);
 	font-weight: 400;
 }
 
@@ -603,7 +640,7 @@ a:hover {
 	width: 22em;
 	min-height: 40px;
 	height: 2vw;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	border-radius: 8em;
 	position: relative;
 	z-index: 3;
@@ -625,12 +662,12 @@ a:hover {
 	width: 100%;
 	height: 100%;
 	border: none;
-	color: #000;
+	color: var(--text-color);
 	outline: none;
 	padding-left: 1em;
 	padding-right: 3.1em;
 	border-radius: 1.3em;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	z-index: 2;
 	-webkit-border-radius: 1.3em;
 	-moz-border-radius: 1.3em;
@@ -639,12 +676,12 @@ a:hover {
 }
 
 #search::placeholder {
-	color: #000;
+	color: var(--text-color);
 	font-size: 1em;
 }
 
 #search::-webkit-input-placeholder {
-	color: #000;
+	color: var(--text-color);
 	font-size: 1em;
 }
 
@@ -654,7 +691,7 @@ a:hover {
 	position: relative;
 	top: 0;
 	height: 0;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	padding-top: 2.5em;
 	border-radius: 1.5em;
 	overflow: hidden;
@@ -667,7 +704,7 @@ a:hover {
 }
 
 .search-results-container.results-loading {
-	border-top: 0.1em solid #ccc;
+	border-top: 0.1em solid var(--background-color-300);
 }
 
 .search-results-container.results-loading::after {
@@ -677,8 +714,8 @@ a:hover {
 	left: calc(52% - 1.5em);
 	width: 1.5em;
 	height: 1.5em;
-	border: 0.15em solid #ccc;
-	border-top: 0.15em solid #000;
+	border: 0.15em solid transparent;
+	border-top: 0.15em solid var(--background-color-500);
 	border-radius: 3em;
 	transform: rotate(0deg);
 	animation: rotate 1s infinite linear;
@@ -717,11 +754,12 @@ a:hover {
 }
 
 .search-description {
-	border-top: 0.1em solid #ccc;
+	border-top: 0.1em solid var(--background-color-300);
 	width: 100%;
 	padding: 0.6em 2.5em 1.2em 2.5em;
 	text-align: center;
 	word-wrap: break-word;
+	color: var(--text-color);
 }
 
 .search-description > img {
@@ -740,8 +778,8 @@ a:hover {
 	align-items: center;
 	text-decoration: none;
 	padding: 0.3em 0.5em 0.3em 1em;
-	border-top: 0.1em solid #ccc;
-	color: #000;
+	border-top: 0.1em solid var(--background-color-300);
+	color: var(--text-color);
 }
 
 .search-results-container > .search-result > img {
@@ -763,8 +801,8 @@ a:hover {
 
 .searched-phrase-highlight {
 	font-weight: 500;
-	color: #000;
-	background-color: #ffff00;
+	color: var(--text-color);
+	background-color: var(--searched-phrase-highlight);
 }
 
 .search-results-container-focused {
@@ -775,7 +813,8 @@ a:hover {
 	text-align: center;
 	padding: 0.5em 4em 1.2em 4em;
 	height: fit-content;
-	border-top: 1px solid #ccc;
+	border-top: 1px solid var(--background-color-200);
+	color: var(--text-color);
 }
 
 .no-search-results-container > img {
@@ -803,6 +842,7 @@ a:hover {
 
 .search-btn i {
 	position: relative;
+	color: var(--text-color);
 }
 
 .page-heading-1 {
@@ -812,6 +852,7 @@ a:hover {
 	font-size: 2.1rem;
 	margin: 2em auto 0;
 	padding: 0 4em 0.5em;
+	color: var(--text-color);
 }
 
 .page-heading-1::before {
@@ -820,7 +861,7 @@ a:hover {
 	height: 0.2em;
 	position: absolute;
 	bottom: 0;
-	background-color: #000;
+	background-color: var(--text-color);
 	border-radius: 10px;
 }
 
@@ -843,7 +884,7 @@ a:hover {
 	position: relative;
 	margin: 1.5em 0;
 	padding: 0.25em 0 0.75em;
-	background-color: var(--background-color-1);
+	background-color: var(--background-color-300);
 	border-radius: 1em;
 	order: 1;
 	box-shadow: 10px 30px 70px -20px rgba(0, 0, 0, 0.49);
@@ -858,7 +899,7 @@ a:hover {
 .nav-box hr {
 	width: 90%;
 	margin: 0 auto;
-	border-top: 0.05em solid #999999;
+	border-top: 0.05em solid var(--background-color-400);
 }
 
 .nav-box .navigate-through-links ul {
@@ -874,12 +915,11 @@ a:hover {
 	min-height: 30px;
 	border-radius: 0.5em;
 	padding: 0.5em;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	list-style: none;
 	display: flex;
 	margin: 0.2em;
 	transform: scaleX(1);
-	transition: transform 0.4s ease;
 	animation: appearItems 0.2s linear forwards;
 	-webkit-animation: appearItems 0.2s linear forwards;
 	-webkit-transform: translateY(1em);
@@ -890,6 +930,11 @@ a:hover {
 	-moz-border-radius: 0.5em;
 	-ms-border-radius: 0.5em;
 	-o-border-radius: 0.5em;
+	transition: box-shadow 0.2s linear;
+	-webkit-transition: box-shadow 0.2s linear;
+	-moz-transition: box-shadow 0.2s linear;
+	-ms-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
 }
 .nav-box .navigate-through-links ul.links-loading li.loading {
 	display: block;
@@ -901,7 +946,7 @@ a:hover {
 .nav-box .navigate-through-links ul li a {
 	width: 100%;
 	position: relative;
-	color: #000;
+	color: var(--text-color);
 	font-size: 1.1em;
 	text-decoration: none;
 	text-align: center;
@@ -915,33 +960,34 @@ a:hover {
 	flex-wrap: wrap;
 }
 
-.nav-box .trending-articles-heading,
-.nav-box .search-through-categories-heading {
+.nav-box :is(.trending-articles-heading, .search-through-categories-heading) {
 	font-size: 1.4em;
 	text-align: center;
 	margin: 0.6em 0;
 	font-weight: 400;
+	color: var(--text-color);
 }
 
 .nav-box .search-through-categories .categories {
-	background-color: #fff;
+	background-color: var(--background-color-100);
 	position: relative;
 	padding: 0.35em 0.5em;
-	border-radius: 1.25em;
 	margin: 0 0.2em;
 	margin-bottom: 0.4em;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
 	animation: appearItems 0.2s linear forwards;
 	-webkit-animation: appearItems 0.2s linear forwards;
-	-webkit-transform: translateY(1em);
-	-moz-transform: translateY(1em);
-	-ms-transform: translateY(1em);
-	-o-transform: translateY(1em);
+	border-radius: 1.25em;
 	-webkit-border-radius: 1.25em;
 	-moz-border-radius: 1.25em;
 	-ms-border-radius: 1.25em;
 	-o-border-radius: 1.25em;
+	transform: translateY(1em);
+	-webkit-transform: translateY(1em);
+	-moz-transform: translateY(1em);
+	-ms-transform: translateY(1em);
+	-o-transform: translateY(1em);
 }
 
 .nav-box .search-through-categories.categories-loading .categories.loading {
@@ -951,12 +997,12 @@ a:hover {
 	min-width: 50px;
 	min-height: 25px;
 	display: none;
-	background: #ccc;
+	background: var(--background-color-100);
 }
 
 .nav-box .search-through-categories .categories a,
 .article .article-info-container .article-categories-container .categories a {
-	color: #000;
+	color: var(--text-color);
 	font-size: 1.1rem;
 	text-decoration: none;
 }
@@ -966,7 +1012,7 @@ a:hover {
 	height: fit-content;
 	height: -moz-fit-content;
 	min-height: 250px;
-	background-color: var(--background-color-1);
+	background-color: var(--background-color-300);
 	margin: 1.25em 0;
 	padding: 1.25em;
 	border-radius: 1.25em;
@@ -975,9 +1021,9 @@ a:hover {
 	flex-wrap: wrap;
 	order: 0;
 	overflow: hidden;
-	box-shadow: 10px 30px 70px -20px rgba(0, 0, 0, 0.49);
-	-webkit-box-shadow: 10px 30px 70px -20px rgba(0, 0, 0, 0.49);
-	-moz-box-shadow: 10px 30px 70px -20px rgba(0, 0, 0, 0.49);
+	box-shadow: 10px 30px 70px -20px var(--box-shadow);
+	-webkit-box-shadow: 10px 30px 70px -20px var(--box-shadow);
+	-moz-box-shadow: 10px 30px 70px -20px var(--box-shadow);
 	-webkit-border-radius: 1.25em;
 	-moz-border-radius: 1.25em;
 	-ms-border-radius: 1.25em;
@@ -1018,7 +1064,7 @@ a:hover {
 	height: fit-content;
 	height: -moz-fit-content;
 	min-height: 150px;
-	background-color: var(--background-color);
+	background-color: var(--background-color-100);
 	margin: 1.25em 0.7em;
 	border-radius: 0.7em;
 	position: relative;
@@ -1105,7 +1151,7 @@ a:hover {
 
 .article .article-info-container .article-heading a {
 	font-size: 1.5rem;
-	color: #000;
+	color: var(--text-color);
 	height: 100%;
 	text-decoration: none;
 }
@@ -1121,6 +1167,7 @@ a:hover {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	color: var(--text-color);
 }
 
 .article .article-info-container .article-description .more {
@@ -1134,16 +1181,17 @@ a:hover {
 
 .article .article-info-container .article-author-container {
 	margin: 0.7em 0.7em 0.7em;
+	color: var(--text-color);
 }
 
 .article .article-info-container .article-author-container a {
 	font-size: 1.1em;
-	color: #000;
+	color: var(--text-color);
 }
 
 .article .article-info-container .article-stats-container {
 	margin: 0.7em 0 0 0.7em;
-	color: rgb(141, 140, 140);
+	color: var(--text-color-1);
 }
 
 .article .article-info-container .article-stats-container > .stat {
@@ -1168,7 +1216,7 @@ a:hover {
 	-o-border-radius: 1.25em;
 }
 .article .article-info-container .article-categories-container .categories a {
-	color: red;
+	color: var(--highlight-color);
 }
 
 .highlight-categories {
@@ -1195,7 +1243,7 @@ a:hover {
 	overflow: hidden;
 	opacity: 1;
 	transition: height 0.4s ease, opacity 0.4s ease, transform 0.3s ease;
-	box-shadow: 5px 10px 18px #888888;
+	box-shadow: 5px 10px 18px var(--box-shadow);
 	-webkit-border-radius: 0.6em;
 	-moz-border-radius: 0.6em;
 	-ms-border-radius: 0.6em;
@@ -1204,6 +1252,10 @@ a:hover {
 	-moz-transform: translateX(-50%);
 	-ms-transform: translateX(-50%);
 	-o-transform: translateX(-50%);
+}
+
+body.logged-in .get-started-container {
+	display: none;
 }
 
 .get-started-container.invisible {
@@ -1223,7 +1275,7 @@ a:hover {
 	font-size: 1.25em;
 	padding-left: 2em;
 	padding-right: 1.25em;
-	color: #fff;
+	color: var(--text-color-variant);
 }
 
 .get-started-container > .description > ul > li {
@@ -1233,7 +1285,7 @@ a:hover {
 .get-started-container > .log-in-btn {
 	grid-column: 2/3;
 	grid-row: 4/5;
-	color: #fff;
+	color: var(--text-color-variant);
 	font-size: 1.2em;
 	background-color: var(--highlight-color);
 	border-radius: 1.8em;
@@ -1250,7 +1302,7 @@ a:hover {
 .get-started-container > .signup-btn {
 	grid-column: 4/5;
 	grid-row: 4/5;
-	color: #fff;
+	color: var(--text-color-variant);
 	font-size: 1.2em;
 	padding: 0.5em 0;
 	margin: 0 0.5em;
@@ -1277,7 +1329,7 @@ a:hover {
 .get-started-container > .heading {
 	grid-column: 2/5;
 	grid-row: 2/3;
-	color: #fff;
+	color: var(--text-color-variant);
 	font-size: 1.5em;
 	padding: 10px 20px;
 	text-align: center;
@@ -1309,7 +1361,7 @@ a:hover {
 	right: 0.25em;
 	grid-column: 8/9;
 	grid-row: 1/2;
-	color: #fff;
+	color: var(--text-color-variant);
 }
 
 .get-started-container > .exit > i {
@@ -1319,16 +1371,16 @@ a:hover {
 .footer {
 	width: 100%;
 	height: fit-content;
-	background-color: #000;
+	background-color: var(--background-color-black);
 	position: relative;
 	font-size: 1rem;
 	margin-top: 4em;
 	display: block;
 	z-index: 9;
 	overflow: hidden;
-	box-shadow: 0px -4px 77px 0px rgba(0, 0, 0, 0.5);
-	-webkit-box-shadow: 0px -4px 77px 0px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow: 0px -4px 77px 0px rgba(0, 0, 0, 0.5);
+	box-shadow: 0px -4px 77px 0px var(--box-shadow);
+	-webkit-box-shadow: 0px -4px 77px 0px var(--box-shadow);
+	-moz-box-shadow: 0px -4px 77px 0px var(--box-shadow);
 	border-radius: 1.25em 1.25em 0 0;
 	-webkit-border-radius: 1.25em 1.25em 0 0;
 	-moz-border-radius: 1.25em 1.25em 0 0;
@@ -1343,7 +1395,7 @@ a:hover {
 	padding: 1em 0;
 	justify-content: space-between;
 	align-items: center;
-	border-bottom: 0.12em solid #fff;
+	border-bottom: 0.12em solid var(--text-color-white);
 	margin: 0 auto;
 }
 
@@ -1352,7 +1404,7 @@ a:hover {
 }
 
 .footer .footer-label-and-move-to-top-container > .move-to-top {
-	color: #fff;
+	color: var(--text-color-white);
 	font-size: 1em;
 }
 
@@ -1361,7 +1413,6 @@ a:hover {
 	max-width: 1500px;
 	font-size: 1.2em;
 	min-height: 150px;
-
 	position: relative;
 	box-sizing: border-box;
 	height: fit-content;
@@ -1377,7 +1428,7 @@ a:hover {
 }
 
 .footer .footer-content > .description {
-	color: #fff;
+	color: var(--text-color-white);
 	min-width: 250px;
 	width: 40%;
 	text-align: left;
@@ -1388,7 +1439,7 @@ a:hover {
 }
 
 .footer > .footer-content > .newsletter-description {
-	color: #fff;
+	color: var(--text-color-white);
 	width: 40%;
 }
 
@@ -1409,7 +1460,7 @@ a:hover {
 
 .footer > .footer-content > .main-links > ul > li > a {
 	font-weight: 300;
-	color: #fff;
+	color: var(--text-color-white);
 }
 
 .footer > .footer-content > .main-links > ul > li:nth-child(5),
@@ -1423,11 +1474,11 @@ a:hover {
 	margin: 0 auto;
 	bottom: 0;
 	padding: 0.6em 0 0.5em 0;
-	color: #fff;
+	color: var(--text-color-white);
 	font-size: 1rem;
 	font-weight: 300;
-	border-top: 0.12em solid #fff;
-	background-color: #000;
+	border-top: 0.12em solid var(--text-color-white);
+	background-color: var(--background-color-black);
 	text-align: center;
 }
 
@@ -1465,7 +1516,7 @@ a:hover {
 	.footer > .footer-content > .main-links {
 		margin: 0 0 1.25em 0;
 		width: 70vw;
-		border-top: 0.1em solid #fff;
+		border-top: 0.1em solid var(--text-color-variant);
 		padding: 0.3em 1.25em;
 	}
 
@@ -1705,7 +1756,7 @@ a:hover {
 	.footer > .footer-content > .main-links {
 		margin: 0 0 20px 0;
 		width: 70vw;
-		border-top: 2px solid #fff;
+		border-top: 2px solid var(--text-color-white);
 		padding: 5px 20px;
 	}
 
@@ -1786,7 +1837,7 @@ a:hover {
 
 	
     .articles-container{
-        background-color:var(--background-color);
+        background-color:var(--background-color-100);
     }
 
 	.article .article-image {

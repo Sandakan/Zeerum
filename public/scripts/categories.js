@@ -103,8 +103,8 @@ fetchData(`/data/categories/`, ({ success, data }) => {
 				x.name.toLowerCase() === window.location.pathname.split('/').pop().toLowerCase() ||
 				x.categoryId === Number(window.location.pathname.split('/').pop())
 			) {
-				document.title = `ZEERUM \| You searched for \#${x.name}`;
-				document.querySelector('.highlight-categories').innerHTML = `#${x.name}`;
+				document.title = `ZEERUM \| You searched for ${x.name}`;
+				document.querySelector('.highlight-categories').innerHTML = `${x.name}`;
 			}
 			document.querySelector(
 				'.search-through-categories'

@@ -12,7 +12,7 @@ fetchData('/data/categories', ({ success, data }) => {
 		data.forEach((x) => {
 			temp += `<div class="discover-category" onclick="window.location.href = 'categories/${x.name.toLowerCase()}'"><div class="img-container"><img src="${
 				x.pictureUrl
-			}" alt="" /></div><div class="heading-container"><a href="categories/${x.name.toLowerCase()}"># ${
+			}" alt="" /></div><div class="heading-container"><a href="categories/${x.name.toLowerCase()}">${
 				x.name
 			}</a></div></div>`;
 		});

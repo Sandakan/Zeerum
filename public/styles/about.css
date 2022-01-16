@@ -47,7 +47,7 @@
 	width: 100%;
 	height: fit-content;
 	font-size: 4rem;
-	color: var(--background-color);
+	color: var(--background-color-100);
 	text-align: center;
 	padding: 0 100px;
 }
