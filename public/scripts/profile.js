@@ -55,6 +55,15 @@ fetchData('/data/profile', (res) => {
 						<i class="fas fa-cog"></i> Settings
 					</a>
 				</li>
+				<li id="change-theme">
+					<a href="#">
+						${
+							document.body.classList.contains('dark-mode')
+								? `<i class="fas fa-sun"></i> Light Mode`
+								: `<i class="fas fa-moon"></i> Dark Mode`
+						}
+					</a>
+				</li>
 				<li id="logout">
 					<a href="/logout">
 						<i class="fas fa-sign-out-alt"></i> Log out
@@ -64,6 +73,20 @@ fetchData('/data/profile', (res) => {
 		document
 			.querySelector('.user-profile-dropdown > .user-data-container > img')
 			.addEventListener('click', () => (location.href = '/profile'));
+		document.querySelector('#change-theme').addEventListener('click', async (e) => {
+			if (!document.body.classList.contains('dark-mode'))
+				document.querySelector(
+					'#change-theme a'
+				).innerHTML = `<i class="fas fa-sun"></i> Light Mode`;
+			else
+				document.querySelector(
+					'#change-theme a'
+				).innerHTML = `<i class="fas fa-moon"></i> Dark Mode`;
+			fetch('/change-theme')
+				.then((res) => res.json())
+				.then((res) => console.log(res.message));
+			document.querySelector('body').classList.toggle('dark-mode');
+		});
 		document.getElementById('user-profile').addEventListener('click', (e) => {
 			e.stopPropagation();
 			e.target.classList.toggle('active');
@@ -71,7 +94,7 @@ fetchData('/data/profile', (res) => {
 				.querySelector('.user-profile-dropdown')
 				.classList.toggle('user-profile-dropdown-active');
 		});
-		document.querySelector('body').addEventListener('click', (e) => {
+		document.body.addEventListener('click', (e) => {
 			document.querySelector('.user-profile-img').classList.remove('active');
 			e.stopPropagation();
 			document
@@ -163,14 +186,6 @@ fetchData('/data/profile', (res) => {
 		console.log(`Error occurred when requesting profile data.`, res.message);
 		sessionStorage.clear();
 	}
-});
-if (sessionStorage.getItem('theme') === 'dark')
-	document.querySelector('body').classList.add('dark-mode');
-document.querySelector('.made-with-love .heart').addEventListener('click', (e) => {
-	if (sessionStorage.getItem('theme') === 'dark' || sessionStorage.getItem('theme') === undefined)
-		sessionStorage.setItem('theme', 'light');
-	else sessionStorage.setItem('theme', 'dark');
-	document.querySelector('body').classList.toggle('dark-mode');
 });
 
 //? User specific articles

@@ -61,7 +61,7 @@ const login = async (req, res, next) => {
 const sendLoginHTML = (req, res) => {
 	if (req.session.userId !== undefined || req.session.username)
 		res.status(307).redirect('/profile');
-	else res.render('login', { csrfToken: req.csrfToken() });
+	else res.render('login', { csrfToken: req.csrfToken(), theme: req.session.theme });
 };
 
 module.exports = { login, sendLoginHTML };

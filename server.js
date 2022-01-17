@@ -97,26 +97,30 @@ app.use(
 // ? /////////////////////////////////// MAIN ROUTES ///////////////////////////////////////////////
 
 app.get('/', csrfProtection, (req, res) => {
-	res.render('index', { status: 'Development in progress.', csrfToken: req.csrfToken() });
+	res.render('index', {
+		status: 'Development in progress.',
+		csrfToken: req.csrfToken(),
+		theme: req.session.theme,
+	});
 });
 
 app.get('/discover', csrfProtection, (req, res) => {
-	res.render('discover', { csrfToken: req.csrfToken() });
+	res.render('discover', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 
 app.get('/write', csrfProtection, (req, res) => {
-	res.render('write', { csrfToken: req.csrfToken() });
+	res.render('write', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 app.get('/about', csrfProtection, (req, res) => {
-	res.render('about', { csrfToken: req.csrfToken() });
+	res.render('about', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 
 app.get('/profile', csrfProtection, authenticate, (req, res) => {
-	res.render('profile', { csrfToken: req.csrfToken() });
+	res.render('profile', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 
 app.get('/404', csrfProtection, (req, res) => {
-	res.render('404', { csrfToken: req.csrfToken() });
+	res.render('404', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 
 app.get('/logout', (req, res) => {
@@ -124,6 +128,24 @@ app.get('/logout', (req, res) => {
 		if (err) console.log(err);
 		res.status(308).redirect('/');
 	});
+});
+
+app.get('/change-theme', (req, res) => {
+	if (!req.session.theme || req.session.theme === 'light-mode') {
+		req.session.theme = 'dark-mode';
+		res.json({
+			success: true,
+			status: 200,
+			message: 'Theme changed from light to dark successfully.',
+		});
+	} else {
+		req.session.theme = 'light-mode';
+		res.json({
+			success: true,
+			status: 200,
+			message: 'Theme changed from dark to light successfully.',
+		});
+	}
 });
 
 app.use('/login', loginRouter);
@@ -146,7 +168,7 @@ app.get('/articles/:article', csrfProtection, async (req, res, next) => {
 		: await requestData('articles', { articleId: articleId });
 	// console.log(articleId, articleData);
 	if (articleData.success && articleData.data.length !== 0)
-		res.render('article', { csrfToken: req.csrfToken() });
+		res.render('article', { csrfToken: req.csrfToken(), theme: req.session.theme });
 	else next();
 });
 
@@ -158,12 +180,12 @@ app.get('/categories/:category', csrfProtection, async (req, res, next) => {
 		? await requestData('categories', { name: { $regex: new RegExp(category, 'i') } })
 		: await requestData('categories', { categoryId: category });
 	if (categoryData.success && categoryData.data.length !== 0)
-		res.render('categories', { csrfToken: req.csrfToken() });
+		res.render('categories', { csrfToken: req.csrfToken(), theme: req.session.theme });
 	else next();
 });
 
 app.get('/search/:searchItem', csrfProtection, (req, res) => {
-	res.render('categories', { csrfToken: req.csrfToken() });
+	res.render('categories', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 
 app.get('/user/:user', csrfProtection, async (req, res, next) => {
@@ -182,7 +204,7 @@ app.get('/user/:user', csrfProtection, async (req, res, next) => {
 			: await checkUser({ userId: userId });
 		// console.log(userId, userData);
 		if (userData.success && userData.isThereAUser)
-			res.render('user', { csrfToken: req.csrfToken() });
+			res.render('user', { csrfToken: req.csrfToken(), theme: req.session.theme });
 		else next();
 	}
 });

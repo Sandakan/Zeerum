@@ -113,9 +113,9 @@ fetch(`/data/users/${userId}`)
 								document.querySelector(
 									'.follow-btn'
 								).innerHTML = `<i class="fas fa-check"></i> followed`;
-								document.querySelector(
-									'.followers-and-followings'
-								).innerHTML = `${data.followers.length} followers / ${data.followings.length} followings`;
+								document.querySelector('.followers-and-followings').innerHTML = `${
+									data.followers.length + 1
+								} followers / ${data.followings.length} followings`;
 							} else alert(x.message);
 						});
 				}

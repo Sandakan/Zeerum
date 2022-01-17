@@ -34,7 +34,7 @@ body {
 }
 
 .login-description > .description {
-	color: #fff;
+	color: var(--text-color-white);
 	font-size: 1.25em;
 	margin-bottom: 3em;
 	font-weight: 300;
@@ -47,7 +47,7 @@ body {
 	height: 100vh;
 	border-radius: 20px;
 	margin: 0 100px;
-	background-color: hsla(0, 0%, 100%, 0.9);
+	background-color: var(--background-color-100);
 	backdrop-filter: blur(10px);
 	position: relative;
 	display: grid;
@@ -65,7 +65,7 @@ body {
 	padding-top: 25px;
 	text-align: center;
 	font-size: 2.5rem;
-	color: var(--highlight-color);
+	color: var(--text-color);
 }
 .form > .log-in-heading::after {
 	content: '';
@@ -75,7 +75,7 @@ body {
 	transform: translateY(50px) translateX(-50%);
 	height: 4px;
 	border-radius: 20px;
-	background-color: var(--highlight-color);
+	background-color: var(--text-color);
 }
 
 .form > .email-container {
@@ -108,17 +108,18 @@ input {
 	outline: none;
 	font-size: 1.1rem;
 	border: 2px solid transparent;
-	background-color: rgba(204, 204, 204, 0.5);
+	background-color: var(--background-color-200);
 	border-radius: 30px;
 	transition: border-color 0.2s linear, background 0.2s linear;
 	-webkit-border-radius: 30px;
 	-moz-border-radius: 30px;
 	-ms-border-radius: 30px;
 	-o-border-radius: 30px;
+	color: var(--text-color);
 }
 
 input::placeholder {
-	color: hsla(0, 0%, 0%, 0.8);
+	color: var(--text-color-1);
 }
 
 input[id='submit'] {
@@ -128,13 +129,11 @@ input[id='submit'] {
 		border-color 0.3s ease-out 0.1s;
 }
 
-.form > input[id='submit'].submitting {
-	color: rgb(189, 189, 189);
-}
-.form > input[id='submit'].submitting:hover {
-	background-color: rgba(204, 204, 204, 0.5);
-	border-color: rgba(204, 204, 204, 0.5);
-	color: transparent;
+.form > :is(input[id='submit'].submitting, input[id='submit'].submitting:hover) {
+	color: var(--background-color-500);
+	background-color: var(--background-color-100);
+	border-color: var(--background-color-200);
+	text-transform: uppercase;
 }
 
 .data-error-container {
@@ -155,7 +154,7 @@ input[id='submit'] {
 	text-align: center;
 	grid-column: 2/7;
 	grid-row: 10/11;
-	color: var(--highlight-color-variant);
+	color: var(--text-color-1);
 	text-decoration: none;
 	font-size: 1.1rem;
 }

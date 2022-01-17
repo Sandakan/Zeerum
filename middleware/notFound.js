@@ -14,7 +14,7 @@ const notFound = (isApiResponse = false, customMessage = '') => {
 				requestedUrl: req.originalUrl,
 			});
 		} else {
-			res.render('404', { csrfToken: req.csrfToken() });
+			res.render('404', { csrfToken: req.csrfToken(), theme: req.session.theme });
 		}
 	};
 };

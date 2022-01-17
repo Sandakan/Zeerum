@@ -17,6 +17,11 @@
 	align-items: center;
 	padding: 10px 20px;
 	cursor: pointer;
+	transition: box-shadow 0.2s linear;
+	-webkit-transition: box-shadow 0.2s linear;
+	-moz-transition: box-shadow 0.2s linear;
+	-ms-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
 }
 .articles-container .user img {
 	width: 100px;
@@ -40,7 +45,7 @@
 	word-spacing: 3px;
 }
 .articles-container .user .user-data .name a {
-	color: #000;
+	color: var(--text-color);
 	text-decoration: none;
 }
 .articles-container .user .user-data .name:hover a {
@@ -49,10 +54,12 @@
 .articles-container .user .user-data .user-type {
 	text-transform: uppercase;
 	font-weight: 500;
+	color: var(--text-color);
 }
 
 .articles-container .user .user-data .stats {
 	margin-top: 10px;
+	color: var(--text-color);
 }
 
 .articles-container .category {
@@ -66,6 +73,11 @@
 	align-items: center;
 	padding: 10px 20px;
 	cursor: pointer;
+	transition: box-shadow 0.2s linear;
+	-webkit-transition: box-shadow 0.2s linear;
+	-moz-transition: box-shadow 0.2s linear;
+	-ms-transition: box-shadow 0.2s linear;
+	-o-transition: box-shadow 0.2s linear;
 }
 
 .articles-container .category img {
@@ -76,10 +88,16 @@
 
 .articles-container .category .name {
 	font-size: 1.5rem;
-	color: #000;
+	color: var(--text-color);
 	text-decoration: none;
 }
 
 .articles-container .category .name:hover {
 	text-decoration: underline;
+}
+
+.articles-container :is(.user, .category):hover {
+	box-shadow: 0px 24px 100px -15px var(--box-shadow);
+	-webkit-box-shadow: 0px 24px 100px -15px var(--box-shadow);
+	-moz-box-shadow: 0px 24px 100px -15px var(--box-shadow);
 }

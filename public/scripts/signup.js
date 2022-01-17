@@ -135,7 +135,7 @@ document.getElementById('form').addEventListener('submit', (e) => {
 	} else {
 		e.preventDefault();
 		document.getElementById('submit').classList.add('submitting');
-		document.getElementById('submit').value = 'LOADING...';
+		document.getElementById('submit').value = 'SIGNING UP...';
 		fetch('/signup', {
 			method: 'POST',
 			headers: {
@@ -172,6 +172,13 @@ document.getElementById('form').addEventListener('submit', (e) => {
 				}
 			});
 	}
+});
+
+document.querySelector('.made-with-love .heart').addEventListener('click', async (e) => {
+	fetch('/change-theme')
+		.then((res) => res.json())
+		.then((res) => console.log(res.message));
+	document.querySelector('body').classList.toggle('dark-mode');
 });
 
 // ? ///////////////////////////////////////////////////////////////////////////////////////////////

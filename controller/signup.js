@@ -78,7 +78,7 @@ const signup = (req, res, next) => {
 const sendSignupHTML = (req, res) => {
 	if (req.session.username || req.session.userId !== undefined)
 		res.status(307).redirect('/profile');
-	else res.render('signup', { csrfToken: req.csrfToken() });
+	else res.render('signup', { csrfToken: req.csrfToken(), theme: req.session.theme });
 };
 
 module.exports = { validateSignupInputs, signup, sendSignupHTML };

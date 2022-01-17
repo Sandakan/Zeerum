@@ -51,14 +51,13 @@
 
 /*Transitions for SIGN-IN */
 input:not([type='submit']):focus {
-	border-color: var(--highlight-color);
+	border-color: var(--background-color-500);
 }
 
 .container > .form > input[id='submit']:hover,
 .form > input[id='submit']:hover {
-	background-color: var(--highlight-color);
-	border-color: var(--highlight-color);
-	color: #fff;
+	background-color: var(--background-color-400);
+	border-color: var(--background-color-400);
 }
 
 .container > .form > .log-in:hover,

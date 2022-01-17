@@ -196,12 +196,14 @@
 .article-data span,
 .article-data ol li,
 .article-data ul li {
-	font-family: 'Calibri', serif;
-	font-size: 1.4em;
+	font-family: 'Noto Serif', serif;
+	font-size: 1.3em;
+	word-spacing: 0.1em;
+	line-height: 1.6em;
 }
 
 .article-data :is(h1, h2, h3) {
-	font-family: 'open sans', sans-serif;
+	font-family: 'Open Sans', sans-serif;
 	padding-top: 1.5em;
 }
 
@@ -276,6 +278,7 @@
 }
 .article-data-container > .article-data > .footnotes a {
 	text-decoration: underline;
+	color: var(--text-color-1);
 }
 
 .article-data-container > .article-data > .categories {

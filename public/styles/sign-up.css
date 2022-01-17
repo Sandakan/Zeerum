@@ -45,7 +45,7 @@ body {
 }
 
 .signup-description > .description {
-	color: #fff;
+	color: var(--text-color-white);
 	font-size: 1.25em;
 	margin-bottom: 3em;
 	font-weight: 300;
@@ -59,16 +59,16 @@ body {
 	height: 100vh;
 	padding: 2em;
 	border-radius: 20px;
-	background-color: hsla(0, 0%, 100%, 0.9);
+	background-color: var(--background-color-100);
 	backdrop-filter: blur(10px);
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
-	-webkit-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
-	-moz-box-shadow: 10px 10px 21px 0px rgba(0, 0, 0, 0.4);
+	box-shadow: 10px 10px 21px 0px var(--box-shadow);
+	-webkit-box-shadow: 10px 10px 21px 0px var(--box-shadow);
+	-moz-box-shadow: 10px 10px 21px 0px var(--box-shadow);
 	-webkit-border-radius: 20px;
 	-moz-border-radius: 20px;
 	-ms-border-radius: 20px;
@@ -79,7 +79,7 @@ body {
 	text-align: center;
 	font-size: 2.5em;
 	margin-bottom: 1.25em;
-	color: var(--highlight-color);
+	color: var(--text-color);
 }
 
 .signup-heading::before {
@@ -90,7 +90,7 @@ body {
 	transform: translateY(45px) translateX(-50%);
 	height: 0.125em;
 	border-radius: 20px;
-	background-color: var(--highlight-color);
+	background-color: var(--text-color);
 }
 
 .form
@@ -144,17 +144,18 @@ input {
 	outline: none;
 	font-size: 1.1rem;
 	border: 2px solid transparent;
-	background-color: rgba(204, 204, 204, 0.5);
+	background-color: var(--background-color-200);
 	border-radius: 30px;
 	transition: border-color 0.2s linear, background 0.2s linear;
 	-webkit-border-radius: 30px;
 	-moz-border-radius: 30px;
 	-ms-border-radius: 30px;
 	-o-border-radius: 30px;
+	color: var(--text-color);
 }
 
 input::placeholder {
-	color: hsla(0, 0%, 0%, 0.8);
+	color: var(--text-color-1);
 }
 
 .form > input[id='submit'] {
@@ -163,19 +164,17 @@ input::placeholder {
 		border-color 0.3s ease-out 0.1s;
 }
 
-.form > input[id='submit'].submitting {
-	color: rgb(189, 189, 189);
-}
-.form > input[id='submit'].submitting:hover {
-	background-color: rgba(204, 204, 204, 0.5);
-	border-color: rgba(204, 204, 204, 0.5);
-	color: transparent;
+.form > :is(input[id='submit'].submitting, input[id='submit'].submitting:hover) {
+	color: var(--background-color-500);
+	background-color: var(--background-color-100);
+	border-color: var(--background-color-200);
+	text-transform: uppercase;
 }
 
 .form > .log-in {
 	font-size: 1.15em;
 	text-align: center;
-	color: var(--highlight-color-variant);
+	color: var(--text-color-1);
 	text-decoration: none;
 	margin: 1em;
 }

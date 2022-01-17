@@ -23,11 +23,13 @@
 	--highlight-color-variant: hsl(243, 39%, 36%);
 	--highlight-color-1: hsl(44, 96%, 59%);
 	--highlight-color-2: hsl(213, 92%, 61%);
+	--highlight-color-3: hsl(153, 91%, 56%);
+	--highlight-color-4: hsl(210, 29%, 24%);
 	--searched-phrase-highlight: hsl(60, 100%, 50%);
 	--text-color-white: #fff;
 	--text-color-black: #000;
 	--text-color: hsl(0, 0%, 0%);
-	--text-color-variant: hsl(0, 0%, 100%);
+	--text-color-variant: hsl(0, 0%, 90%);
 	--text-color-1: hsl(0, 0%, 50%);
 	--box-shadow: hsla(0, 0%, 0%, 0.5);
 	/* UNUSED CSS COLOR VARIABLES */
@@ -93,7 +95,7 @@ body.dark-mode {
 	--background-color-300: hsl(206, 21%, 35%);
 	--background-color-400: hsl(206, 21%, 45%);
 	--background-color-500: hsl(206, 21%, 55%);
-	--text-color: hsl(0, 0%, 100%);
+	--text-color: hsl(0, 0%, 90%);
 	--text-color-variant: hsl(0, 0%, 0%);
 	--navbar-background-color: hsla(206, 21%, 15%, 0.75);
 	--text-color-1: hsl(0, 0%, 60%);
@@ -1275,7 +1277,7 @@ body.logged-in .get-started-container {
 	font-size: 1.25em;
 	padding-left: 2em;
 	padding-right: 1.25em;
-	color: var(--text-color-variant);
+	color: var(--text-color-white);
 }
 
 .get-started-container > .description > ul > li {
@@ -1285,7 +1287,7 @@ body.logged-in .get-started-container {
 .get-started-container > .log-in-btn {
 	grid-column: 2/3;
 	grid-row: 4/5;
-	color: var(--text-color-variant);
+	color: var(--text-color-white);
 	font-size: 1.2em;
 	background-color: var(--highlight-color);
 	border-radius: 1.8em;
@@ -1302,7 +1304,7 @@ body.logged-in .get-started-container {
 .get-started-container > .signup-btn {
 	grid-column: 4/5;
 	grid-row: 4/5;
-	color: var(--text-color-variant);
+	color: var(--text-color-white);
 	font-size: 1.2em;
 	padding: 0.5em 0;
 	margin: 0 0.5em;
@@ -1329,7 +1331,7 @@ body.logged-in .get-started-container {
 .get-started-container > .heading {
 	grid-column: 2/5;
 	grid-row: 2/3;
-	color: var(--text-color-variant);
+	color: var(--text-color-white);
 	font-size: 1.5em;
 	padding: 10px 20px;
 	text-align: center;
@@ -1361,7 +1363,7 @@ body.logged-in .get-started-container {
 	right: 0.25em;
 	grid-column: 8/9;
 	grid-row: 1/2;
-	color: var(--text-color-variant);
+	color: var(--text-color-white);
 }
 
 .get-started-container > .exit > i {
