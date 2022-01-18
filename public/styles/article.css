@@ -460,6 +460,8 @@
 	font-size: 1.5em;
 	padding: 0.25em 0 0 0;
 	transition: color 0.3s ease;
+	/* -webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: var(--text-color); */
 }
 
 .author
@@ -523,11 +525,11 @@
 	border: none;
 	outline: none;
 	background-color: var(--background-color-200);
-	transition: background 0.2s linear;
-	-webkit-transition: background 0.2s linear;
-	-moz-transition: background 0.2s linear;
-	-ms-transition: background 0.2s linear;
-	-o-transition: background 0.2s linear;
+	transition: background 0.2s ease-in-out;
+	-webkit-transition: background 0.2s ease-in-out;
+	-moz-transition: background 0.2s ease-in-out;
+	-ms-transition: background 0.2s ease-in-out;
+	-o-transition: background 0.2s ease-in-out;
 	-webkit-border-radius: 1.25em;
 	-moz-border-radius: 1.25em;
 	-ms-border-radius: 1.25em;
@@ -754,7 +756,6 @@
 @media screen and (max-width: 600px) {
 	.article-data :is(p, span, ul, ol) {
 		padding: 1em 1em 0.625em 1em;
-		text-align: justify;
 	}
 
 	.article-data :is(h3, h2, h1) {

@@ -131,21 +131,25 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/change-theme', (req, res) => {
-	if (!req.session.theme || req.session.theme === 'light-mode') {
-		req.session.theme = 'dark-mode';
+	const theme = req.query.theme;
+	if (theme === 'dark') req.session.theme = 'dark-mode';
+	else if (theme === 'light') req.session.theme = 'light-mode';
+	else {
+		if (!req.session.theme || req.session.theme === 'light-mode') req.session.theme = 'dark-mode';
+		else req.session.theme = 'light-mode';
+	}
+	if (req.session.theme === 'dark-mode')
 		res.json({
 			success: true,
 			status: 200,
 			message: 'Theme changed from light to dark successfully.',
 		});
-	} else {
-		req.session.theme = 'light-mode';
+	else
 		res.json({
 			success: true,
 			status: 200,
 			message: 'Theme changed from dark to light successfully.',
 		});
-	}
 });
 
 app.use('/login', loginRouter);

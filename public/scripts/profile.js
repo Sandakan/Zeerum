@@ -73,20 +73,9 @@ fetchData('/data/profile', (res) => {
 		document
 			.querySelector('.user-profile-dropdown > .user-data-container > img')
 			.addEventListener('click', () => (location.href = '/profile'));
-		document.querySelector('#change-theme').addEventListener('click', async (e) => {
-			if (!document.body.classList.contains('dark-mode'))
-				document.querySelector(
-					'#change-theme a'
-				).innerHTML = `<i class="fas fa-sun"></i> Light Mode`;
-			else
-				document.querySelector(
-					'#change-theme a'
-				).innerHTML = `<i class="fas fa-moon"></i> Dark Mode`;
-			fetch('/change-theme')
-				.then((res) => res.json())
-				.then((res) => console.log(res.message));
-			document.querySelector('body').classList.toggle('dark-mode');
-		});
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) changeTheme('dark');
+		document.querySelector('#change-theme').addEventListener('click', () => changeTheme(''));
+		document.querySelector('.change-theme-btn').addEventListener('click', () => changeTheme(''));
 		document.getElementById('user-profile').addEventListener('click', (e) => {
 			e.stopPropagation();
 			e.target.classList.toggle('active');
@@ -449,4 +438,32 @@ const changeSettings = () => {
 		});
 	});
 	document.querySelector('li[data-setting-type="account"]').click();
+};
+
+const changeTheme = (theme = '') => {
+	if (theme === 'dark' && !document.body.classList.contains('dark-mode')) {
+		document.body.classList.add('dark-mode');
+		fetch('/change-theme?theme="dark"')
+			.then((res) => res.json())
+			.then((res) => console.log(res.message));
+	} else if (theme === 'light' && document.body.classList.contains('dark-mode')) {
+		document.body.classList.remove('dark-mode');
+		fetch('/change-theme?theme="light"')
+			.then((res) => res.json())
+			.then((res) => console.log(res.message));
+	} else if (theme === '') {
+		document.body.classList.toggle('dark-mode');
+		fetch('/change-theme?theme=""')
+			.then((res) => res.json())
+			.then((res) => console.log(res.message));
+	}
+	if (!document.body.classList.contains('dark-mode')) {
+		document.querySelector('#change-theme a').innerHTML = `<i class="fas fa-sun"></i> Light Mode`;
+		document.querySelector('.change-theme-btn').classList.add('fa-moon');
+		document.querySelector('.change-theme-btn').classList.remove('fa-sun');
+	} else {
+		document.querySelector('#change-theme a').innerHTML = `<i class="fas fa-moon"></i> Dark Mode`;
+		document.querySelector('.change-theme-btn').classList.add('fa-sun');
+		document.querySelector('.change-theme-btn').classList.remove('fa-moon');
+	}
 };
