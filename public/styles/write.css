@@ -4,6 +4,9 @@ body.logged-out .write-content {
 body.logged-in.author .banner-container {
 	display: none;
 }
+body.logged-in.author .write-content {
+	display: flex;
+}
 
 .nav-bar .link-list ul li:nth-child(3) a {
 	color: var(--highlight-color);
@@ -58,7 +61,7 @@ body.logged-in.author .banner-container {
 	-moz-border-radius: 1em;
 	-ms-border-radius: 1em;
 	-o-border-radius: 1em;
-	display: flex;
+	display: none;
 	flex-direction: column;
 	overflow: hidden;
 	background: var(--background-color-200);
@@ -78,6 +81,9 @@ body.logged-in.author .banner-container {
 	padding: 0.5em;
 	overflow: hidden;
 	padding: 1em 1em 5em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 .write-content .write-preview:empty:after {
 	content: 'Enter article content here.';
@@ -94,6 +100,7 @@ body.logged-in.author .banner-container {
 	font-size: 3rem;
 	text-align: center;
 	color: var(--background-color-300);
+	padding: 0 0.5em;
 }
 
 .write-content
@@ -779,4 +786,10 @@ body.logged-in.author .banner-container {
 	box-shadow: 3px 32px 84px 16px var(--box-shadow);
 	-webkit-box-shadow: 3px 32px 84px 16px var(--box-shadow);
 	-moz-box-shadow: 3px 32px 84px 16px var(--box-shadow);
+}
+
+@media screen and (max-width: 600px) {
+	.write-content .finalize-article-btn-container {
+		justify-content: center;
+	}
 }

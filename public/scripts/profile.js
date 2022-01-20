@@ -75,7 +75,9 @@ fetchData('/data/profile', (res) => {
 			.addEventListener('click', () => (location.href = '/profile'));
 		if (window.matchMedia('(prefers-color-scheme: dark)').matches) changeTheme('dark');
 		document.querySelector('#change-theme').addEventListener('click', () => changeTheme(''));
-		document.querySelector('.change-theme-btn').addEventListener('click', () => changeTheme(''));
+		document
+			.querySelector('.made-with-love .heart')
+			.addEventListener('click', () => changeTheme(''));
 		document.getElementById('user-profile').addEventListener('click', (e) => {
 			e.stopPropagation();
 			e.target.classList.toggle('active');
@@ -457,13 +459,9 @@ const changeTheme = (theme = '') => {
 			.then((res) => res.json())
 			.then((res) => console.log(res.message));
 	}
-	if (!document.body.classList.contains('dark-mode')) {
+	if (document.body.classList.contains('dark-mode')) {
 		document.querySelector('#change-theme a').innerHTML = `<i class="fas fa-sun"></i> Light Mode`;
-		document.querySelector('.change-theme-btn').classList.add('fa-moon');
-		document.querySelector('.change-theme-btn').classList.remove('fa-sun');
 	} else {
 		document.querySelector('#change-theme a').innerHTML = `<i class="fas fa-moon"></i> Dark Mode`;
-		document.querySelector('.change-theme-btn').classList.add('fa-sun');
-		document.querySelector('.change-theme-btn').classList.remove('fa-moon');
 	}
 };

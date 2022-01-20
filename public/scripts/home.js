@@ -7,7 +7,7 @@ const token = document.querySelector('meta[name="csrf-token"]').getAttribute('co
 
 //? Data fetches //////////////////////////////////////////////////////////
 fetchData(
-	'/data/articles/',
+	'/data/articles?allArticles=true',
 	(res) => {
 		const { success, data } = res;
 		if (success) {

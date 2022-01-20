@@ -124,7 +124,7 @@
 	height: fit-content;
 	position: absolute;
 	bottom: 0;
-	background: linear-gradient(0deg, var(--highlight-color) 0%, rgba(0, 0, 0, 0) 100%);
+	background: linear-gradient(0deg, var(--highlight-color) 0%, transparent 100%);
 }
 
 .article-heading-and-stats-container span[class='article-heading'] {
@@ -221,7 +221,6 @@
 
 .article-data h3 {
 	font-size: 1.7em;
-	font-weight: 500;
 }
 
 .article-data ul,

@@ -112,7 +112,13 @@ const checkUser = async (userDataObj, customProjection = {}, func = () => true) 
 	return promise;
 };
 
-const requestData = async (collection, query = {}, customProjection = {}, func = () => true) => {
+const requestData = async (
+	collection,
+	query = {},
+	customProjection = {},
+	limit = 0,
+	func = () => true
+) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
@@ -121,6 +127,7 @@ const requestData = async (collection, query = {}, customProjection = {}, func =
 			.find(query, {
 				projection: { password: false, birthday: false, ...customProjection },
 			})
+			.limit(limit)
 			.toArray((error, result) => {
 				if (error) {
 					reject({ success: false });

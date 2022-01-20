@@ -19,7 +19,7 @@
 	--background-color-black: hsl(0, 0%, 0%);
 	--navbar-background-color: hsla(208, 52%, 95%, 50%);
 	--popup-container-background-color: hsla(211, 35%, 24%, 0.5);
-	--highlight-color: hsl(360, 67%, 51%);
+	--highlight-color: #ee5253;
 	--highlight-color-variant: hsl(243, 39%, 36%);
 	--highlight-color-1: hsl(44, 96%, 59%);
 	--highlight-color-2: hsl(213, 92%, 61%);
@@ -1051,6 +1051,10 @@ body.dark-mode .banner .banner-img {
 	text-align: center;
 	font-size: 1.5rem;
 	padding: 1em 0;
+	color: var(--text-color);
+}
+
+span.no-articles {
 }
 
 .no-articles-container .no-search {
@@ -1390,45 +1394,23 @@ body.logged-in .get-started-container {
 	-o-border-radius: 1.25em 1.25em 0 0;
 }
 
-.footer .footer-label-move-to-top-and-theme-change-container {
+.footer .footer-label-and-move-to-top-container {
 	position: relative;
 	width: 95%;
 	display: flex;
-	padding: 1em 0;
-	justify-content: space-between;
 	align-items: center;
-	border-bottom: 0.12em solid var(--text-color-white);
+	justify-content: space-between;
+	padding: 1em 0;
 	margin: 0 auto;
+	border-bottom: 0.12em solid var(--text-color-white);
 }
-
-.footer .footer-label-move-to-top-and-theme-change-container .label {
+.footer .footer-label-and-move-to-top-container a .label {
 	font-size: 2.5rem;
 }
 
-.footer
-	.footer-label-move-to-top-and-theme-change-container
-	> .move-to-top-and-theme-change-container {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-}
-
-.footer
-	.footer-label-move-to-top-and-theme-change-container
-	> .move-to-top-and-theme-change-container
-	> .move-to-top {
+.footer .footer-label-and-move-to-top-container > .move-to-top {
 	color: var(--text-color-white);
 	font-size: 1em;
-}
-
-.footer
-	.footer-label-move-to-top-and-theme-change-container
-	> .move-to-top-and-theme-change-container
-	> .change-theme-btn {
-	font-size: 1.5em;
-	margin-right: 2em;
-	color: var(--text-color-white);
-	cursor: pointer;
 }
 
 .footer .footer-content {
@@ -1459,6 +1441,7 @@ body.logged-in .get-started-container {
 
 .footer > .footer-content > .description .heart {
 	color: red;
+	cursor: pointer;
 }
 
 .footer > .footer-content > .newsletter-description {
@@ -1539,7 +1522,7 @@ body.logged-in .get-started-container {
 	.footer > .footer-content > .main-links {
 		margin: 0 0 1.25em 0;
 		width: 70vw;
-		border-top: 0.1em solid var(--text-color-variant);
+		border-top: 0.1em solid var(--text-color-white);
 		padding: 0.3em 1.25em;
 	}
 

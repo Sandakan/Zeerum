@@ -115,47 +115,54 @@ fetchData(`/data/categories/`, ({ success, data }) => {
 	} else console.log('Error occurred when requesting categories data.');
 });
 
-fetchData(`/data/articles/`, ({ success, data }) => {
-	if (success) {
-		data.forEach((x) => {
-			console.log(x);
+fetchData('/data/articles?allArticles=true&limit=5', (res) => {
+	if (res.success) {
+		res.data.forEach((x) => {
 			document.querySelector(
 				'.navigate-through-links > ul'
 			).innerHTML += `<li><a href="../articles/${x.urlSafeTitle}">${x.title}</a></li>`;
-			x.categories.forEach((y) => {
-				if (window.location.pathname.split('/').pop().toLowerCase() === y.toLowerCase()) {
-					document.querySelector('.articles-container').innerHTML =
-						`<div class="article" onclick=\"window.location = \'../articles/${
-							x.urlSafeTitle
-						}\'\"><img class="article-image" src="${x.coverImg}" alt="${
-							x.coverImgAlt
-						}" onclick="window.location = '../articles/${
-							x.urlSafeTitle
-						}'"><div class="article-info-container"> <h2 class="article-heading"><a href="../articles/${
-							x.urlSafeTitle
-						}">${x.title}</a></h2><p class="article-description">${
-							x.description
-						}<a class="more" href="../articles/${
-							x.urlSafeTitle
-						}">Read more.</a><div class="article-author-container">By <a href="/user/${x.author.name
-							.replace(/[^a-zA-Z0-9\s]/gm, '')
-							.replace(/\s/gm, '-')
-							.replace(/-$/gm, '')
-							.toLowerCase()}">${
-							x.author.name
-						}</a></div><div class="article-categories-container">${x.categories
-							.map((i) => {
-								return `<span class="categories"> <a href="${i}">${i}</a></span>`;
-							})
-							.join('')}
-                  </div></p></div></div>` + document.querySelector('.articles-container').innerHTML;
-
-					document.querySelector('.no-articles-container').style.display = 'none';
-					// console.log(x.categories, y, window.location.pathname.split('/').pop());
-				} else {
-					noArticlesContainer.style.display = 'flex';
-				}
-			});
 		});
-	} else console.log('Error occurred when requesting article data.');
+	} else
+		console.log(`Error occurred when requesting article data for navigate through links panel.`);
 });
+
+fetchData(
+	`/data/articles?categoryId=${window.location.pathname.split('/').pop().toLowerCase()}`,
+	(res) => {
+		if (res.success) {
+			const { data } = res;
+			data.forEach((x) => {
+				document.querySelector('.articles-container').innerHTML =
+					`<div class="article" onclick=\"window.location = \'../articles/${
+						x.urlSafeTitle
+					}\'\"><img class="article-image" src="${x.coverImg}" alt="${
+						x.coverImgAlt
+					}" onclick="window.location = '../articles/${
+						x.urlSafeTitle
+					}'"><div class="article-info-container"> <h2 class="article-heading"><a href="../articles/${
+						x.urlSafeTitle
+					}">${x.title}</a></h2><p class="article-description">${
+						x.description
+					}<a class="more" href="../articles/${
+						x.urlSafeTitle
+					}">Read more.</a><div class="article-author-container">By <a href="/user/${x.author.name
+						.replace(/[^a-zA-Z0-9\s]/gm, '')
+						.replace(/\s/gm, '-')
+						.replace(/-$/gm, '')
+						.toLowerCase()}">${
+						x.author.name
+					}</a></div><div class="article-categories-container">${x.categories
+						.map((i) => {
+							return `<span class="categories"> <a href="${i}">${i}</a></span>`;
+						})
+						.join('')}
+				      </div></p></div></div>` + document.querySelector('.articles-container').innerHTML;
+				document.querySelector('.no-articles-container').style.display = 'none';
+				// console.log(x.categories, y, window.location.pathname.split('/').pop());
+			});
+		} else {
+			noArticlesContainer.style.display = 'flex';
+			console.log('Error occurred when requesting article data.');
+		}
+	}
+);

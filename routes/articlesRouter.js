@@ -14,13 +14,15 @@ const {
 	likeCommentsOnArticles,
 } = require('../controller/articles.js');
 const authenticate = require('../middleware/authenticate.js');
+const notFound = require('../middleware/notFound.js');
 
 router
 	.route('/')
 	.get(sendAllArticles)
 	.get(sendArticlesByAuthorId)
 	.get(sendArticlesByUserBookmarked)
-	.get(sendArticlesByCategory);
+	.get(sendArticlesByCategory)
+	.get(notFound(true, `We couldn't find what you're looking for.`));
 
 router.route('/:article').get(shareArticleCount).get(sendArticle);
 

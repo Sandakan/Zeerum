@@ -163,7 +163,11 @@ const renderData = (res) => {
 										<span class="commented-date" title="Commented on ${new Date(comment.date).toString()}">
 											${timeFromNow(comment.date)}
 										</span>
-										<span class="like-comment" data-comment-id="${commentId}">like</span>
+										${
+											comment.likedUsers.includes(Number(userId))
+												? `<span class="like-comment liked" data-comment-id="${commentId}">liked</span>`
+												: `<span class="like-comment" data-comment-id="${commentId}">like</span>`
+										}
 										<span class="reply-btn">Reply</span>
 									</span>
 								</div>
@@ -282,7 +286,7 @@ function sendComment() {
 		fetch(`${requestingArticleName}?commentOnArticle=true`, {
 			method: 'POST',
 			body: JSON.stringify({
-				userId: userId,
+				userId: Number(sessionStorage.getItem('userId')),
 				commentContent: comment.value,
 			}),
 			headers: {
@@ -361,12 +365,9 @@ const reactionsHandler = async (reaction) => {
 			'share-popup'
 		);
 
-		document.querySelector('.copy-btn').addEventListener('click', () => {
+		document.querySelector('.copy-btn').addEventListener('click', async () => {
 			const href = document.location.href;
-			const type = 'text/plain';
-			const blob = new Blob([href], { type });
-			const data = [new ClipboardItem({ [type]: blob })];
-			navigator.clipboard.write(data).then(
+			navigator.clipboard.writeText(href).then(
 				async () => {
 					document.querySelector('.copy-container').classList.add('copied');
 					document.querySelector(
@@ -388,11 +389,12 @@ const reactionsHandler = async (reaction) => {
 							}
 						});
 				},
-				(err) => {
-					alert('Error occurred in copying data to the clipboard.');
-					throw err;
-				}
+				() => alert('Copying link to clipboard failed.')
 			);
+			// const type = 'text/plain';
+			// const blob = new Blob([href], { type });
+			// const data = [new ClipboardItem({ [type]: blob })];
+			// navigator.clipboard.write(data).then(
 		});
 	} else if (reaction === 'bookmark') {
 		if (!reactions.bookmarked) {

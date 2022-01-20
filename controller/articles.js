@@ -11,8 +11,14 @@ const {
 
 // ? FOR ACCESSING ALL THE ARTICLES. ** CAN BE REMOVED IN THE FUTURE **
 const sendAllArticles = async (req, res, next) => {
-	if (Object.entries(req.query).length === 0) {
-		const articleData = await requestData('articles');
+	if (req.query.allArticles && req.query.allArticles === 'true') {
+		const limit = Number(req.query.limit) || 0;
+		const articleData = await requestData(
+			'articles',
+			{},
+			{ article: 0, comments: 0, footnotes: 0 },
+			limit
+		);
 		// Sorts the data from latest to oldest
 		articleData.data.sort(
 			(a, b) => new Date(b.releasedDate).getTime() - new Date(a.releasedDate).getTime()
@@ -37,20 +43,31 @@ const sendAllArticles = async (req, res, next) => {
 // ? FOR ACCESSING ARTICLES FILTERED BY THE AUTHOR ID
 const sendArticlesByAuthorId = async (req, res, next) => {
 	if (req.query.authorUserId) {
+		const limit = Number(req.query.limit) | 0;
 		const authorUserId = isNaN(Number(req.query.authorUserId))
 			? req.query.authorUserId
 			: Number(req.query.authorUserId);
 		const articleData = isNaN(authorUserId)
-			? await requestData('articles', {
-					'author.name': `${authorUserId
-						.split('-')[0]
-						.replace(/^\w/, (x) => x.toUpperCase())} ${authorUserId
-						.split('-')[1]
-						.replace(/^\w/, (x) => x.toUpperCase())}`,
-			  })
-			: await requestData('articles', {
-					'author.userId': Number(authorUserId),
-			  });
+			? await requestData(
+					'articles',
+					{
+						'author.name': `${authorUserId
+							.split('-')[0]
+							.replace(/^\w/, (x) => x.toUpperCase())} ${authorUserId
+							.split('-')[1]
+							.replace(/^\w/, (x) => x.toUpperCase())}`,
+					},
+					{},
+					limit
+			  )
+			: await requestData(
+					'articles',
+					{
+						'author.userId': Number(authorUserId),
+					},
+					{},
+					limit
+			  );
 		if (articleData.success && articleData.data.length !== 0) {
 			res.status(200).json({
 				success: true,
@@ -70,9 +87,15 @@ const sendArticlesByAuthorId = async (req, res, next) => {
 // ? FOR REQUESTING ARTICLES BOOKMARKED BY THE USER
 const sendArticlesByUserBookmarked = async (req, res, next) => {
 	if (req.query.userBookmarked === 'true') {
-		const articleData = await requestData('articles', {
-			'reactions.bookmarks': req.session.userId,
-		});
+		const limit = Number(req.query.limit) | 0;
+		const articleData = await requestData(
+			'articles',
+			{
+				'reactions.bookmarks': req.session.userId,
+			},
+			{},
+			limit
+		);
 		if (articleData.success && articleData.data.length > 0) {
 			res.json({
 				success: true,
@@ -88,25 +111,27 @@ const sendArticlesByUserBookmarked = async (req, res, next) => {
 // ? ARTICLES FILTERED BY ITS' RESPECTIVE CATEGORY
 const sendArticlesByCategory = async (req, res, next) => {
 	if (req.query.categoryId) {
+		const limit = Number(req.query.limit) | 0;
 		const category = isNaN(Number(req.query.categoryId))
 			? req.query.categoryId
 			: await requestData(
 					'categories',
-					{ categoryId: 1 },
-					{ categoryId: false, pictureUrl: false }
+					{ categoryId: Number(req.query.categoryId) },
+					{ categoryId: false, pictureUrl: false },
+					limit
 			  ).then((x) => x.data[0].name);
 		// console.log(category);
 		const articleData = await requestData('articles', {
 			categories: { $regex: RegExp(category, 'i') },
 		});
 		// console.log(category, articleData);
-		if (articleData.success && articleData.data.length !== 0) {
+		if (articleData.success && articleData.length !== 0) {
 			res.json({
 				success: true,
 				status: 200,
 				message: `Request successful.`,
 				category: category,
-				data: articleData,
+				data: articleData.data,
 			});
 		} else
 			res.json({
@@ -117,24 +142,13 @@ const sendArticlesByCategory = async (req, res, next) => {
 	} else next();
 };
 
-// (req, res, next) => {
-// 	res.status(404).json({
-// 		success: false,
-// 		status: 404,
-// 		message: `We couldn't find find what you were looking for`,
-// 	});
-// };
-
 // SHARE ARTICLE
 const shareArticleCount = async (req, res, next) => {
 	if (req.query.shareArticle === 'true') {
-		const article = await requestData('articles', { urlSafeTitle: req.params.article })
-			.then((res) => res.data[0])
-			.catch((err) => next(err));
 		await updateData(
 			'articles',
 			{ urlSafeTitle: req.params.article },
-			{ $set: { 'reactions.shares': article.reactions.shares + 1 } }
+			{ $inc: { 'reactions.shares': 1 } }
 		);
 		res.json({ success: true, status: 200, message: `You shared ${req.params.article}` });
 	} else if (req.query.shareArticle === 'false') {
@@ -179,7 +193,7 @@ const sendArticle = async (req, res) => {
 		const { updatedData: updatedArticleData } = await updateData(
 			'articles',
 			{ urlSafeTitle: req.params.article },
-			{ $set: { 'views.allTime': articleData.data[0].views.allTime + 1 } },
+			{ $inc: { 'views.allTime': 1 } },
 			true
 		);
 		// ? FOR SORTING COMMENTS BY ITS CREATED DATE FROM LATEST TO OLDEST
@@ -290,7 +304,7 @@ const likeArticle = async (req, res, next) => {
 // 	//? BOOKMARK ARTICLE
 const bookmarkArticle = async (req, res, next) => {
 	if (req.query.bookmarkArticle) {
-		// ? If you request to share the article
+		// ? If you request to bookmark the article
 		const user = req.session.user;
 		const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
 			(res) => res.data[0]
