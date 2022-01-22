@@ -668,7 +668,10 @@ body.logged-in.author .write-content {
 	position: relative;
 }
 
-.popup.finalize-article .finalize-article-container #finalize-article-form :is(input, textarea) {
+.popup.finalize-article
+	.finalize-article-container
+	#finalize-article-form
+	:is(input, textarea, select) {
 	width: 100%;
 	height: 3em;
 	padding: 0.5em 1em;
@@ -690,6 +693,24 @@ body.logged-in.author .write-content {
 	:is(input, textarea)::placeholder {
 	color: var(--text-color-1);
 }
+
+.popup.finalize-article .finalize-article-container #finalize-article-form select:invalid {
+	color: var(--text-color-1);
+}
+
+.popup.finalize-article .finalize-article-container #finalize-article-form select {
+	padding: 0;
+	border-radius: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-ms-border-radius: 1em;
+	-o-border-radius: 1em;
+}
+.popup.finalize-article .finalize-article-container #finalize-article-form select option {
+	color: var(--text-color);
+	padding: 5em;
+}
+
 .popup.finalize-article .finalize-article-container #finalize-article-form textarea {
 	height: fit-content;
 	min-height: 5em;

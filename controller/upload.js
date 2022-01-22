@@ -15,9 +15,11 @@ const uploadNewArticle = async (req, res, next) => {
 		req.body.articleTitle &&
 		req.body.articleDescription &&
 		req.body.articleFootnotes &&
-		req.body.articleBody
+		req.body.articleBody &&
+		req.body.articleCategory
 	) {
-		let { articleTitle, articleDescription, articleFootnotes, articleBody } = req.body;
+		let { articleTitle, articleDescription, articleFootnotes, articleBody, articleCategory } =
+			req.body;
 		const articleId = await countDocuments('articles');
 		if (req.files) {
 			let imageLocations = {
@@ -69,6 +71,7 @@ const uploadNewArticle = async (req, res, next) => {
 					title: articleTitle,
 					description: articleDescription,
 					body: articleBody,
+					categories: articleCategory,
 					footnotes: articleFootnotes,
 					coverImg: `/images/articles/${articleId}/articleCoverImg.${req.files.articleCoverImg.name
 						.split('.')

@@ -28,15 +28,16 @@
 	width: 15em;
 	max-width: 100%;
 	aspect-ratio: 1/1;
-	width: 15em;
-	border-radius: 7.5em;
+	position: relative;
 	box-shadow: var(--box-shadow) 0px 30px 90px;
 	background-color: var(--background-color-100);
+	border-radius: 7.5em;
 	-webkit-border-radius: 7.5em;
 	-moz-border-radius: 7.5em;
 	-ms-border-radius: 7.5em;
 	-o-border-radius: 7.5em;
 }
+
 .user-container > .user-img-container > .edit-profile-picture {
 	padding: 1em;
 	position: absolute;

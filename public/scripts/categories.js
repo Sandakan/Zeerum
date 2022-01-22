@@ -129,7 +129,7 @@ fetchData('/data/articles?allArticles=true&limit=5', (res) => {
 fetchData(
 	`/data/articles?categoryId=${window.location.pathname.split('/').pop().toLowerCase()}`,
 	(res) => {
-		if (res.success) {
+		if (res.success && res.data.length > 0) {
 			const { data } = res;
 			data.forEach((x) => {
 				document.querySelector('.articles-container').innerHTML =
@@ -161,7 +161,7 @@ fetchData(
 				// console.log(x.categories, y, window.location.pathname.split('/').pop());
 			});
 		} else {
-			noArticlesContainer.style.display = 'flex';
+			noArticlesContainer.classList.add('visible');
 			console.log('Error occurred when requesting article data.');
 		}
 	}

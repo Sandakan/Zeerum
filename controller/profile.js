@@ -164,12 +164,11 @@ const sendProfileData = async (req, res) => {
 	// 	if (articleData.success && articleData.data.length !== 0) return articleData.data.length;
 	// 	else return 0;
 	// };
-	const articleData = await requestData('articles', { 'author.userId': userId });
-	if (articleData.success && articleData.data.length !== 0) {
-		const { data } = await articleData;
+	if (userType === 'author') {
 		let allTimeViews = 0;
 		let allTimeLikes = 0;
-
+		const articleData = await requestData('articles', { 'author.userId': userId });
+		const { data } = await articleData;
 		data.forEach((article) => {
 			allTimeLikes += article.reactions.likes.length;
 			allTimeViews += article.views.allTime;

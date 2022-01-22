@@ -19,7 +19,7 @@
 	--background-color-black: hsl(0, 0%, 0%);
 	--navbar-background-color: hsla(208, 52%, 95%, 50%);
 	--popup-container-background-color: hsla(211, 35%, 24%, 0.5);
-	--highlight-color: #ee5253;
+	--highlight-color: hsl(360, 90%, 63%);
 	--highlight-color-variant: hsl(243, 39%, 36%);
 	--highlight-color-1: hsl(44, 96%, 59%);
 	--highlight-color-2: hsl(213, 92%, 61%);
@@ -1065,6 +1065,9 @@ body.dark-mode .banner .banner-img {
 	flex-direction: column;
 	align-items: center;
 }
+.no-articles-container.visible {
+	display: flex;
+}
 
 .no-articles-container img {
 	width: 20em;
@@ -1078,9 +1081,6 @@ body.dark-mode .banner .banner-img {
 	font-size: 1.5rem;
 	padding: 1em 0;
 	color: var(--text-color);
-}
-
-span.no-articles {
 }
 
 .no-articles-container .no-search {
@@ -1169,6 +1169,10 @@ span.no-articles {
 	color: var(--background-color-500);
 	cursor: pointer;
 }
+.articles-container.articles-loading .load-more {
+	display: none;
+}
+
 .articles-container .load-more:hover {
 	box-shadow: 0px 25px 100px -15px var(--box-shadow);
 }

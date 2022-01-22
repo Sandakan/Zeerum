@@ -327,6 +327,8 @@ const changeProfilePicture = () => {
 	// 	e.target.classList.remove('on-drag-over');
 	// });
 	document.querySelector('.change-profile-picture').addEventListener('drop', (e) => {
+		document.querySelector('input[type="submit"]').disabled = true;
+		document.querySelector('input[type="submit"]').value = 'UPLOADING...';
 		e.preventDefault();
 		console.log(e.dataTransfer.files);
 		const formData = new FormData(document.uploadProfilePictureForm);
@@ -355,6 +357,8 @@ const changeProfilePicture = () => {
 		if (document.querySelector('input[type="file"]').files.length <= 0) {
 			alert("You didn't upload your profile picture.");
 		} else {
+			document.querySelector('input[type="submit"]').disabled = true;
+			document.querySelector('input[type="submit"]').value = 'UPLOADING...';
 			fetch('/data/upload/profile/user-profile-picture', {
 				method: 'POST',
 				redirect: 'follow',

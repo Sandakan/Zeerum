@@ -204,6 +204,29 @@ const finalizeArticle = () => {
 						<input type="text" name="articleTitle" class="article-title" placeholder="Article Title" spellcheck="true" required/>
 						<textarea name="articleDescription" class="article-description" cols="10" placeholder="Article Description" rows="5" required></textarea>
 						<textarea name="articleFootnotes" class="article-footnotes" cols="10" placeholder="Footnotes" rows="5"></textarea>
+						<select name="articleCategory" id="category" required>
+							<option value="" disabled selected hidden>Select a category</option>
+							<option value="Art">Art</option>
+							<option value="Celebrities">Celebrities</option>
+							<option value="Culture">Culture</option>
+							<option value="Design">Design</option>
+							<option value="Entertainment">Entertainment</option>
+							<option value="Fitness">Fitness</option>
+							<option value="Food">Food</option>
+							<option value="Health">Health</option>
+							<option value="Leadership">Leadership</option>
+							<option value="Love">Love</option>
+							<option value="Music">Music</option>
+							<option value="Nature">Nature</option>
+							<option value="Photography">Photography</option>
+							<option value="Politics">Politics</option>
+							<option value="Society">Society</option>
+							<option value="Space">Space</option>
+							<option value="Sports">Sports</option>
+							<option value="Style">Style</option>
+							<option value="Technology">Technology</option>
+							<option value="Travel">Travel</option>
+						</select>
 						<input type="submit" value="Save Article" class="save-btn" aria-label="Save article"/>
 					</form>
 				</div>
@@ -320,7 +343,11 @@ const finalizeArticle = () => {
 						.addEventListener('click', () => window.location.replace(res.articleUrl));
 					window.removeEventListener('beforeunload', (e) => preventLeavingSite(e));
 				} else {
+					document.querySelector('#finalize-article-form .save-btn').value = 'Save Article';
 					document.querySelector('#finalize-article-form .save-btn').disabled = 'false';
+					document
+						.querySelector('#finalize-article-form .save-btn')
+						.classList.remove('uploading');
 					alert(res.message);
 					console.log(res.message);
 				}

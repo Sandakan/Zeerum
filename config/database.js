@@ -250,7 +250,7 @@ const createArticle = async (articleData = {}, userData = {}, func = () => true)
 				comments: [],
 				article: articleData.body || null,
 				footnotes: articleData.footnotes || null,
-				categories: articleData.categories || [],
+				categories: articleData.categories.split(' ') || [],
 				urlSafeTitle: articleUrlSafeTitle,
 				views: {
 					allTime: 0,

@@ -18,7 +18,10 @@ export default (val = undefined, precision = 2) => {
 		} else if (1_000_000_000_000 < val && val < 1_000_000_000_000_000) {
 			return `${round(val / 1_000_000_000_000, precision)} T`;
 		}
-	} else throw new Error('Entered value is not a number');
+	} else {
+		console.error('Entered value is not a number. value :', val);
+		return 'NaN';
+	}
 };
 
 /*
