@@ -1,5 +1,42 @@
-/* .change-profile-picture {
-} */
+.change-profile-picture {
+	position: relative;
+}
+.change-profile-picture::after {
+	content: 'Drop the image here';
+	text-align: center;
+	color: var(--background-color-500);
+	font-size: 2em;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	-webkit-transition: opacity 0.2s ease;
+	-moz-transition: opacity 0.2s ease;
+	-ms-transition: opacity 0.2s ease;
+	-o-transition: opacity 0.2s ease;
+}
+.change-profile-picture.on-drag-over {
+	border-color: var(--background-color-500);
+}
+.change-profile-picture form * {
+	transition: opacity 0.2s ease;
+	-webkit-transition: opacity 0.2s ease;
+	-moz-transition: opacity 0.2s ease;
+	-ms-transition: opacity 0.2s ease;
+	-o-transition: opacity 0.2s ease;
+}
+.change-profile-picture.on-drag-over form * {
+	opacity: 0;
+}
+.change-profile-picture.on-drag-over::after {
+	opacity: 1;
+}
 
 .change-profile-picture h1 {
 	font-size: 2.5rem;

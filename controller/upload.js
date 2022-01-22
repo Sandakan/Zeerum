@@ -147,8 +147,16 @@ const changeProfilePicture = (req, res, next) => {
 					console.log(req.files);
 					const user = await checkUser({ userId: req.session.userId });
 					req.session.user = user.userData[0];
-					res.redirect('/profile');
-				} else res.json({ success: false });
+					res.json({
+						success: true,
+						status: 200,
+						message: 'Profile picture changed successfully.',
+					});
+				} else
+					res.json({
+						success: false,
+						message: 'Error occurred when saving your profile picture.',
+					});
 			});
 		});
 	}

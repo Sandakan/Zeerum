@@ -15,7 +15,7 @@
 	color: var(--highlight-color);
 }
 
-.nav-bar .link-list ul li:hover a {
+.nav-bar .link-list ul li a:hover {
 	color: var(--highlight-color);
 }
 

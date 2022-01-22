@@ -17,7 +17,6 @@
 .banner-text {
 	text-align: left;
 	left: inherit;
-	right: -20px;
 	font-size: 5.5rem;
 	letter-spacing: 3px;
 }
@@ -26,8 +25,8 @@
 	width: 100%;
 	height: fit-content;
 	box-sizing: border-box;
-	margin: 120px 0 30px 0;
-	padding: 100px 0;
+	margin-top: 4em;
+	padding: 5em 0;
 	background: linear-gradient(
 		135deg,
 		#5335cf 0%,
@@ -49,78 +48,23 @@
 	font-size: 4rem;
 	color: var(--text-color-white);
 	text-align: center;
-	padding: 0 100px;
+	padding: 0 1em;
 }
-
-/* 
-.mission-container {
-	width: 100%;
-	height: 200px;
-	padding: 20px 0;
-	box-sizing: content-box;
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.mission-container::before {
-	content: '';
-	width: 30%;
-	transform: scaleX(0);
-	height: 7px;
-	border-radius: 50px;
-	position: absolute;
-	top: 10px;
-	background-color: #000;
-	transition: transform 0.5s ease-out 0.2s;
-}
-
-.mission-container[data-scroll='in']::before {
-	transform: scaleX(1);
-}
-
-.mission-container::after {
-	content: '';
-	width: 15%;
-	height: 7px;
-	transform: scaleX(0);
-	border-radius: 50px;
-	position: absolute;
-	bottom: 0;
-	background-color: #000;
-	transition: transform 0.5s ease-out 0.5s;
-}
-
-.mission-container[data-scroll='in']::after {
-	transform: scaleX(1);
-}
-
-.mission-container .mission {
-	text-align: center;
-	font-size: 2.5rem;
-	margin: 20px 50px 10px 50px;
-	padding: 0 50px;
-}
-
-.mission-container .mission i {
-	padding: 10px 0 20px 0;
-} */
 
 .belief-container {
 	width: 100%;
-	height: 400px;
-	margin: 100px 0 10px 0;
+	height: fit-content;
+	margin: 3em 0 0.5em 0;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
-	overflow: hidden;
+	/* overflow: hidden; */
 	position: relative;
 	color: var(--text-color);
 }
 
 .belief-container > .background {
-	width: 80%;
+	width: 100%;
 	height: 100%;
 	position: absolute;
 	right: 0;
@@ -136,14 +80,14 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
+	padding: 5em 0;
 	z-index: 1;
 }
 
 .belief-container > .belief > span {
 	width: 50%;
 	font-size: 2.9rem;
-	line-height: 50px;
-	padding-left: 20px;
+	padding-left: 1em;
 }
 
 .belief-container > .belief > .mission-img {
@@ -153,16 +97,14 @@
 }
 
 .belief-container > .belief > .belief-img > img {
-	width: 400px;
-	height: 400px;
+	width: 25em;
 	object-fit: fill;
-	margin: 0 80px 0 0;
+	/* margin: 0 80px 0 0; */
 }
 
 .reasons-container {
 	width: 100%;
-	height: 400px;
-	margin: 50px 0 10px 0;
+	margin: 5em 0 2em 0;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
@@ -181,10 +123,6 @@
 	background-size: cover;
 }
 
-.reasons-container > .background > svg {
-	object-fit: cover;
-}
-
 .reasons-container > .reason {
 	width: 100%;
 	height: fit-content;
@@ -198,28 +136,25 @@
 .reasons-container > .reason > span {
 	width: 50%;
 	font-size: 2.9rem;
-	line-height: 50px;
 	order: 1;
-	padding: 0 20px 0 0;
+	padding-right: 1.25em;
 }
 
 .reasons-container > .reason > .reason-img {
 	width: fit-content;
 	height: 100%;
 	overflow: hidden;
-	margin: 0 0 0 70px;
+	margin-left: 2em;
 }
 
 .reasons-container > .reason > .reason-img > img {
-	width: 400px;
-	height: 400px;
+	width: 25em;
 	object-fit: fill;
-	margin: 0;
 }
 
 .testimonial-container {
 	width: 100%;
-	height: 400px;
+	height: fit-content;
 	padding: 40px 10px;
 	margin-top: 25px;
 	display: flex;
@@ -241,15 +176,21 @@
 	width: 60%;
 	display: flex;
 	flex-direction: row;
-	justify-content: space-around;
+	justify-content: space-between;
+	padding: 2em 0;
+	max-width: 1000px;
 }
 
 .testimonial-container > .users-container > img {
-	width: 100px;
-	height: 100px;
-	border-radius: 50px;
+	width: 7em;
+	border-radius: 5em;
+	margin: 0 1em;
 	filter: grayscale(1);
 	transition: filter 0.3s linear;
+	-webkit-border-radius: 5em;
+	-moz-border-radius: 5em;
+	-ms-border-radius: 5em;
+	-o-border-radius: 5em;
 }
 
 .testimonial-container > .users-container > :is(img:hover, .active) {
@@ -327,11 +268,6 @@
 */
 
 /*/////////////////////////////////////////////////  @MEDIA  ////////////////////////////////////////////////////////*/
-@media screen and (min-width: 1920px) {
-	.mission-container {
-		height: 300px;
-	}
-}
 
 @media screen and (max-width: 1050px) {
 	.banner-container .banner-img {
@@ -339,29 +275,11 @@
 	}
 
 	.banner-container .banner .banner-text {
-		right: 10px;
+		right: 0.5em;
 	}
 
 	.animation-container {
-		padding: 50px 0;
-	}
-
-	.belief-container > .belief > .belief-img > img {
-		width: 300px;
-		height: 300px;
-		object-fit: fill;
-		margin: 20px 80px 0 0;
-	}
-
-	.reason-container > .reason > .reason-img {
-		margin: 0;
-	}
-
-	.reason-container > .reason > .reason-img > img {
-		width: 300px;
-		height: 300px;
-		object-fit: fill;
-		margin: 20px 80px 0 0;
+		padding: 4em 0;
 	}
 }
 
@@ -371,32 +289,38 @@
 	}
 
 	.banner-container .banner .banner-text {
-		right: 20px;
+		right: 1em;
 	}
 
 	.animation-container .animation-text {
 		font-size: 3rem;
 	}
 
-	.mission-container .mission {
-		font-size: 2.25rem;
-		padding: 0 30px;
+	.testimonial-container > .users-container {
+		width: 100%;
+		padding: 1em;
+	}
+	.testimonial-container > .users-container > img {
+		width: 5em;
 	}
 
-	.belief-container > .belief > .element-img > img {
-		margin: 20px 50px 0 0;
+	.join-with-us-container {
+		background-size: 90%;
 	}
 
 	.join-with-us-container .description {
-		padding: 100px 20px;
+		padding: 2em 2em 0 2em;
 		font-size: 3rem;
 	}
 }
 
 @media screen and (max-width: 700px) {
+	.banner-container .banner .banner-img {
+		background-position: 50% 100%;
+	}
 	.banner-container .banner .banner-text {
-		right: inherit;
-		font-size: 7rem;
+		/* right: inherit; */
+		text-align: right;
 	}
 
 	.saying-container .saying {
@@ -404,7 +328,7 @@
 		padding: 0 30px;
 	}
 
-	:is(.belief-container .belief, .reason-container .reason) span {
+	:is(.belief-container .belief, .reasons-container .reason) span {
 		font-size: 2.5rem;
 		line-height: 40px;
 	}
@@ -423,18 +347,17 @@
 	.banner-text {
 		padding: 0;
 		text-align: center;
-		right: inherit;
-		line-height: 100px;
+		right: unset;
+		font-size: 3.5rem;
+	}
+
+	.animation-container {
+		margin-top: 1em;
 	}
 
 	.animation-container .animation-text {
-		font-size: 3rem;
+		font-size: 2rem;
 		padding: 0 20px;
-	}
-
-	.creators-container .creator .img img {
-		width: 100px;
-		height: 100px;
 	}
 
 	.saying-container {
@@ -451,23 +374,22 @@
 		padding: 0 20px;
 	}
 
-	.belief-container,
-	.reason-container {
-		height: 300px;
+	:is(.belief-container, .reasons-container) .background {
+		background-image: none;
 	}
 
-	.reason-container {
+	.reasons-container {
 		display: block;
 		margin: 0;
 		min-height: 250px;
 		height: fit-content;
 	}
 
-	.reason-container > .reason {
+	.reasons-container > .reason {
 		display: flex;
 	}
 
-	.reason-container > .reason > span {
+	.reasons-container > .reason > span {
 		position: relative;
 		margin: 20px 30px;
 		width: 90%;
@@ -475,14 +397,15 @@
 		text-align: center;
 	}
 
-	.belief-container > .belief > span {
+	.belief-container > .belief > span,
+	.reasons-container > .reason > span {
 		width: 100%;
 		padding: 0 20px;
 		text-align: center;
 	}
 
 	.belief-container > .belief > .belief-img,
-	.reason-container > .reason > .reason-img {
+	.reasons-container > .reason > .reason-img {
 		display: none;
 	}
 

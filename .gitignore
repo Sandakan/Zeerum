@@ -2,6 +2,5 @@ node_modules
 dumps
 .env
 temp/*
-public/images/users
 config/mongooseDB.js
 model/User.js

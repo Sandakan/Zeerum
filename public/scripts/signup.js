@@ -3,21 +3,12 @@ import reportError from './formReportError.js';
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-const queryErrors = document.location.search.split('?').at(-1);
 let isErrorInForm = {
 	name: null,
 	email: null,
 	password: null,
 	confirmPassword: null,
 };
-
-if (queryErrors.includes('emailExists=true')) {
-	reportError('email', 'add', 'Email is already taken.');
-}
-if (queryErrors.includes('nameExists=true')) {
-	reportError('first-name', 'add', 'Firstname is used.');
-	reportError('last-name', 'add', 'Lastname is used.');
-}
 
 const isNullOrEmpty = (id) => {
 	const element = document.getElementById(id);
@@ -107,20 +98,25 @@ const retypePasswordValidator = (id, confirmId) => {
 
 // ? Event Listeners //////////////////////////////////////////////////////////
 document.getElementById('first-name').addEventListener('change', () => {
+	reportError('first-name', 'remove');
 	nameValidator('first-name');
 });
 document.getElementById('last-name').addEventListener('change', () => {
+	reportError('last-name', 'remove');
 	nameValidator('last-name');
 });
 document.getElementById('email').addEventListener('change', () => {
+	reportError('email', 'remove');
 	emailValidator('email');
 });
 
 document.getElementById('password').addEventListener('change', () => {
+	reportError('password', 'remove');
 	passwordValidator('password', 'password');
 });
 
 document.getElementById('confirm-password').addEventListener('change', () => {
+	reportError('confirm-password', 'remove');
 	retypePasswordValidator('password', 'confirm-password');
 });
 

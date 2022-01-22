@@ -29,7 +29,6 @@ router
 router
 	.route('/profile/user-profile-picture')
 	.post(authenticate)
-	.post(isAuthor)
 	.post(
 		fileUpload({
 			useTempFiles: true,

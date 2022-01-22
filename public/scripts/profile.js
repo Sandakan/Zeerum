@@ -73,11 +73,7 @@ fetchData('/data/profile', (res) => {
 		document
 			.querySelector('.user-profile-dropdown > .user-data-container > img')
 			.addEventListener('click', () => (location.href = '/profile'));
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) changeTheme('dark');
 		document.querySelector('#change-theme').addEventListener('click', () => changeTheme(''));
-		document
-			.querySelector('.made-with-love .heart')
-			.addEventListener('click', () => changeTheme(''));
 		document.getElementById('user-profile').addEventListener('click', (e) => {
 			e.stopPropagation();
 			e.target.classList.toggle('active');
@@ -146,21 +142,22 @@ fetchData('/data/profile', (res) => {
 			document
 				.querySelector('.edit-profile-picture')
 				.addEventListener('click', () => changeProfilePicture());
+			const searchParams = new URLSearchParams(window.location.search);
 			if (
-				window.location.search.slice(1) === `popup=edit-profile-picture` ||
-				window.location.search.slice(1) === `edit-profile-picture=true`
+				searchParams.get('popup') === `edit-profile-picture` ||
+				searchParams.has('edit-profile-picture')
 			)
 				document.querySelector('.edit-profile-picture').click();
 			if (
-				window.location.search.slice(1) === `changeUserType=author` ||
-				window.location.search.slice(1) === `popup=become-an-author` ||
-				window.location.search.slice(1) === `changeUserType=reader` ||
-				window.location.search.slice(1) === `popup=become-a-reader`
+				searchParams.get('changeUserType') === `author` ||
+				searchParams.get('popup') === `become-an-author` ||
+				searchParams.get('changeUserType') === `reader` ||
+				searchParams.get('popup') === `become-a-reader`
 			) {
 				changeUserType(data);
 			}
 			//settings pane
-			if (window.location.search.slice(1) === `popup=settings`) {
+			if (searchParams.get('popup') === `settings`) {
 				changeSettings();
 			}
 
@@ -177,6 +174,17 @@ fetchData('/data/profile', (res) => {
 		console.log(`Error occurred when requesting profile data.`, res.message);
 		sessionStorage.clear();
 	}
+	// UNSTABLE CODE FOR SWITCHING THEME ACCORDING TO SYSTEM THEME
+	// if (
+	// 	sessionStorage.getItem('systemTheme') === null &&
+	// 	window.matchMedia('(prefers-color-scheme: dark)').matches
+	// ) {
+	// 	sessionStorage.setItem('systemTheme', 'dark');
+	// 	changeTheme('dark');
+	// }
+	document
+		.querySelector('.made-with-love .heart')
+		.addEventListener('click', () => changeTheme(''));
 });
 
 //? User specific articles
@@ -291,15 +299,79 @@ if (window.location.pathname.split('/').pop() === 'profile') {
 // ? ///////////////////////////////////  FUNCTIONS  ///////////////////////////////////////////////////
 // ? Data for popup 'edit-profile-picture' goes here.
 const changeProfilePicture = () => {
-	const popUpData = ` <h1 class="heading">Edit your Profile Picture</h1><form action="/data/upload/profile/user-profile-picture" encType="multipart/form-data" name="upload-profile-picture-form" id="upload-profile-picture-form" method="post"><label for="file"><img src="${sessionStorage.getItem(
+	const popUpData = ` <h1 class="heading">Edit your Profile Picture</h1><form action="/data/upload/profile/user-profile-picture" encType="multipart/form-data" name="uploadProfilePictureForm" id="upload-profile-picture-form" method="post"><label for="file"><img src="${sessionStorage.getItem(
 		'userProfilePictureUrl'
-	)}" alt="" /><i class="upload-icon fas fa-arrow-up"></i></label><input type="file" name="profilePicture" id="file" accept=".png,.jpeg,.jpg,.webp" /><p>Change your profile picture to stand out from other users. Supports PNG, JPG and JPEG images.<br /> Note that authors are mandatory to  upload a profile picture for better recognition and security. <br/><br/> Click on the above image to upload.</p><input type="submit" id="submit-profile-picture" value="Save changes" disabled/></form>`;
+	)}" alt="" /><i class="upload-icon fas fa-arrow-up"></i></label><input type="file" name="profilePicture" id="file" accept=".png,.jpeg,.jpg,.webp" /><p>Change your profile picture to stand out from other users. Supports PNG, JPG and JPEG images.<br /> Note that authors are mandatory to  upload a profile picture for better recognition and security. <br/><br/> Click on the above image or drag and drop an image here to upload.</p><input type="submit" id="submit-profile-picture" value="Save changes" disabled/></form>`;
 	togglePopup(popUpData);
 	document.querySelector('.popup').classList.add('change-profile-picture');
+	document.body.addEventListener('dragover', (e) => {
+		if (document.querySelector('.popup').classList.contains('change-profile-picture')) {
+			document.querySelector('.popup').classList.add('on-drag-over');
+		}
+	});
+	document.body.addEventListener('dragleave', (e) => {
+		if (document.querySelector('.popup').classList.contains('change-profile-picture')) {
+			document.querySelector('.popup').classList.remove('on-drag-over');
+		}
+	});
+	document.querySelector('.change-profile-picture').addEventListener('dragover', (e) => {
+		e.preventDefault();
+		e.target.classList.add('on-drag-over');
+	});
+	document.querySelector('.change-profile-picture').addEventListener('dragenter', (e) => {
+		e.preventDefault();
+		e.target.classList.add('on-drag-over');
+	});
+	// document.querySelector('.change-profile-picture').addEventListener('dragleave', (e) => {
+	// 	e.preventDefault();
+	// 	e.target.classList.remove('on-drag-over');
+	// });
+	document.querySelector('.change-profile-picture').addEventListener('drop', (e) => {
+		e.preventDefault();
+		console.log(e.dataTransfer.files);
+		const formData = new FormData(document.uploadProfilePictureForm);
+		formData.append('profilePicture', e.dataTransfer.files[0]);
+		fetch('/data/upload/profile/user-profile-picture', {
+			method: 'POST',
+			redirect: 'follow',
+			headers: {
+				'CSRF-Token': token,
+			},
+			body: formData,
+		})
+			.then(
+				(res) => res.json(),
+				(err) => console.log(err)
+			)
+			.then((res) => {
+				if (res.success) {
+					window.location.replace('/profile');
+				} else alert(res.message);
+			});
+		e.target.classList.remove('on-drag-over');
+	});
 	document.getElementById('upload-profile-picture-form').addEventListener('submit', (e) => {
+		e.preventDefault();
 		if (document.querySelector('input[type="file"]').files.length <= 0) {
-			e.preventDefault();
 			alert("You didn't upload your profile picture.");
+		} else {
+			fetch('/data/upload/profile/user-profile-picture', {
+				method: 'POST',
+				redirect: 'follow',
+				headers: {
+					'CSRF-Token': token,
+				},
+				body: new FormData(e.target),
+			})
+				.then(
+					(res) => res.json(),
+					(err) => console.log(err)
+				)
+				.then((res) => {
+					if (res.success) {
+						window.location.replace('/profile');
+					} else alert(res.message);
+				});
 		}
 	});
 	document.getElementById('file').addEventListener('change', (e) => {
@@ -459,9 +531,15 @@ const changeTheme = (theme = '') => {
 			.then((res) => res.json())
 			.then((res) => console.log(res.message));
 	}
-	if (document.body.classList.contains('dark-mode')) {
-		document.querySelector('#change-theme a').innerHTML = `<i class="fas fa-sun"></i> Light Mode`;
-	} else {
-		document.querySelector('#change-theme a').innerHTML = `<i class="fas fa-moon"></i> Dark Mode`;
+	if (document.body.contains(document.querySelector('#change-theme'))) {
+		if (document.body.classList.contains('dark-mode')) {
+			document.querySelector(
+				'#change-theme a'
+			).innerHTML = `<i class="fas fa-sun"></i> Light Mode`;
+		} else {
+			document.querySelector(
+				'#change-theme a'
+			).innerHTML = `<i class="fas fa-moon"></i> Dark Mode`;
+		}
 	}
 };
