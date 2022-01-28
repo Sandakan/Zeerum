@@ -280,7 +280,7 @@
 	color: var(--text-color-1);
 }
 
-.article-data-container > .article-data > .categories {
+.article-data-container > .article-data > :is(.categories, .tags) {
 	width: 90%;
 	height: fit-content;
 	position: relative;
@@ -289,10 +289,13 @@
 	display: flex;
 	flex-wrap: wrap;
 }
-.article-data-container > .article-data > .categories a {
+.article-data-container > .article-data > :is(.categories, .tags) a {
 	text-decoration: none;
 	color: var(--text-color-white);
 	outline: none;
+}
+.article-data-container > .article-data > .categories a:hover {
+	text-decoration: underline;
 }
 .article-data-container > .article-data > .categories a .category {
 	width: -moz-fit-content;
@@ -308,6 +311,16 @@
 	-moz-border-radius: 1em;
 	-ms-border-radius: 1em;
 	-o-border-radius: 1em;
+}
+.article-data-container > .article-data > .tags a .tag {
+	padding: 0.5em 0.7em 0 0.25em;
+	font-size: 1.2em;
+	font-weight: 500;
+	color: var(--highlight-color);
+}
+
+.article-data-container > .article-data > .tags a:hover {
+	text-decoration: underline;
 }
 
 /*? //////////////////////////////////////////// End of article styling ///////////////////////////////////////////// */

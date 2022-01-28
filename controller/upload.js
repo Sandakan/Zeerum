@@ -1,6 +1,6 @@
 const fs = require('fs');
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -8,6 +8,7 @@ const {
 	updateUserData,
 	updateData,
 	createArticle,
+	createTags,
 } = require('../config/database');
 
 const uploadNewArticle = async (req, res, next) => {
@@ -16,11 +17,19 @@ const uploadNewArticle = async (req, res, next) => {
 		req.body.articleDescription &&
 		req.body.articleFootnotes &&
 		req.body.articleBody &&
-		req.body.articleCategory
+		req.body.articleCategory &&
+		req.body.articleTags
 	) {
-		let { articleTitle, articleDescription, articleFootnotes, articleBody, articleCategory } =
-			req.body;
+		let {
+			articleTitle,
+			articleDescription,
+			articleFootnotes = '',
+			articleBody,
+			articleCategory,
+			articleTags,
+		} = req.body;
 		const articleId = await countDocuments('articles');
+		await createTags(articleTags.split('#'), {}, articleId);
 		if (req.files) {
 			let imageLocations = {
 				articleCoverImg: '',
@@ -72,27 +81,31 @@ const uploadNewArticle = async (req, res, next) => {
 					description: articleDescription,
 					body: articleBody,
 					categories: articleCategory,
+					tags: articleTags,
 					footnotes: articleFootnotes,
 					coverImg: `/images/articles/${articleId}/articleCoverImg.${req.files.articleCoverImg.name
 						.split('.')
 						.at(-1)}`,
 				},
 				req.session.user
-			).then((result) => {
-				if (result.success) {
-					res.json({
-						success: true,
-						status: 200,
-						message: 'Successfully added your article.',
-						articleUrl: result.articleUrl,
-					});
-				} else
-					res.json({
-						success: false,
-						status: 500,
-						message: 'Error occurred when adding your article.',
-					});
-			});
+			).then(
+				(result) => {
+					if (result.success) {
+						res.json({
+							success: true,
+							status: 200,
+							message: 'Successfully added your article.',
+							articleUrl: result.articleUrl,
+						});
+					} else
+						res.json({
+							success: false,
+							status: 500,
+							message: 'Error occurred when adding your article.',
+						});
+				},
+				(err) => next(err)
+			);
 		} else {
 			createArticle(
 				{
@@ -105,11 +118,14 @@ const uploadNewArticle = async (req, res, next) => {
 				req.session.user
 			).then((result) => {
 				if (result.success) {
-					res.json({
-						success: true,
-						status: 200,
-						message: 'Successfully added your article.',
-					});
+					res.json(
+						{
+							success: true,
+							status: 200,
+							message: 'Successfully added your article.',
+						},
+						(err) => next(err)
+					);
 				} else
 					res.json({
 						success: false,
@@ -148,7 +164,9 @@ const changeProfilePicture = (req, res, next) => {
 			).then(async ({ success }) => {
 				if (success) {
 					console.log(req.files);
-					const user = await checkUser({ userId: req.session.userId });
+					const user = await checkUser({ userId: req.session.userId })
+						.then((res) => res)
+						.catch((err) => next(err));
 					req.session.user = user.userData[0];
 					res.json({
 						success: true,

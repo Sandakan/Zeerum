@@ -12,6 +12,7 @@ const {
 	bookmarkArticle,
 	commentOnArticle,
 	likeCommentsOnArticles,
+	sendArticlesByTag,
 } = require('../controller/articles.js');
 const authenticate = require('../middleware/authenticate.js');
 const notFound = require('../middleware/notFound.js');
@@ -22,6 +23,7 @@ router
 	.get(sendArticlesByAuthorId)
 	.get(sendArticlesByUserBookmarked)
 	.get(sendArticlesByCategory)
+	.get(sendArticlesByTag)
 	.get(notFound(true, `We couldn't find what you're looking for.`));
 
 router.route('/:article').get(shareArticleCount).get(sendArticle);

@@ -2,7 +2,7 @@ const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -18,8 +18,12 @@ const validateSignupInputs = async (req, res, next) => {
 	if (validationErrors.isEmpty()) {
 		let errObj = { isError: false, errors: [] };
 		const { firstName, lastName, email } = req.body;
-		const nameCheck = await checkUser({ firstName, lastName });
-		const emailCheck = await checkUser({ email });
+		const nameCheck = await checkUser({ firstName, lastName })
+			.then((res) => res)
+			.catch((err) => next(err));
+		const emailCheck = await checkUser({ email })
+			.then((res) => res)
+			.catch((err) => next(err));
 		if (nameCheck.isThereAUser) {
 			errObj.isError = true;
 			errObj.errors.push('nameExists');
@@ -51,26 +55,31 @@ const signup = (req, res, next) => {
 	//hash the Passwords
 	bcrypt.genSalt(10, (err, salt) => {
 		if (err) throw err;
-		bcrypt.hash(password, salt, (err, hashedPassword) => {
+		bcrypt.hash(password, salt, async (err, hashedPassword) => {
 			if (err) throw err;
 			req.body.password = hashedPassword;
-			createUser({ ...req.body, country: req.ipInfo.country }, (data) => {
-				const { success, userData } = data;
-				// console.log(data);
-				if (success) {
-					req.session.userId = userData.userId;
-					req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
-					req.session.user = userData;
-					res.status(200).json({
-						success: true,
-						status: 200,
-						message: 'Signed up successfully.',
-					});
-				} else
-					res.status(500).send(
-						`<h1>Error occurred when signing up. Please try again later.</h1>`
-					);
-			});
+			await createUser({ ...req.body, country: req.ipInfo.country })
+				.then((data) => {
+					const { success, userData } = data;
+					// console.log(data);
+					if (success) {
+						req.session.userId = userData.userId;
+						req.session.username = `${userData.firstName.toLowerCase()}-${userData.lastName.toLowerCase()}`;
+						req.session.user = userData;
+						res.status(200).json({
+							success: true,
+							status: 200,
+							message: 'Signed up successfully.',
+						});
+					} else
+						res.status(500).json({
+							success: false,
+							status: 500,
+							message:
+								'A system error occurred when signing you up. Please try again later.',
+						});
+				})
+				.catch((err) => next(err));
 		});
 	});
 };

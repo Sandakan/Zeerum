@@ -13,26 +13,17 @@ require('dotenv').config();
 require('express-async-errors');
 // const nodemailer = require('nodemailer');
 // const path = require('path');
-// const ejs = require('ejs');
-// const fileUpload = require('express-fileupload');
 // const fs = require('fs');
-// const bcrypt = require('bcryptjs');
-// const { check, validationResult } = require('express-validator');
 // const passport = require('passport');
-// const { MongoClient } = require('mongodb');
 // const utils = require('util');
 // const { readFile, writeFile } = require('fs');
-//? DATA IMPORT //////////////////////////////////////////////////////////////////////////////////////////
-
-// const data = require('./data/data');
 
 // ? MIDDLEWARE & FUNCTION IMPORTS   /////////////////////////////////////////////////////////////////////
 const authenticate = require('./middleware/authenticate');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/notFound.js');
-// const { createAccountLimiter } = require('./middleware/rate-limit');
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -41,7 +32,7 @@ const {
 	updateData,
 	createArticle,
 } = require('./config/database');
-connectToDB();
+testDatabaseConnection();
 const csrfProtection = csrf({ cookie: true });
 const validateFileExtensions = require('./middleware/validateFileExtensions');
 // ? ROUTES /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +44,7 @@ const profileRouter = require('./routes/profileRouter.js');
 const uploadRouter = require('./routes/uploadRouter.js');
 const loginRouter = require('./routes/loginRouter.js');
 const signupRouter = require('./routes/signupRouter.js');
-
+const tagRouter = require('./routes/tagRouter.js');
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
 
@@ -67,7 +58,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse json
 app.use(bodyParser.json());
 //handles cross-origin-resource-sharing
-app.use(cors());
+app.use(
+	cors({
+		origin: true,
+		optionsSuccessStatus: 200,
+	})
+);
 // handles cookies
 app.use(cookieParser());
 // sets ip-related information
@@ -164,25 +160,18 @@ app.use('/signup', signupRouter);
 				.toLowerCase()
 */
 app.get('/articles/:article', csrfProtection, async (req, res, next) => {
-	const articleId = isNaN(Number(req.params.article))
-		? req.params.article
-		: Number(req.params.article);
-	const articleData = isNaN(articleId)
-		? await requestData('articles', { urlSafeTitle: articleId })
-		: await requestData('articles', { articleId: articleId });
-	// console.log(articleId, articleData);
+	const articleData = isNaN(Number(req.params.article))
+		? await requestData('articles', { urlSafeTitle: req.params.article })
+		: await requestData('articles', { articleId: Number(req.params.article) });
 	if (articleData.success && articleData.data.length !== 0)
 		res.render('article', { csrfToken: req.csrfToken(), theme: req.session.theme });
 	else next();
 });
 
 app.get('/categories/:category', csrfProtection, async (req, res, next) => {
-	const category = isNaN(Number(req.params.category))
-		? req.params.category.toLowerCase()
-		: Number(req.params.category);
-	const categoryData = isNaN(category)
-		? await requestData('categories', { name: { $regex: new RegExp(category, 'i') } })
-		: await requestData('categories', { categoryId: category });
+	const categoryData = isNaN(Number(req.params.category))
+		? await requestData('categories', { name: { $regex: new RegExp(req.params.category, 'i') } })
+		: await requestData('categories', { categoryId: Number(req.params.category) });
 	if (categoryData.success && categoryData.data.length !== 0)
 		res.render('categories', { csrfToken: req.csrfToken(), theme: req.session.theme });
 	else next();
@@ -204,19 +193,31 @@ app.get('/user/:user', csrfProtection, async (req, res, next) => {
 			? await checkUser({
 					firstName: userId.split('-')[0].replace(/^\w/, (x) => x.toUpperCase()),
 					lastName: userId.split('-')[1].replace(/^\w/, (x) => x.toUpperCase()),
-			  })
-			: await checkUser({ userId: userId });
+			  }).then(
+					(res) => res,
+					(err) => next(err)
+			  )
+			: await checkUser({ userId: userId }).then(
+					(res) => res,
+					(err) => next(err)
+			  );
 		// console.log(userId, userData);
 		if (userData.success && userData.isThereAUser)
 			res.render('user', { csrfToken: req.csrfToken(), theme: req.session.theme });
 		else next();
 	}
 });
+
+app.get('/tags/:tag', csrfProtection, (req, res, next) => {
+	res.render('categories', { csrfToken: req.csrfToken(), theme: req.session.theme });
+});
 // ? /////////////////////////  Data GET and POST requests  ////////////////////////////////////////
 
 app.use('/data/search', searchRouter);
 
 app.use('/data/articles/', articleRouter);
+
+app.use('/data/tags/', tagRouter);
 
 app.use('/data/users/', usersRouter);
 
@@ -231,7 +232,7 @@ app.use('/data/upload', uploadRouter);
 app.all('*', csrfProtection, notFound(false));
 
 // ? ////////////////////////// ERROR HANDLER AND SERVER CALL /////////////////////////////////////////////////
-app.use(errorHandler(false));
+app.use(errorHandler(true));
 
 app.listen(process.env.PORT || 5000, () =>
 	console.log(`user hit the server on ${process.env.PORT}`)

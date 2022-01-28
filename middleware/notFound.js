@@ -1,7 +1,7 @@
 const notFound = (isApiResponse = false, customMessage = '') => {
 	return (req, res) => {
 		console.log(
-			`Error : File not found. \n\tRequest method: ${req.method}\n\t${req.protocol}\:\/\/${
+			`Error : Resource not found. \n\tRequest method: ${req.method}\n\t${req.protocol}\:\/\/${
 				req.get('host') + req.originalUrl
 			}`,
 			req.url
@@ -10,7 +10,7 @@ const notFound = (isApiResponse = false, customMessage = '') => {
 			res.json({
 				success: false,
 				status: 404,
-				message: `File not found. ${customMessage}`,
+				message: `Resource not found. ${customMessage}`,
 				requestedUrl: req.originalUrl,
 			});
 		} else {

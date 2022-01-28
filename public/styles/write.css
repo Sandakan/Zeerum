@@ -629,7 +629,7 @@ body.logged-in.author .write-content {
 	flex-direction: row;
 	background-color: var(--background-color-200);
 	margin: 1.5em;
-	height: 70vh;
+	height: 75vh;
 	border-radius: 1em;
 	-webkit-border-radius: 1em;
 	-moz-border-radius: 1em;
@@ -659,6 +659,7 @@ body.logged-in.author .write-content {
 
 .popup.finalize-article .finalize-article-container #finalize-article-form {
 	width: 30%;
+	height: 100%;
 	padding: 0.5em 1em;
 	display: flex;
 	flex-direction: column;
@@ -666,6 +667,7 @@ body.logged-in.author .write-content {
 	order: 0;
 	box-shadow: -10px 0 20px 0 var(--box-shadow);
 	position: relative;
+	overflow-y: auto;
 }
 
 .popup.finalize-article
@@ -722,13 +724,63 @@ body.logged-in.author .write-content {
 	resize: none;
 }
 
+.popup.finalize-article .finalize-article-container #finalize-article-form .add-tags-container {
+	width: 100%;
+	margin-bottom: 1em;
+}
+
+.popup.finalize-article
+	.finalize-article-container
+	#finalize-article-form
+	.add-tags-container
+	.tags-container {
+	width: 100%;
+	height: fit-content;
+	min-height: 3em;
+	padding: 0.25em;
+	border: 0.25em solid var(--background-color-300);
+	border-radius: 0.75em;
+	-webkit-border-radius: 0.75em;
+	-moz-border-radius: 0.75em;
+	-ms-border-radius: 0.75em;
+	-o-border-radius: 0.75em;
+	display: flex;
+	flex-direction: row;
+	overflow-x: auto;
+}
+
+.popup.finalize-article
+	.finalize-article-container
+	#finalize-article-form
+	.add-tags-container
+	.tags-container::-webkit-scrollbar {
+	width: 8px;
+}
+
+.popup.finalize-article
+	.finalize-article-container
+	#finalize-article-form
+	.add-tags-container
+	.tags-container
+	.tag {
+	padding: 0.25em 0.5em;
+	margin: 0 0.5em 0.25em 0;
+	background: var(--background-color-300);
+	border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	-ms-border-radius: 0.5em;
+	-o-border-radius: 0.5em;
+}
+
 .popup.finalize-article .finalize-article-container #finalize-article-form .save-btn {
 	width: 90%;
 	font-size: 1.25em;
 	padding: 0;
 	border-radius: 1.5em;
-	position: absolute;
+	position: relative;
 	bottom: 0;
+	margin-bottom: 0;
 	-webkit-border-radius: 1.5em;
 	-moz-border-radius: 1.5em;
 	-ms-border-radius: 1.5em;

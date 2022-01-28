@@ -114,7 +114,7 @@ input::placeholder {
 }
 
 a {
-	color: var(--text-color-black);
+	color: var(--text-color);
 	text-decoration: none;
 }
 
@@ -365,7 +365,7 @@ body.logged-in .nav-bar .link-list ul #user-profile {
 .user-profile-dropdown {
 	height: fit-content;
 	max-height: 80vh;
-	min-width: 250px;
+	min-width: 280px;
 	width: fit-content;
 	position: absolute;
 	background-color: var(--background-color-100);
@@ -413,15 +413,18 @@ body.logged-in .nav-bar .link-list ul #user-profile {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	border-bottom: 0.1em solid var(--background-color-200);
+	border-bottom: 0.1em solid var(--background-color-500);
 	padding: 1em 0;
-	background: var(--background-color-500);
+	background: var(--highlight-color-4);
+}
+
+.user-data-container {
 }
 .user-profile-dropdown > .user-data-container > img {
 	width: 4.5em;
 	max-width: 100%;
 	padding: 0.25em;
-	border: 0.15em solid var(--background-color-100);
+	border: 0.15em solid var(--text-color-white);
 	border-radius: 4em;
 	-webkit-border-radius: 4em;
 	-moz-border-radius: 4em;
@@ -431,7 +434,7 @@ body.logged-in .nav-bar .link-list ul #user-profile {
 }
 .user-profile-dropdown > .user-data-container > .name {
 	cursor: pointer;
-	color: var(--text-color-variant);
+	color: var(--text-color-white);
 }
 
 .user-profile-dropdown > ul {
@@ -1028,8 +1031,17 @@ body.dark-mode .banner .banner-img {
 	background: var(--background-color-100);
 }
 
-.nav-box .search-through-categories .categories a,
-.article .article-info-container .article-categories-container .categories a {
+.nav-box .search-through-categories .category {
+	padding: 0.3em 0.75em;
+	margin: 0 0.25em 0.4em 0;
+	background-color: var(--background-color-100);
+	border-radius: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-ms-border-radius: 1em;
+	-o-border-radius: 1em;
+}
+.nav-box .search-through-categories .category a {
 	color: var(--text-color);
 	font-size: 1.1rem;
 	text-decoration: none;
@@ -1274,10 +1286,10 @@ body.dark-mode .banner .banner-img {
 }
 
 .article .article-info-container .article-categories-container {
-	margin: 0.8em 0.19em 1.9em;
+	margin: 1em 0.19em;
 }
 
-.article .article-info-container .article-categories-container .categories {
+.article .article-info-container .article-categories-container .category {
 	font-size: 1.2em;
 	padding: 0.2em 0.5em;
 	margin: 0 0.2em;
@@ -1289,8 +1301,25 @@ body.dark-mode .banner .banner-img {
 	-ms-border-radius: 1.25em;
 	-o-border-radius: 1.25em;
 }
-.article .article-info-container .article-categories-container .categories a {
+.article .article-info-container .article-categories-container .category a {
 	color: var(--highlight-color);
+}
+
+.article .article-info-container .article-tags-container {
+	margin: 0.8em 0.19em 1.9em;
+}
+
+.article .article-info-container .article-tags-container .tag {
+	font-size: 1.2em;
+	padding: 0.2em 0.5em 0.2em 0.2em;
+	margin: 0 0.2em 0.2em 0;
+	cursor: pointer;
+}
+.article .article-info-container .article-tags-container .tag a {
+	color: var(--highlight-color);
+}
+.article .article-info-container .article-tags-container .tag a:hover {
+	text-decoration: underline;
 }
 
 .highlight-categories {

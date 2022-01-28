@@ -28,7 +28,7 @@ document.querySelector('#search').addEventListener('input', () => {
 			fetchData(`/data/search/${encodeURIComponent(searchPhrase.toLowerCase())}`, (res) => {
 				console.log(res);
 				if (res.success) {
-					const { articles, users, categories } = res.results;
+					const { articles, users, categories, tags } = res.results;
 					let temp = [];
 					articles.forEach((x) => {
 						if (articles.length !== 0) {
@@ -69,6 +69,18 @@ document.querySelector('#search').addEventListener('input', () => {
 								);
 						}
 					});
+					tags.forEach((x) => {
+						if (tags.length > 0) {
+							const searchedPhraseHighlightedText = x.name.replaceAll(
+								new RegExp(searchPhrase, 'gi'),
+								(match) => `<span class="searched-phrase-highlight">${match}</span>`
+							);
+							if (temp.length < 3)
+								temp.push(
+									`<a href="/tags/${x.name.toLowerCase()}" class="search-result"><img src="/images/tag.webp" alt="" /> <span class="text">${searchedPhraseHighlightedText}</span> </a>`
+								);
+						}
+					});
 					document
 						.querySelector('.search-results-container')
 						.classList.remove('results-loading');
@@ -99,11 +111,11 @@ document.querySelector('#search').addEventListener('keypress', (e) => {
 	}
 });
 
-document.querySelector('#search-btn').addEventListener('click', (e) => {
+document.querySelector('.search-btn').addEventListener('click', (e) => {
 	e.stopPropagation();
 	let searchPhrase = document.querySelector('#search').value;
 	if (searchPhrase !== '') {
-		window.location = `search/${searchPhrase}`;
+		window.location = `/search/${searchPhrase}`;
 	} else alert('Type something in the search bar !!!');
 });
 

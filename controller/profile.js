@@ -1,5 +1,5 @@
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -13,9 +13,13 @@ const {
 const followUser = async (req, res, next) => {
 	if (req.query.followUser !== undefined && req.query.followingUserId) {
 		// console.log(req.query.followUser, req.query.followingUserId);
-		let userData = await checkUser({ userId: req.session.userId });
+		let userData = await checkUser({ userId: req.session.userId })
+			.then((res) => res)
+			.catch((err) => next(err));
 		const followingUserId = Number(req.query.followingUserId);
-		let followingUserData = await checkUser({ userId: followingUserId });
+		let followingUserData = await checkUser({ userId: followingUserId })
+			.then((res) => res)
+			.catch((err) => next(err));
 		if (req.query.followUser === 'true') {
 			// ? If use wants to follow
 			if (followingUserData.success && followingUserData.isThereAUser && userData.success) {
@@ -158,12 +162,6 @@ const sendProfileData = async (req, res) => {
 		country,
 		bookmarks,
 	} = req.session.user;
-
-	// const articlesPublished = async (userId) => {
-	// 	const articleData = await requestData('articles', { 'author.userId': userId });
-	// 	if (articleData.success && articleData.data.length !== 0) return articleData.data.length;
-	// 	else return 0;
-	// };
 	if (userType === 'author') {
 		let allTimeViews = 0;
 		let allTimeLikes = 0;

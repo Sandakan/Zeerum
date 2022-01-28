@@ -31,7 +31,7 @@ const authenticate = require('./middleware/authenticate');
 const errorHandler = require('./middleware/errorHandler');
 const { createAccountLimiter } = require('./middleware/rate-limit');
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -40,7 +40,7 @@ const {
 	updateData,
 	createArticle,
 } = require('./config/database');
-connectToDB();
+testDatabaseConnection();
 const csrfProtection = csrf({ cookie: true });
 const validateFileExtensions = require('./middleware/validateFileExtensions');
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////

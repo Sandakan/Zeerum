@@ -1,6 +1,6 @@
 const { check, validationResult } = require('express-validator');
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -17,7 +17,9 @@ const login = async (req, res, next) => {
 	let user = { isAvailable: false, userId: null, username: null, data: null };
 	// console.log(req.body);
 	if (validationErrors.isEmpty()) {
-		const data = await checkUser({ email });
+		const data = await checkUser({ email })
+			.then((res) => res)
+			.catch((err) => next(err));
 		// console.log(data);
 		if (data.isThereAUser) {
 			bcrypt.compare(password, data.userData[0].password, (err, result) => {

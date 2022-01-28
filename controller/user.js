@@ -1,5 +1,5 @@
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -19,7 +19,11 @@ const sendUserData = async (req, res, next) => {
 				},
 				{ password: false }
 		  )
-		: await checkUser({ userId: user }, { email: false, password: false });
+				.then((res) => res)
+				.catch((err) => next(err))
+		: await checkUser({ userId: user }, { email: false, password: false })
+				.then((res) => res)
+				.catch((err) => next(err));
 
 	if (userData.isThereAUser)
 		res.status(200).json({

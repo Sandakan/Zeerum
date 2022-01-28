@@ -1,5 +1,5 @@
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -18,12 +18,15 @@ const sendAllArticles = async (req, res, next) => {
 			{},
 			{ article: 0, comments: 0, footnotes: 0 },
 			limit
+		).then(
+			(res) => res,
+			(err) => next(err)
 		);
 		// Sorts the data from latest to oldest
 		articleData.data.sort(
 			(a, b) => new Date(b.releasedDate).getTime() - new Date(a.releasedDate).getTime()
 		);
-		if (articleData.success && articleData.data.length !== 0)
+		if (articleData.success && articleData.data.length > 0)
 			res.status(200).json({
 				success: true,
 				status: 200,
@@ -43,7 +46,7 @@ const sendAllArticles = async (req, res, next) => {
 // ? FOR ACCESSING ARTICLES FILTERED BY THE AUTHOR ID
 const sendArticlesByAuthorId = async (req, res, next) => {
 	if (req.query.authorUserId) {
-		const limit = Number(req.query.limit) | 0;
+		const limit = Number(req.query.limit) || 0;
 		const authorUserId = isNaN(Number(req.query.authorUserId))
 			? req.query.authorUserId
 			: Number(req.query.authorUserId);
@@ -59,6 +62,9 @@ const sendArticlesByAuthorId = async (req, res, next) => {
 					},
 					{},
 					limit
+			  ).then(
+					(res) => res,
+					(err) => next(err)
 			  )
 			: await requestData(
 					'articles',
@@ -67,8 +73,11 @@ const sendArticlesByAuthorId = async (req, res, next) => {
 					},
 					{},
 					limit
+			  ).then(
+					(res) => res,
+					(err) => next(err)
 			  );
-		if (articleData.success && articleData.data.length !== 0) {
+		if (articleData.success && articleData.data.length > 0) {
 			res.status(200).json({
 				success: true,
 				status: 200,
@@ -87,7 +96,7 @@ const sendArticlesByAuthorId = async (req, res, next) => {
 // ? FOR REQUESTING ARTICLES BOOKMARKED BY THE USER
 const sendArticlesByUserBookmarked = async (req, res, next) => {
 	if (req.query.userBookmarked === 'true') {
-		const limit = Number(req.query.limit) | 0;
+		const limit = Number(req.query.limit) || 0;
 		const articleData = await requestData(
 			'articles',
 			{
@@ -95,6 +104,9 @@ const sendArticlesByUserBookmarked = async (req, res, next) => {
 			},
 			{},
 			limit
+		).then(
+			(res) => res,
+			(err) => next(err)
 		);
 		if (articleData.success && articleData.data.length > 0) {
 			res.json({
@@ -111,7 +123,7 @@ const sendArticlesByUserBookmarked = async (req, res, next) => {
 // ? ARTICLES FILTERED BY ITS' RESPECTIVE CATEGORY
 const sendArticlesByCategory = async (req, res, next) => {
 	if (req.query.categoryId) {
-		const limit = Number(req.query.limit) | 0;
+		const limit = Number(req.query.limit) || 0;
 		const category = isNaN(Number(req.query.categoryId))
 			? req.query.categoryId
 			: await requestData(
@@ -119,13 +131,19 @@ const sendArticlesByCategory = async (req, res, next) => {
 					{ categoryId: Number(req.query.categoryId) },
 					{ categoryId: false, pictureUrl: false },
 					limit
-			  ).then((x) => x.data[0].name);
+			  ).then(
+					(res) => res.data[0].name,
+					(err) => next(err)
+			  );
 		// console.log(category);
 		const articleData = await requestData('articles', {
 			categories: { $regex: RegExp(category, 'i') },
-		});
+		}).then(
+			(res) => res,
+			(err) => next(err)
+		);
 		// console.log(category, articleData);
-		if (articleData.success && articleData.length !== 0) {
+		if (articleData.success && articleData.data.length > 0) {
 			res.json({
 				success: true,
 				status: 200,
@@ -142,6 +160,38 @@ const sendArticlesByCategory = async (req, res, next) => {
 	} else next();
 };
 
+const sendArticlesByTag = async (req, res, next) => {
+	if (req.query.tagId !== undefined) {
+		// const tagData = isNaN(Number(req.query.tagId))
+		// 	? await requestData('tags', { name: req.query.tagId }).then(
+		// 			(result) => result.data[0],
+		// 			(err) => next(err)
+		// 	  )
+		// 	: await requestData('tags', { tagId: Number(req.query.tagId) }).then(
+		// 			(result) => result.data[0],
+		// 			(err) => next(err)
+		// 	  );
+		const articles = await requestData('articles', { tags: { $all: [req.query.tagId] } }).then(
+			(result) => result,
+			(err) => next(err)
+		);
+		res.json(articles);
+		// const articles = [];
+		// tagData.articles.map(async (articleId) => {
+		// 	const article = await requestData('articles', { articleId: articleId }).then(
+		// 		(result) => result.data[0],
+		// 		(err) => next(err)
+		// 	);
+		// 	articles.push(article);
+		// });
+		// res.json({
+		// 	success: true,
+		// 	status: 200,
+		// 	data: articles,
+		// });
+	} else next();
+};
+
 // SHARE ARTICLE
 const shareArticleCount = async (req, res, next) => {
 	if (req.query.shareArticle === 'true') {
@@ -149,6 +199,9 @@ const shareArticleCount = async (req, res, next) => {
 			'articles',
 			{ urlSafeTitle: req.params.article },
 			{ $inc: { 'reactions.shares': 1 } }
+		).then(
+			(res) => res,
+			(err) => next(err)
 		);
 		res.json({ success: true, status: 200, message: `You shared ${req.params.article}` });
 	} else if (req.query.shareArticle === 'false') {
@@ -161,23 +214,17 @@ const shareArticleCount = async (req, res, next) => {
 };
 
 // SEND ARTICLE DATA
-const sendArticle = async (req, res) => {
-	const article = isNaN(Number(req.params.article))
-		? req.params.article
-		: Number(req.params.article);
-	const articleData = isNaN(article)
-		? await requestData('articles', { urlSafeTitle: article })
-		: await requestData('articles', { articleId: article });
-	if (
-		articleData.success &&
-		articleData.data.length !== 0 &&
-		(articleData.data[0].title
-			.replace(/[^a-zA-Z0-9\s]/gm, '')
-			.replace(/\s/gm, '-')
-			.replace(/-$/gm, '')
-			.toLowerCase() === article ||
-			articleData.data[0].articleId === article)
-	) {
+const sendArticle = async (req, res, next) => {
+	const articleData = isNaN(Number(req.params.article))
+		? await requestData('articles', { urlSafeTitle: req.params.article }).then(
+				(res) => res,
+				(err) => next(err)
+		  )
+		: await requestData('articles', { articleId: Number(req.params.article) }).then(
+				(res) => res,
+				(err) => next(err)
+		  );
+	if (articleData.success && articleData.data.length > 0) {
 		const { updatedData: authorData } = await updateUserData(
 			{ userId: articleData.data[0].author.userId },
 			{
@@ -189,13 +236,31 @@ const sendArticle = async (req, res) => {
 				},
 			},
 			true
+		).then(
+			(res) => res,
+			(err) => next(err)
 		);
-		const { updatedData: updatedArticleData } = await updateData(
-			'articles',
-			{ urlSafeTitle: req.params.article },
-			{ $inc: { 'views.allTime': 1 } },
-			true
-		);
+		const { updatedData: updatedArticleData } = isNaN(Number(req.params.article))
+			? await updateData(
+					'articles',
+					{ urlSafeTitle: req.params.article },
+					{ $inc: { 'views.allTime': 1 } },
+					{},
+					true
+			  ).then(
+					(res) => res,
+					(err) => next(err)
+			  )
+			: await updateData(
+					'articles',
+					{ articleId: Number(req.params.article) },
+					{ $inc: { 'views.allTime': 1 } },
+					{},
+					true
+			  ).then(
+					(res) => res,
+					(err) => next(err)
+			  );
 		// ? FOR SORTING COMMENTS BY ITS CREATED DATE FROM LATEST TO OLDEST
 		// const comments = articleData.data[0].comments.sort(
 		// 	(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -249,16 +314,19 @@ const likeArticle = async (req, res, next) => {
 	if (req.query.likeArticle) {
 		// ? IF YOU REQUEST TO LIKE THE ARTICLE
 		const article = await requestData('articles', { urlSafeTitle: req.params.article }).then(
-			(res) => res.data[0]
+			(res) => res.data[0],
+			(err) => next(err)
 		);
 		if (req.query.likeArticle === 'true' && req.session.userId !== undefined) {
 			if (!article.reactions.likes.includes(Number(req.session.userId))) {
 				// ? if you haven't liked the same article before
-				article.reactions.likes.push(req.session.userId);
 				await updateData(
 					'articles',
 					{ urlSafeTitle: req.params.article },
-					{ $set: { 'reactions.likes': article.reactions.likes } }
+					{ $push: { 'reactions.likes': req.session.userId } }
+				).then(
+					(res) => res,
+					(err) => next(err)
 				);
 				res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
 			} else {
@@ -272,12 +340,13 @@ const likeArticle = async (req, res, next) => {
 		} else if (req.query.likeArticle === 'false' && req.session.userId !== undefined) {
 			if (article.reactions.likes.includes(Number(req.session.userId))) {
 				// ? if you haven't liked the same article before
-				const likedIdPosition = article.reactions.likes.indexOf(req.session.userId);
-				article.reactions.likes.splice(likedIdPosition, 1);
 				await updateData(
 					'articles',
 					{ urlSafeTitle: req.params.article },
-					{ $set: { 'reactions.likes': article.reactions.likes } }
+					{ $pull: { 'reactions.likes': req.session.userId } }
+				).then(
+					(res) => res,
+					(err) => next(err)
 				);
 				res.json({
 					success: true,
@@ -312,16 +381,14 @@ const bookmarkArticle = async (req, res, next) => {
 		if (req.query.bookmarkArticle === 'true' && req.session.userId !== undefined) {
 			if (!article.reactions.bookmarks.includes(Number(req.session.userId))) {
 				// ? if you haven't bookmarked the same article before
-				article.reactions.bookmarks.push(Number(req.session.userId));
-				user.bookmarks.push(Number(article.articleId));
 				await updateData(
 					'articles',
 					{ urlSafeTitle: req.params.article },
-					{ $set: { 'reactions.bookmarks': article.reactions.bookmarks } }
+					{ $push: { 'reactions.bookmarks': req.session.userId } }
 				);
 				await updateUserData(
 					{ userId: req.session.userId },
-					{ $set: { bookmarks: user.bookmarks } }
+					{ $push: { bookmarks: req.session.userId } }
 				);
 				req.session.user.bookmarks = user.bookmarks;
 				res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
@@ -336,18 +403,20 @@ const bookmarkArticle = async (req, res, next) => {
 		} else if (req.query.bookmarkArticle === 'false' && req.session.userId !== undefined) {
 			if (article.reactions.bookmarks.includes(Number(req.session.userId))) {
 				// ? if you haven't un-bookmarked the same article before
-				const userBookmarkedIdPosition = user.bookmarks.indexOf(article.articleId);
-				const bookmarkedIdPosition = article.reactions.bookmarks.indexOf(req.session.userId);
-				article.reactions.bookmarks.splice(bookmarkedIdPosition, 1);
-				user.bookmarks.splice(userBookmarkedIdPosition, 1);
 				await updateData(
 					'articles',
 					{ urlSafeTitle: req.params.article },
-					{ $set: { 'reactions.bookmarks': article.reactions.bookmarks } }
+					{ $pull: { 'reactions.bookmarks': req.session.userId } }
+				).then(
+					(res) => res,
+					(err) => next(err)
 				);
 				await updateUserData(
 					{ userId: req.session.userId },
-					{ $set: { bookmarks: user.bookmarks } }
+					{ $pull: { bookmarks: req.session.userId } }
+				).then(
+					(res) => res,
+					(err) => next(err)
 				);
 				req.session.user.bookmarks = user.bookmarks;
 				res.json({
@@ -373,25 +442,31 @@ const bookmarkArticle = async (req, res, next) => {
 
 // ? FOR COMMENTING ON THE ARTICLE
 const commentOnArticle = async (req, res, next) => {
-	if (req.query.commentOnArticle && req.body.userId && req.body.commentContent) {
+	if (req.query.commentOnArticle && req.body.userId !== undefined && req.body.commentContent) {
 		const { userId, commentContent } = req.body;
 		if (!isNaN(Number(userId)) && typeof commentContent === 'string') {
 			const article = await requestData('articles', {
 				urlSafeTitle: req.params.article,
-			}).then((res) => res.data[0]);
-			article.comments.push({
-				userId: Number(userId),
-				date: new Date(),
-				isEdited: false,
-				editedDate: null,
-				comment: commentContent,
-				likedUsers: [],
-				replies: [],
-			});
+			}).then(
+				(res) => res.data[0],
+				(err) => next(err)
+			);
 			await updateData(
 				'articles',
 				{ urlSafeTitle: req.params.article },
-				{ $set: { comments: article.comments } }
+				{
+					$push: {
+						comments: {
+							userId: Number(userId),
+							date: new Date(),
+							isEdited: false,
+							editedDate: null,
+							comment: commentContent,
+							likedUsers: [],
+							replies: [],
+						},
+					},
+				}
 			).then((result) => {
 				if (result.success) {
 					res.json({
@@ -427,13 +502,21 @@ const likeCommentsOnArticles = async (req, res, next) => {
 					await updateData(
 						'articles',
 						{ urlSafeTitle: req.params.article },
-						{ $set: { comments: article.comments } }
-					);
-					res.json({
-						success: true,
-						status: 200,
-						message: `Liked comment with id ${commentId} by user with id ${userId}`,
-					});
+						{
+							$set: {
+								comments: article.comments,
+							},
+						}
+					)
+						.then((result) => {
+							if (result.success)
+								res.json({
+									success: true,
+									status: 200,
+									message: `Liked comment with id ${commentId} by user with id ${userId}`,
+								});
+						})
+						.catch((err) => next(err));
 				} else {
 					// if you have liked the same comment before
 					res.json({
@@ -492,4 +575,5 @@ module.exports = {
 	bookmarkArticle,
 	commentOnArticle,
 	likeCommentsOnArticles,
+	sendArticlesByTag,
 };

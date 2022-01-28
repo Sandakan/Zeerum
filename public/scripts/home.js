@@ -46,7 +46,9 @@ fetchData(
 				).toString()}"><i class="fas fa-clock"></i> ${timeFromNow(
 					x.releasedDate
 				)}</span></div> <div class="article-categories-container">${x.categories
-					.map((y) => `<span class="categories"><a href="categories/${y}">#${y}</a></span>`)
+					.map((y) => `<span class="category"><a href="categories/${y}">${y}</a></span>`)
+					.join('')}</div> <div class="article-tags-container">${x.tags
+					.map((y) => `<span class="tag"><a href="/tags/${y}">#${y}</a></span>`)
 					.join('')}</div></div></div>`;
 				document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
 				// Only displays the latest 5 articles in the .navigate-through-links panel.
@@ -87,7 +89,7 @@ fetchData(`/data/categories/`, (res) => {
 		document.querySelector('.search-through-categories').classList.remove('categories-loading');
 		document.querySelector('.search-through-categories').innerHTML = data
 			.map((x) => {
-				return `<span class="categories"> <a href="/categories/${x.name.toLowerCase()}">${
+				return `<span class="category"> <a href="/categories/${x.name.toLowerCase()}">${
 					x.name
 				}</a></span>`;
 			})

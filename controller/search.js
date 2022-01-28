@@ -1,5 +1,5 @@
 const {
-	connectToDB,
+	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
@@ -14,26 +14,39 @@ const search = async (req, res, next) => {
 	// console.log(searchPhrase);
 	const articleData = await requestData('articles', {
 		title: { $regex: new RegExp(`${searchPhrase}`, 'i') },
-	});
+	})
+		.then((res) => res)
+		.catch((err) => next(err));
 	const categoryData = await requestData('categories', {
 		name: { $regex: new RegExp(`${searchPhrase}`, 'i') },
-	});
+	})
+		.then((res) => res)
+		.catch((err) => next(err));
 	const userData = await checkUser(
 		{
 			username: { $regex: new RegExp(`${searchPhrase}`, 'i') },
 		},
 		{ _id: false, password: false }
-	);
-	if (articleData.success || categoryData.success || userData.success) {
+	)
+		.then((res) => res)
+		.catch((err) => next(err));
+	const tagData = await requestData('tags', {
+		name: { $regex: new RegExp(`${searchPhrase}`, 'i') },
+	})
+		.then((res) => res)
+		.catch((err) => next(err));
+	if (articleData.success || categoryData.success || userData.success || tagData.success) {
 		if (
 			articleData.data.length !== 0 ||
 			categoryData.data.length !== 0 ||
+			tagData.data.length !== 0 ||
 			userData.isThereAUser
 		) {
 			const results = {
 				articles: articleData.data || [],
 				users: userData.userData || [],
 				categories: categoryData.data || [],
+				tags: tagData.data || [],
 			};
 			// console.log(searchPhrase, results);
 			res.status(200).json({

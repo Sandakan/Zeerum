@@ -34,9 +34,11 @@ const renderData = (res) => {
 		}<div class="end"></div><div class="footnotes">${
 			article.footnotes || ''
 		}</div><div class="categories">${article.categories
-			.map((x) => {
-				return `<a href="/categories/${x.toLowerCase()}"><span class="category">#${x}</span></a>`;
-			})
+			.map(
+				(x) => `<a href="/categories/${x.toLowerCase()}"><span class="category">${x}</span></a>`
+			)
+			.join('')}</div><div class="tags">${article.tags
+			.map((tag) => `<a href="/tags/${tag}"><span class="tag">#${tag}</span></a>`)
 			.join('')}</div>`;
 		document.querySelector('.author > .author-data-container').innerHTML = `<img src="${
 			author.profilePictureUrl || '/images/user.webp'
@@ -126,11 +128,12 @@ const renderData = (res) => {
 		if (article.comments.length !== 0) {
 			article.comments.forEach(
 				async (comment, commentId) => {
-					await fetchData(`/data/users/${comment.userId}`, ({ success, data }) => {
-						if (success) {
-							// console.log(comment);
-							document.querySelector('#comments').innerHTML =
-								`<div class="comment">
+					await fetchData(`/data/users/${comment.userId}`)
+						.then(({ success, data }) => {
+							if (success) {
+								// console.log(comment);
+								document.querySelector('#comments').innerHTML =
+									`<div class="comment">
 								<img src="${data.profilePictureUrl || '/images/user.webp'}" 
 									onclick="window.location = \`/user/${data.username}\`" />
 								<div class="text">
@@ -151,10 +154,10 @@ const renderData = (res) => {
 									</span>
 								</div>
 							</div>` + document.querySelector('#comments').innerHTML;
-							document.querySelector('.no-comments').style.display = 'none';
-						} else {
-							document.querySelector('#comments').innerHTML =
-								`<div class="comment">
+								document.querySelector('.no-comments').style.display = 'none';
+							} else {
+								document.querySelector('#comments').innerHTML =
+									`<div class="comment">
 								<img src="/images/user.webp" onclick="window.location = \`/user/unknownOrDeletedUser" />
 								<div class="text">
 									<span class="name">Deleted User</span>
@@ -172,9 +175,10 @@ const renderData = (res) => {
 									</span>
 								</div>
 							</div>` + document.querySelector('#comments').innerHTML;
-							document.querySelector('.no-comments').style.display = 'none';
-						}
-					});
+								document.querySelector('.no-comments').style.display = 'none';
+							}
+						})
+						.catch((err) => console.log(err));
 					// ? FOR LIKING AND DISLIKING COMMENTS.
 					const commentLikeButtons = document.querySelectorAll('.stats > .like-comment');
 					commentLikeButtons.forEach((x) => {

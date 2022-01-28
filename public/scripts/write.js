@@ -200,35 +200,39 @@ const finalizeArticle = () => {
 							<div class="article-data"></div>
 						</div>
 					</div>
-					<form name="finalizeArticleForm" id="finalize-article-form">
-						<input type="text" name="articleTitle" class="article-title" placeholder="Article Title" spellcheck="true" required/>
-						<textarea name="articleDescription" class="article-description" cols="10" placeholder="Article Description" rows="5" required></textarea>
-						<textarea name="articleFootnotes" class="article-footnotes" cols="10" placeholder="Footnotes" rows="5"></textarea>
-						<select name="articleCategory" id="category" required>
-							<option value="" disabled selected hidden>Select a category</option>
-							<option value="Art">Art</option>
-							<option value="Celebrities">Celebrities</option>
-							<option value="Culture">Culture</option>
-							<option value="Design">Design</option>
-							<option value="Entertainment">Entertainment</option>
-							<option value="Fitness">Fitness</option>
-							<option value="Food">Food</option>
-							<option value="Health">Health</option>
-							<option value="Leadership">Leadership</option>
-							<option value="Love">Love</option>
-							<option value="Music">Music</option>
-							<option value="Nature">Nature</option>
-							<option value="Photography">Photography</option>
-							<option value="Politics">Politics</option>
-							<option value="Society">Society</option>
-							<option value="Space">Space</option>
-							<option value="Sports">Sports</option>
-							<option value="Style">Style</option>
-							<option value="Technology">Technology</option>
-							<option value="Travel">Travel</option>
-						</select>
-						<input type="submit" value="Save Article" class="save-btn" aria-label="Save article"/>
-					</form>
+						<form name="finalizeArticleForm" id="finalize-article-form">
+							<input type="text" name="articleTitle" class="article-title" placeholder="Article Title" spellcheck="true" required/>
+							<textarea name="articleDescription" class="article-description" cols="10" placeholder="Article Description" rows="3" required></textarea>
+							<textarea name="articleFootnotes" class="article-footnotes" cols="10" placeholder="Footnotes" rows="3"></textarea>
+							<select name="articleCategory" id="category" required>
+								<option value="" disabled selected hidden>Select a category</option>
+								<option value="Art">Art</option>
+								<option value="Celebrities">Celebrities</option>
+								<option value="Culture">Culture</option>
+								<option value="Design">Design</option>
+								<option value="Entertainment">Entertainment</option>
+								<option value="Fitness">Fitness</option>
+								<option value="Food">Food</option>
+								<option value="Health">Health</option>
+								<option value="Leadership">Leadership</option>
+								<option value="Love">Love</option>
+								<option value="Music">Music</option>
+								<option value="Nature">Nature</option>
+								<option value="Photography">Photography</option>
+								<option value="Politics">Politics</option>
+								<option value="Society">Society</option>
+								<option value="Space">Space</option>
+								<option value="Sports">Sports</option>
+								<option value="Style">Style</option>
+								<option value="Technology">Technology</option>
+								<option value="Travel">Travel</option>
+							</select>
+							<div class="add-tags-container">
+								<input type="text" name="tagInput" id="tag-input" placeholder="Add Tags (Enter to add)"/>
+								<div class="tags-container"></div>
+							</div>
+							<input type="submit" value="Save Article" class="save-btn" aria-label="Save article"/>
+						</form>
 				</div>
 			`;
 	togglePopup(popupData, 'finalize-article', true, true);
@@ -242,6 +246,7 @@ const finalizeArticle = () => {
 
 	let articleTitle = '';
 	let articleBody = '';
+	let articleTags = [];
 	if (previewContainer.innerText.trim() === '') {
 		alert('Article body cannot be empty.');
 	} else {
@@ -300,6 +305,27 @@ const finalizeArticle = () => {
 					'.article-preview .article-data-container .article-data .footnotes'
 				).innerHTML = e.target.value;
 			});
+		document
+			.querySelector('#finalize-article-form .add-tags-container #tag-input')
+			.addEventListener('keypress', (e) => {
+				if (e.keyCode === 13) {
+					e.preventDefault();
+					let tag = e.target.value
+						.trim()
+						.replace(/\s/gi, '-')
+						.split(/[-_]/gi)
+						.map((x, id) =>
+							id === 0 ? x : x.replace(/^./gi, (letter) => letter.toUpperCase())
+						)
+						.join('');
+					articleTags.push(tag);
+					console.log(articleTags);
+					document.querySelector(
+						'#finalize-article-form .add-tags-container .tags-container'
+					).innerHTML += `<span class="tag">#${tag}</span>`;
+					e.target.value = '';
+				}
+			});
 	}
 
 	document.finalizeArticleForm.addEventListener('submit', (e) => {
@@ -310,6 +336,7 @@ const finalizeArticle = () => {
 		const articleForm = new FormData(document.finalizeArticleForm);
 		articleForm.append('articleBody', articleBody);
 		articleForm.append('articleCoverImg', articleCoverImg);
+		articleForm.append('articleTags', articleTags.join('#'));
 		articleImages.map((image) => {
 			articleForm.append(
 				'articleImages',
@@ -337,7 +364,7 @@ const finalizeArticle = () => {
 								</div>
 								<button class="go-to-my-article-btn">Go to the article</button>
 							`;
-					togglePopup(popupData, 'article-added', true);
+					togglePopup(popupData, 'article-added', true, true);
 					document
 						.querySelector('.go-to-my-article-btn')
 						.addEventListener('click', () => window.location.replace(res.articleUrl));
