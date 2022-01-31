@@ -14,7 +14,7 @@ const testDatabaseConnection = async () => {
 		.finally(async () => await client.close());
 };
 
-const countDocuments = async (collection, func = () => true) => {
+const countDocuments = async (collection) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
@@ -23,7 +23,6 @@ const countDocuments = async (collection, func = () => true) => {
 				.collection(collection)
 				.countDocuments()
 				.then((res) => res);
-			func(noOfDocuments);
 			resolve(noOfDocuments);
 		} catch (err) {
 			reject(err);
@@ -32,7 +31,7 @@ const countDocuments = async (collection, func = () => true) => {
 	return promise;
 };
 
-const createUser = async (userDataObj, func = () => true) => {
+const createUser = async (userDataObj) => {
 	const promise = new Promise(async (resolve, reject) => {
 		const { firstName, lastName, birthday, email, password, country } = userDataObj;
 		await client.connect();
@@ -79,11 +78,6 @@ const createUser = async (userDataObj, func = () => true) => {
 						message: `Account created successfully`,
 						userData: data,
 					});
-					func({
-						success: true,
-						message: `Account created successfully`,
-						userData: data,
-					});
 				}
 			}
 		);
@@ -91,7 +85,7 @@ const createUser = async (userDataObj, func = () => true) => {
 	return promise;
 };
 
-const checkUser = async (userDataObj, customProjection = {}, func = () => true) => {
+const checkUser = async (userDataObj, customProjection = {}) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
@@ -99,22 +93,13 @@ const checkUser = async (userDataObj, customProjection = {}, func = () => true) 
 			await database
 				.collection('users')
 				.find(userDataObj, {
-					projection: { birthday: false, ...customProjection },
+					projection: customProjection,
 				})
 				.toArray((error, result) => {
-					// console.log(result);
-					if (error) {
-						reject('Error occurred when requesting data from the database.');
-					}
-					if (result.length !== 0) {
-						func({ success: true, isThereAUser: true, userData: result });
+					if (error) reject(error);
+					if (result.length !== 0)
 						resolve({ success: true, isThereAUser: true, userData: result });
-						return { success: true, isThereAUser: true, userData: result };
-					} else {
-						func({ success: true, isThereAUser: false });
-						resolve({ success: true, isThereAUser: false });
-						return { success: true, isThereAUser: false };
-					}
+					else resolve({ success: true, isThereAUser: false });
 				});
 		} catch (err) {
 			reject(err);
@@ -123,29 +108,22 @@ const checkUser = async (userDataObj, customProjection = {}, func = () => true) 
 	return promise;
 };
 
-const requestData = async (
-	collection,
-	query = {},
-	customProjection = {},
-	limit = 0,
-	func = () => true
-) => {
+const requestData = async (collection, query = {}, customProjection = {}, sort = {}, limit = 0) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
 		database
 			.collection(collection)
 			.find(query, {
-				projection: { password: false, birthday: false, ...customProjection },
+				projection: customProjection,
 			})
+			.sort(sort)
 			.limit(limit)
 			.toArray((error, result) => {
 				if (error) {
 					return reject(error);
 				}
-				func({ success: true, data: result });
 				resolve({ success: true, data: result });
-				return { success: true, data: result };
 			});
 	});
 	return promise;
@@ -181,14 +159,11 @@ const updateData = async (
 	options = {},
 	returnUpdatedData = false
 ) => {
-	// console.log(collection, query, newValues, returnUpdatedData);
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
 		database.collection(collection).updateMany(query, newValues, options, async (err, res) => {
-			if (err) {
-				return reject(err);
-			}
+			if (err) return reject(err);
 			console.log(`${res.modifiedCount} documents updated.`);
 			if (res.modifiedCount > 0) {
 				if (returnUpdatedData) {
@@ -217,14 +192,13 @@ const deleteData = async (collection, query = {}) => {
 		database.collection(collection).deleteMany(query, (err, result) => {
 			if (err) {
 				return reject(err);
-				// throw err;
 			} else resolve({ success: true, message: `${result.deletedCount} documents deleted.` });
 		});
 	});
 	return promise;
 };
 
-const createArticle = async (articleData = {}, userData = {}, func = () => true) => {
+const createArticle = async (articleData = {}, userData = {}) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 
@@ -283,10 +257,6 @@ const createArticle = async (articleData = {}, userData = {}, func = () => true)
 						success: true,
 						message: 'Article added successfully.',
 						articleUrl: `/articles/${articleUrlSafeTitle}`,
-					});
-					func({
-						success: true,
-						message: 'Article added successfully.',
 					});
 				}
 			}

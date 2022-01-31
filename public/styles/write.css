@@ -416,9 +416,18 @@ body.logged-in.author .write-content {
 	-ms-transition: color 0.2s ease-in-out;
 	-o-transition: color 0.2s ease-in-out;
 }
+.popup.add-image-to-article.on-drag-over .img-container:empty:after {
+	content: 'Drop the image here';
+	color: var(--background-color-400);
+}
 .popup.add-image-to-article .img-container:hover {
 	border-color: var(--background-color-400);
 }
+
+.popup.add-image-to-article.on-drag-over .img-container {
+	border-color: var(--background-color-400);
+}
+
 .popup.add-image-to-article .img-container:hover::after {
 	color: var(--background-color-400);
 }
@@ -440,6 +449,7 @@ body.logged-in.author .write-content {
 	text-align: center;
 	padding: 1em 2em;
 	color: var(--text-color-white);
+	border: 0.25em solid transparent;
 	border-radius: 1.5em;
 	-webkit-border-radius: 1.5em;
 	-moz-border-radius: 1.5em;
@@ -452,10 +462,20 @@ body.logged-in.author .write-content {
 	-ms-transition: box-shadow 0.2s linear;
 	-o-transition: box-shadow 0.2s linear;
 }
+.popup.add-image-to-article .img-settings-container .done-btn.disabled {
+	background-color: var(--background-color-200);
+	border-color: var(--background-color-100);
+	color: var(--background-color-100);
+	cursor: not-allowed;
+	font-weight: bold;
+}
 .popup.add-image-to-article .img-settings-container .done-btn:hover {
 	box-shadow: 3px 32px 84px 16px var(--box-shadow);
 	-webkit-box-shadow: 3px 32px 84px 16px var(--box-shadow);
 	-moz-box-shadow: 3px 32px 84px 16px var(--box-shadow);
+}
+.popup.add-image-to-article .img-settings-container .done-btn.disabled:hover {
+	box-shadow: none;
 }
 
 .popup.add-image-to-article .img-settings-container .article-images-form {

@@ -1,7 +1,7 @@
 .change-profile-picture {
 	position: relative;
 }
-.change-profile-picture::after {
+.change-profile-picture.on-drag-over::after {
 	content: 'Drop the image here';
 	text-align: center;
 	color: var(--background-color-500);
@@ -21,6 +21,72 @@
 	-ms-transition: opacity 0.2s ease;
 	-o-transition: opacity 0.2s ease;
 }
+.change-profile-picture.on-drop::after {
+	content: 'UPLOADING...';
+	text-align: center;
+	color: var(--background-color-500);
+	font-size: 2em;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	-webkit-transition: opacity 0.2s ease;
+	-moz-transition: opacity 0.2s ease;
+	-ms-transition: opacity 0.2s ease;
+	-o-transition: opacity 0.2s ease;
+}
+.change-profile-picture.on-drop-fail form * {
+	animation: visible 1s forwards ease 1.5s;
+	-webkit-animation: visible 1s forwards ease 1.5s;
+}
+
+@keyframes visible {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.change-profile-picture.on-drop-fail::after {
+	content: 'UPLOAD FAILED.';
+	text-align: center;
+	color: var(--highlight-color);
+	font-size: 2em;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	opacity: 0;
+	/* transition: opacity 0.2s ease;
+	-webkit-transition: opacity 0.2s ease;
+	-moz-transition: opacity 0.2s ease;
+	-ms-transition: opacity 0.2s ease;
+	-o-transition: opacity 0.2s ease; */
+	animation: dissappear 1s forwards ease;
+	-webkit-animation: dissappear 2s forwards ease;
+}
+
+@keyframes dissappear {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
 .change-profile-picture.on-drag-over {
 	border-color: var(--background-color-500);
 }
@@ -31,10 +97,12 @@
 	-ms-transition: opacity 0.2s ease;
 	-o-transition: opacity 0.2s ease;
 }
-.change-profile-picture.on-drag-over form * {
+:is(.change-profile-picture.on-drag-over, .change-profile-picture.on-drop, .change-profile-picture.on-drop-fail)
+	form
+	* {
 	opacity: 0;
 }
-.change-profile-picture.on-drag-over::after {
+:is(.change-profile-picture.on-drag-over, .change-profile-picture.on-drop, .change-profile-picture.on-drop-fail)::after {
 	opacity: 1;
 }
 

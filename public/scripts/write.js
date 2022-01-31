@@ -1,4 +1,5 @@
 import togglePopup from './togglePopup.js';
+import displayAlertPopup from './displayAlertPopup.js';
 
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -8,11 +9,11 @@ if (sessionStorage.getItem('userType') === 'author')
 else if (sessionStorage.getItem('userType') === 'reader') {
 	document.querySelector(
 		'.banner-text'
-	).innerHTML = `<span>You need to <a href="/profile?changeUserType=author">be an author</a> <br />to use this feature. <br /><h6>\*This feature is still under development and might not be available to all the users right now.</h6> </span>`;
+	).innerHTML = `<span>You need to <a href="/profile?changeUserType=author">be an author</a> <br />to use this feature.</span>`;
 } else {
 	document.querySelector(
 		'.banner-text'
-	).innerHTML = `<span>You need to be logged in and be an author to use this feature. <br /><h6>\*This feature is still under development and might not be available to all the users right now.</h6> </span>`;
+	).innerHTML = `<span>You need to be logged in and be an author to use this feature.</span>`;
 }
 
 const createRandomString = () => {
@@ -57,6 +58,19 @@ const addElementToPreview = (string = '') => {
 	previewContainer.innerHTML += string;
 };
 
+document.body.addEventListener('dragover', (e) => {
+	if (document.querySelector('.popup').classList.contains('add-image-to-article')) {
+		document.querySelector('.popup').classList.add('on-drag-over');
+	}
+});
+document.body.addEventListener('dragleave', (e) => {
+	if (document.querySelector('.popup').classList.contains('add-image-to-article')) {
+		document.querySelector('.popup').classList.remove('on-drag-over');
+	}
+});
+document.body.addEventListener('drop', (e) => e.preventDefault());
+document.querySelector('.popup-container').addEventListener('drop', (e) => e.preventDefault());
+
 previewContainer.addEventListener('input', (e) => {
 	if (e.target.contains(document.querySelector('.article-heading'))) {
 		articleHeading.classList.add('disabled');
@@ -70,7 +84,7 @@ articleHeading.addEventListener('click', (e) => {
 		e.target.classList.remove('disabled');
 		addElementToPreview(`<div class="article-heading" data-id="${createRandomString()}"></div>`);
 	} else {
-		alert('There can only be one article heading');
+		displayAlertPopup('info', 'There can only be one article heading');
 		e.target.classList.add('disabled');
 	}
 });
@@ -95,17 +109,29 @@ img.addEventListener('click', () => {
 			<form name="articleImagesForm" class="article-images-form">
 				<input type="text" name="imageName" id="image-name" placeholder="Image Name" required/>
 				<input type="text" name="imageAlt" id="image-alt" placeholder="Image Alt Description / Image Caption" />
-				<input type="file" name="articleImages" id="article-images" accept=".png,.jpeg,.jpg,.webp" required/>
-				<input type="submit" value="" id="article-images-submit" />
+				<input type="file" name="articleImages" id="article-images" accept=".png,.jpeg,.jpg,.webp"/>
+				<input type="submit" value="" id="article-images-submit" value="Add image"/>
 			</form>
-			<label for="article-images-submit" class="done-btn" disabled>Add Image</label>
+			<label for="article-images-submit" class="done-btn disabled">Add Image</label>
 		</div>`;
 	togglePopup(popupData, 'add-image-to-article', false);
+
+	document.querySelector('.img-container').addEventListener('drop', (e) => {
+		e.preventDefault();
+		document.querySelector('.add-image-to-article').classList.remove('on-drag-over');
+		console.log(e.fileTransfer);
+		if (e.fileTransfer.files[0]) {
+			document.querySelector(`.article-images-form input[type="file"]`).files =
+				e.fileTransfer.files[0];
+		}
+	});
 	document
 		.querySelector(`.article-images-form input[type="file"]`)
 		.addEventListener('change', (e) => {
 			if (e.target.files.length > 0) {
-				document.querySelector('.img-settings-container .done-btn').disabled = 'false';
+				document
+					.querySelector('.img-settings-container .done-btn')
+					.classList.remove('disabled');
 				document.querySelector('.img-container').innerHTML = '';
 				const files = e.target.files;
 				document.querySelector('#image-name').value === ''
@@ -125,17 +151,20 @@ img.addEventListener('click', () => {
 		const imgTitle = document.querySelector('#image-name').value;
 		const imgAlt = document.querySelector('#image-alt').value;
 		const img = document.querySelector('#article-images').files[0];
-		const imgExtension = img.name.split('.').at(-1);
 		const imgId = createRandomString();
-		storeArticleImages(imgId, imgTitle, imgAlt, img, imgExtension);
-		addElementToPreview(
-			`<div class="image">
+		if (img !== undefined) {
+			const imgExtension = img.name.split('.').at(-1);
+			storeArticleImages(imgId, imgTitle, imgAlt, img, imgExtension);
+			addElementToPreview(
+				`<div class="image">
 				<img src="${URL.createObjectURL(img)}" title="${
-				imgAlt || imgTitle
-			}" alt="${imgAlt}" data-id="${imgId}" data-file-extension="${imgExtension}">
+					imgAlt || imgTitle
+				}" alt="${imgAlt}" data-id="${imgId}" data-file-extension="${imgExtension}">
 			</div>`
-		);
-		togglePopup();
+			);
+			togglePopup();
+		}
+		elsedisplayAlertPopup('info', 'Please upload an image.');
 	});
 });
 // section.addEventListener('click', () => {
@@ -144,7 +173,7 @@ img.addEventListener('click', () => {
 nextBtn.addEventListener('click', (e) => {
 	if (previewContainer.innerText !== '') {
 		addCoverImgToArticle();
-	} else alert('Article body cannot be empty');
+	} else displayAlertPopup('info', 'Article body cannot be empty');
 });
 
 // / / / / / / / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / // / / / / / / / / / / / /
@@ -248,7 +277,7 @@ const finalizeArticle = () => {
 	let articleBody = '';
 	let articleTags = [];
 	if (previewContainer.innerText.trim() === '') {
-		alert('Article body cannot be empty.');
+		displayAlertPopup('info', 'Article body cannot be empty.');
 	} else {
 		let children = previewContainer.children;
 		console.log(children);
@@ -375,7 +404,7 @@ const finalizeArticle = () => {
 					document
 						.querySelector('#finalize-article-form .save-btn')
 						.classList.remove('uploading');
-					alert(res.message);
+					displayAlertPopup('error', res.message);
 					console.log(res.message);
 				}
 			});

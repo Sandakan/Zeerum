@@ -1,4 +1,5 @@
 import reportError from './formReportError.js';
+import displayAlertPopup from './displayAlertPopup.js';
 
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -26,10 +27,7 @@ document.getElementById('form').addEventListener('submit', (e) => {
 			password: document.getElementById('password').value,
 		}),
 	})
-		.then(
-			(res) => res.json(),
-			(err) => console.log(err)
-		)
+		.then((res) => res.json())
 		.then(
 			(res) => {
 				document.getElementById('submit').classList.remove('submitting');
@@ -54,7 +52,7 @@ document.getElementById('form').addEventListener('submit', (e) => {
 					});
 				}
 			},
-			(err) => console.log(err)
+			(err) => displayAlertPopup('error', err.message)
 		);
 });
 

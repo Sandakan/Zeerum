@@ -1,7 +1,7 @@
-import fetchData from './fetchData.js';
 import timeFromNow from './timeFromNow.js';
 import togglePopup from './togglePopup.js';
 import valueRounder from './valueRounder.js';
+import displayAlertPopup from './displayAlertPopup.js';
 
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -83,7 +83,7 @@ const renderData = (res) => {
 								document.querySelector(
 									'.follow-author-btn'
 								).title = `Click to follow ${author.firstName}`;
-							} else alert(res.message);
+							} else displayAlertPopup('info', res.message);
 						});
 				} else {
 					fetch(`/data/profile?followUser=true&followingUserId=${author.userId}`, {
@@ -103,7 +103,7 @@ const renderData = (res) => {
 								document.querySelector(
 									'.follow-author-btn'
 								).title = `Click to unfollow ${author.firstName}`;
-							} else alert(res.message);
+							} else displayAlertPopup('info', res.message);
 						});
 				}
 			});
@@ -128,7 +128,8 @@ const renderData = (res) => {
 		if (article.comments.length !== 0) {
 			article.comments.forEach(
 				async (comment, commentId) => {
-					await fetchData(`/data/users/${comment.userId}`)
+					await fetch(`/data/users/${comment.userId}`)
+						.then((res) => res.json())
 						.then(({ success, data }) => {
 							if (success) {
 								// console.log(comment);
@@ -155,9 +156,12 @@ const renderData = (res) => {
 								</div>
 							</div>` + document.querySelector('#comments').innerHTML;
 								document.querySelector('.no-comments').style.display = 'none';
-							} else {
-								document.querySelector('#comments').innerHTML =
-									`<div class="comment">
+							}
+						})
+						.catch((err) => {
+							console.log(err);
+							document.querySelector('#comments').innerHTML =
+								`<div class="comment">
 								<img src="/images/user.webp" onclick="window.location = \`/user/unknownOrDeletedUser" />
 								<div class="text">
 									<span class="name">Deleted User</span>
@@ -175,46 +179,64 @@ const renderData = (res) => {
 									</span>
 								</div>
 							</div>` + document.querySelector('#comments').innerHTML;
-								document.querySelector('.no-comments').style.display = 'none';
-							}
-						})
-						.catch((err) => console.log(err));
+							document.querySelector('.no-comments').style.display = 'none';
+						});
 					// ? FOR LIKING AND DISLIKING COMMENTS.
 					const commentLikeButtons = document.querySelectorAll('.stats > .like-comment');
 					commentLikeButtons.forEach((x) => {
-						x.addEventListener('click', (e) => {
+						x.addEventListener('click', async (e) => {
 							if (userId !== null) {
 								if (e.target.classList.contains('liked')) {
-									fetchData(
+									await fetch(
 										`${requestingArticleName}?likeComment=false&userId=${sessionStorage.getItem(
 											'userId'
 										)}&commentId=${e.target.dataset.commentId}`,
-										(res) => {
-											console.log(res);
-											if (res.success) {
-												e.target.classList.remove('liked');
-												e.target.innerHTML = 'like';
-											} else {
-												alert(`Error occurred when liking comment . ${res.message}`);
-												console.log(
-													'Error occurred when liking comment .',
-													res.message
-												);
-											}
-										},
 										{
 											method: 'POST',
 											headers: {
 												'Content-Type': 'application/json',
 											},
 										}
-									);
+									)
+										.then((res) => res.json())
+										.then((res) => {
+											console.log(res);
+											if (res.success) {
+												e.target.classList.remove('liked');
+												e.target.innerHTML = 'like';
+											} else {
+												displayAlertPopup(
+													'error',
+													`Error occurred when liking comment . ${res.message}`
+												);
+												console.log(
+													'Error occurred when liking comment .',
+													res.message
+												);
+											}
+										})
+										.catch((err) => {
+											console.log(err);
+											displayAlertPopup(
+												'error',
+												`Error occurred when liking comment . ${res.message}`
+											);
+											console.log('Error occurred when liking comment .', res.message);
+										});
 								} else {
-									fetchData(
+									fetch(
 										`${requestingArticleName}?likeComment=true&userId=${sessionStorage.getItem(
 											'userId'
 										)}&commentId=${e.target.dataset.commentId}`,
-										(res) => {
+										{
+											method: 'POST',
+											headers: {
+												'Content-Type': 'application/json',
+											},
+										}
+									)
+										.then(res.json())
+										.then((res) => {
 											console.log(res);
 											if (res.success) {
 												e.target.classList.add('liked');
@@ -224,16 +246,10 @@ const renderData = (res) => {
 													'Error occurred when liking comment .',
 													res.message
 												);
-										},
-										{
-											method: 'POST',
-											headers: {
-												'Content-Type': 'application/json',
-											},
-										}
-									);
+										})
+										.catch((err) => console.log(err));
 								}
-							} else alert('You are not logged in.');
+							} else displayAlertPopup('info', 'You are not logged in.');
 						});
 					});
 				},
@@ -248,11 +264,14 @@ const renderData = (res) => {
 };
 console.log(requestingArticleName);
 if (requestingArticleName !== '/data/articles/')
-	fetchData(requestingArticleName, renderData, {
+	fetch(requestingArticleName, {
 		headers: {
 			'CSRF-Token': token,
 		},
-	});
+	})
+		.then((res) => res.json())
+		.then((res) => renderData(res))
+		.catch((err) => console.log(err));
 else console.log("You didn't request an article");
 
 // ? //////////////////////////////////////////////////////////////////////////////
@@ -319,7 +338,7 @@ function sendComment() {
 						</div>` + commentContainer.innerHTML;
 					comment.value = '';
 					document.querySelector('.no-comments').style.display = 'none';
-				} else alert(res.message);
+				} else displayAlertPopup('info', res.message);
 			});
 	}
 }
@@ -342,7 +361,7 @@ const reactionsHandler = async (reaction) => {
 						document.querySelector('#liked-number').innerHTML++;
 						reactions.liked = true;
 						console.log(res.message);
-					} else alert(res.message);
+					} else displayAlertPopup('info', res.message);
 				});
 		} else {
 			await fetch(`${requestingArticleName}?likeArticle=false`, {
@@ -360,7 +379,7 @@ const reactionsHandler = async (reaction) => {
 						document.querySelector('#liked-number').innerHTML--;
 						reactions.liked = false;
 						console.log(res.message);
-					} else alert(res.message);
+					} else displayAlertPopup('info', res.message);
 				});
 		}
 	} else if (reaction === 'share') {
@@ -393,7 +412,7 @@ const reactionsHandler = async (reaction) => {
 							}
 						});
 				},
-				() => alert('Copying link to clipboard failed.')
+				() => displayAlertPopup('success', 'Copying link to clipboard failed.')
 			);
 			// const type = 'text/plain';
 			// const blob = new Blob([href], { type });
@@ -417,7 +436,7 @@ const reactionsHandler = async (reaction) => {
 						document.querySelector('#bookmarked-number').innerHTML++;
 						reactions.bookmarked = true;
 						console.log(res.message);
-					} else alert(res.message);
+					} else displayAlertPopup('info', res.message);
 				});
 		} else {
 			await fetch(`${requestingArticleName}?bookmarkArticle=false`, {
@@ -435,7 +454,7 @@ const reactionsHandler = async (reaction) => {
 						document.querySelector('#bookmarked-number').innerHTML--;
 						reactions.bookmarked = false;
 						console.log(res.message);
-					} else alert(res.message);
+					} else displayAlertPopup('info', res.message);
 				});
 		}
 	}

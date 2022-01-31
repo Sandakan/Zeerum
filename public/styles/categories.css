@@ -6,7 +6,7 @@
 	min-height: 100px;
 }
 
-.articles-container .user {
+.articles-container > .user {
 	width: 100%;
 	height: 130px;
 	background-color: var(--background-color-100);
@@ -23,46 +23,46 @@
 	-ms-transition: box-shadow 0.2s linear;
 	-o-transition: box-shadow 0.2s linear;
 }
-.articles-container .user img {
+.articles-container > .user img {
 	width: 100px;
 	height: 100px;
 	border-radius: 50px;
 	margin: 0 40px;
 	cursor: pointer;
 }
-.articles-container .user .user-data {
+.articles-container > .user .user-data {
 	padding-top: 10px;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	margin-left: 20px;
 }
-.articles-container .user .user-data span {
+.articles-container > .user .user-data span {
 	margin-bottom: 5px;
 }
-.articles-container .user .user-data .name {
+.articles-container > .user .user-data .name {
 	font-size: 1.5rem;
 	word-spacing: 3px;
 }
-.articles-container .user .user-data .name a {
+.articles-container > .user .user-data .name a {
 	color: var(--text-color);
 	text-decoration: none;
 }
-.articles-container .user .user-data .name:hover a {
+.articles-container > .user .user-data .name:hover a {
 	text-decoration: underline;
 }
-.articles-container .user .user-data .user-type {
+.articles-container > .user .user-data .user-type {
 	text-transform: uppercase;
 	font-weight: 500;
 	color: var(--text-color);
 }
 
-.articles-container .user .user-data .stats {
+.articles-container > .user .user-data .stats {
 	margin-top: 10px;
 	color: var(--text-color);
 }
 
-.articles-container .category {
+.articles-container > .category {
 	width: 100%;
 	height: 80px;
 	background-color: var(--background-color-100);
@@ -80,23 +80,23 @@
 	-o-transition: box-shadow 0.2s linear;
 }
 
-.articles-container .category img {
+.articles-container > .category img {
 	width: 50px;
 	height: 50px;
 	margin: 0 70px;
 }
 
-.articles-container .category .name {
+.articles-container > .category .name {
 	font-size: 1.5rem;
 	color: var(--text-color);
 	text-decoration: none;
 }
 
-.articles-container .category .name:hover {
+.articles-container > .category .name:hover {
 	text-decoration: underline;
 }
 
-.articles-container :is(.user, .category):hover {
+.articles-container > :is(.user, .category):hover {
 	box-shadow: 0px 24px 100px -15px var(--box-shadow);
 	-webkit-box-shadow: 0px 24px 100px -15px var(--box-shadow);
 	-moz-box-shadow: 0px 24px 100px -15px var(--box-shadow);

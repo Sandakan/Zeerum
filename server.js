@@ -45,6 +45,7 @@ const uploadRouter = require('./routes/uploadRouter.js');
 const loginRouter = require('./routes/loginRouter.js');
 const signupRouter = require('./routes/signupRouter.js');
 const tagRouter = require('./routes/tagRouter.js');
+const writeRouter = require('./routes/writeRouter.js');
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
 
@@ -216,6 +217,8 @@ app.get('/tags/:tag', csrfProtection, (req, res, next) => {
 app.use('/data/search', searchRouter);
 
 app.use('/data/articles/', articleRouter);
+
+app.use('/data/write', writeRouter);
 
 app.use('/data/tags/', tagRouter);
 

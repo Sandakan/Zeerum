@@ -170,8 +170,12 @@
 	margin-top: 1.25rem;
 }
 
-.other-content > .achievements-container {
+.other-content .other-content-child-container {
 	width: 30%;
+}
+
+.other-content-child-container > .achievements-container {
+	width: 100%;
 	background-color: var(--background-color-300);
 	margin-top: 1em;
 	padding: 1em 1em;
@@ -181,7 +185,7 @@
 	align-items: center;
 	position: relative;
 }
-.other-content > .achievements-container img {
+.other-content-child-container > .achievements-container img {
 	transform: translateY(-4em);
 	-webkit-transform: translateY(-4em);
 	-moz-transform: translateY(-4em);

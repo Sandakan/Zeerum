@@ -8,6 +8,7 @@ const {
 	updateData,
 	createArticle,
 } = require('../config/database');
+const notFound = require('../middleware/notFound');
 
 // ? FOR ACCESSING ALL THE ARTICLES. ** CAN BE REMOVED IN THE FUTURE **
 const sendAllArticles = async (req, res, next) => {
@@ -17,6 +18,7 @@ const sendAllArticles = async (req, res, next) => {
 			'articles',
 			{},
 			{ article: 0, comments: 0, footnotes: 0 },
+			{},
 			limit
 		).then(
 			(res) => res,
@@ -61,6 +63,7 @@ const sendArticlesByAuthorId = async (req, res, next) => {
 							.replace(/^\w/, (x) => x.toUpperCase())}`,
 					},
 					{},
+					{},
 					limit
 			  ).then(
 					(res) => res,
@@ -71,6 +74,7 @@ const sendArticlesByAuthorId = async (req, res, next) => {
 					{
 						'author.userId': Number(authorUserId),
 					},
+					{},
 					{},
 					limit
 			  ).then(
@@ -103,6 +107,7 @@ const sendArticlesByUserBookmarked = async (req, res, next) => {
 				'reactions.bookmarks': req.session.userId,
 			},
 			{},
+			{},
 			limit
 		).then(
 			(res) => res,
@@ -130,6 +135,7 @@ const sendArticlesByCategory = async (req, res, next) => {
 					'categories',
 					{ categoryId: Number(req.query.categoryId) },
 					{ categoryId: false, pictureUrl: false },
+					{},
 					limit
 			  ).then(
 					(res) => res.data[0].name,
@@ -161,34 +167,42 @@ const sendArticlesByCategory = async (req, res, next) => {
 };
 
 const sendArticlesByTag = async (req, res, next) => {
-	if (req.query.tagId !== undefined) {
-		// const tagData = isNaN(Number(req.query.tagId))
-		// 	? await requestData('tags', { name: req.query.tagId }).then(
-		// 			(result) => result.data[0],
-		// 			(err) => next(err)
-		// 	  )
-		// 	: await requestData('tags', { tagId: Number(req.query.tagId) }).then(
-		// 			(result) => result.data[0],
-		// 			(err) => next(err)
-		// 	  );
-		const articles = await requestData('articles', { tags: { $all: [req.query.tagId] } }).then(
-			(result) => result,
+	if (req.query.tag !== undefined) {
+		await requestData('tags', {
+			$or: [{ name: req.query.tag }, { tagId: Number(req.query.tag) }],
+		}).then(
+			async (tagData) => {
+				if (tagData.success && tagData.data.length > 0) {
+					const articles = await requestData('articles', {
+						articleId: { $in: tagData.data[0].articles },
+					}).then(
+						(result) => {
+							if (result.success && result.data.length > 0) {
+								res.json({
+									success: true,
+									status: 200,
+									tagName: tagData.data[0].name,
+									tagId: tagData.data[0].tagId,
+									data: result.data,
+								});
+							} else
+								res.json({
+									success: false,
+									status: 404,
+									message: `We couldn't find any article with a tag/tagId "${req.query.tag}"`,
+								});
+						},
+						(err) => next(err)
+					);
+				} else
+					res.json({
+						success: false,
+						status: 400,
+						message: 'Invalid tag.',
+					});
+			},
 			(err) => next(err)
 		);
-		res.json(articles);
-		// const articles = [];
-		// tagData.articles.map(async (articleId) => {
-		// 	const article = await requestData('articles', { articleId: articleId }).then(
-		// 		(result) => result.data[0],
-		// 		(err) => next(err)
-		// 	);
-		// 	articles.push(article);
-		// });
-		// res.json({
-		// 	success: true,
-		// 	status: 200,
-		// 	data: articles,
-		// });
 	} else next();
 };
 
@@ -564,6 +578,34 @@ const likeCommentsOnArticles = async (req, res, next) => {
 		});
 };
 
+const sendTrendingArticles = async (req, res, next) => {
+	if (req.query.trendingArticles === 'true') {
+		const articles = await requestData(
+			'articles',
+			{},
+			{},
+			{ 'views.allTime': -1, 'reactions.likes': -1 },
+			Number(req.query.limit) || 0
+		).then(
+			(result) => {
+				if (result.success && result.data.length > 0) {
+					res.json({
+						success: true,
+						status: 200,
+						data: result.data,
+					});
+				} else
+					res.json({
+						success: false,
+						status: 404,
+						message: `We couldn't find any trending articles. Please try again later.`,
+					});
+			},
+			(err) => next(err)
+		);
+	} else next();
+};
+
 module.exports = {
 	sendAllArticles,
 	sendArticlesByAuthorId,
@@ -576,4 +618,5 @@ module.exports = {
 	commentOnArticle,
 	likeCommentsOnArticles,
 	sendArticlesByTag,
+	sendTrendingArticles,
 };

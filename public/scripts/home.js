@@ -1,14 +1,19 @@
 // jshint ignore:start
-import fetchData from './fetchData.js';
 import timeFromNow from './timeFromNow.js';
+import displayAlertPopup from './displayAlertPopup.js';
 
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content') + 'foo';
 
 //? Data fetches //////////////////////////////////////////////////////////
-fetchData(
-	'/data/articles?allArticles=true',
-	(res) => {
+await fetch('/data/articles?allArticles=true', {
+	credentials: 'same-origin', // <-- includes cookies in the request
+	headers: {
+		'CSRF-Token': token, // <-- is the csrf token as a header
+	},
+})
+	.then((res) => res.json())
+	.then((res) => {
 		const { success, data } = res;
 		if (success) {
 			document.querySelector('.articles-container').classList.remove('articles-loading');
@@ -46,17 +51,14 @@ fetchData(
 				).toString()}"><i class="fas fa-clock"></i> ${timeFromNow(
 					x.releasedDate
 				)}</span></div> <div class="article-categories-container">${x.categories
-					.map((y) => `<span class="category"><a href="categories/${y}">${y}</a></span>`)
+					.map(
+						(category) =>
+							`<span class="category"><a href="categories/${category}">${category}</a></span>`
+					)
 					.join('')}</div> <div class="article-tags-container">${x.tags
-					.map((y) => `<span class="tag"><a href="/tags/${y}">#${y}</a></span>`)
+					.map((tag) => `<span class="tag"><a href="/tags/${tag}">#${tag}</a></span>`)
 					.join('')}</div></div></div>`;
 				document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
-				// Only displays the latest 5 articles in the .navigate-through-links panel.
-				if (index < 5) {
-					document.querySelector(
-						'.navigate-through-links ul'
-					).innerHTML += `<li><a href="/articles/${x.urlSafeTitle}">${x.title}</a></li>`;
-				}
 			});
 		} else {
 			document.querySelector('.articles-container').classList.remove('articles-loading');
@@ -70,32 +72,46 @@ fetchData(
 				</span>
 				<span class="no-search"></span>
 			</div>`;
-			document.querySelector('.no-articles-container').style.display = 'flex';
+			document.querySelector('.no-articles-container').classList.add('visible');
 			console.log('Error occurred when requesting article data.', res.message);
 		}
-	},
-	{
-		credentials: 'same-origin', // <-- includes cookies in the request
-		headers: {
-			'CSRF-Token': token, // <-- is the csrf token as a header
-		},
-	}
-);
+	})
+	.catch((err) => console.log(err));
 
-fetchData(`/data/categories/`, (res) => {
-	const { success, data } = res;
-	// console.log(res);
-	if (success) {
-		document.querySelector('.search-through-categories').classList.remove('categories-loading');
-		document.querySelector('.search-through-categories').innerHTML = data
-			.map((x) => {
-				return `<span class="category"> <a href="/categories/${x.name.toLowerCase()}">${
-					x.name
-				}</a></span>`;
-			})
-			.join('');
-	} else {
-		document.querySelector('.search-through-categories').classList.remove('categories-loading');
-		console.log(`Error occurred when requesting category data.${res.message}`);
-	}
-});
+fetch('/data/articles?trendingArticles=true&limit=5')
+	.then((res) => res.json())
+	.then((res) => {
+		if (res.success && res.data.length > 0) {
+			res.data.forEach((x) => {
+				document.querySelector(
+					'.navigate-through-links ul'
+				).innerHTML += `<li><a href="/articles/${x.urlSafeTitle}">${x.title}</a></li>`;
+			});
+		} else console.log(res.message);
+	})
+	.catch((err) => console.log(err));
+
+fetch(`/data/categories/`)
+	.then((res) => res.json())
+	.then((res) => {
+		const { success, data } = res;
+		// console.log(res);
+		if (success) {
+			document
+				.querySelector('.search-through-categories')
+				.classList.remove('categories-loading');
+			document.querySelector('.search-through-categories').innerHTML = data
+				.map((x) => {
+					return `<span class="category"> <a href="/categories/${x.name.toLowerCase()}">${
+						x.name
+					}</a></span>`;
+				})
+				.join('');
+		} else {
+			document
+				.querySelector('.search-through-categories')
+				.classList.remove('categories-loading');
+			console.log(`Error occurred when requesting category data.${res.message}`);
+		}
+	})
+	.catch((err) => console.log(err));

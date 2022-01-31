@@ -1,34 +1,38 @@
-import fetchData from './fetchData.js';
 import valueRounder from './valueRounder.js';
 import togglePopup from './togglePopup.js';
+import displayAlertPopup from './displayAlertPopup.js';
 
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-fetchData('/data/profile', (res) => {
-	if (res && res.success) {
-		const { success, data } = res;
-		if (typeof Storage !== 'undefined') {
-			sessionStorage.setItem(
-				'userProfilePictureUrl',
-				data.profilePictureUrl || `/images/user.webp`
-			);
-			sessionStorage.setItem('userId', data.userId);
-			sessionStorage.setItem(
-				'username',
-				`${data.firstName.toLowerCase()}-${data.lastName.toLowerCase()}`
-			);
-			sessionStorage.setItem('userType', data.userType);
-		} else {
-			console.log('Sorry! No Web Storage support..');
-		}
-		document.querySelector('body').classList.add('logged-in');
-		if (document.body.contains(document.getElementById('logout')))
-			document.getElementById('logout').addEventListener('click', (e) => sessionStorage.clear());
-		document.getElementById('user-profile').innerHTML = `
+fetch('/data/profile')
+	.then((res) => res.json())
+	.then((res) => {
+		if (res && res.success) {
+			const { success, data } = res;
+			if (typeof Storage !== 'undefined') {
+				sessionStorage.setItem(
+					'userProfilePictureUrl',
+					data.profilePictureUrl || `/images/user.webp`
+				);
+				sessionStorage.setItem('userId', data.userId);
+				sessionStorage.setItem(
+					'username',
+					`${data.firstName.toLowerCase()}-${data.lastName.toLowerCase()}`
+				);
+				sessionStorage.setItem('userType', data.userType);
+			} else {
+				console.log('Sorry! No Web Storage support..');
+			}
+			document.querySelector('body').classList.add('logged-in');
+			if (document.body.contains(document.getElementById('logout')))
+				document
+					.getElementById('logout')
+					.addEventListener('click', (e) => sessionStorage.clear());
+			document.getElementById('user-profile').innerHTML = `
 			<img class="user-profile-img" src="${data.profilePictureUrl || '/images/user.webp'}"
 			alt="${data.firstName}\'s profile picture">`;
-		document.getElementById('user-profile-dropdown').innerHTML = `
+			document.getElementById('user-profile-dropdown').innerHTML = `
 			<div class="user-data-container">
 				<img src="${data.profilePictureUrl || '/images/user.webp'}" 
 					alt="${data.firstName}\'s profile picture" 
@@ -70,36 +74,38 @@ fetchData('/data/profile', (res) => {
 					</a>
 				</li>
 			</ul>`;
-		document
-			.querySelector('.user-profile-dropdown > .user-data-container > img')
-			.addEventListener('click', () => (location.href = '/profile'));
-		document.querySelector('#change-theme').addEventListener('click', () => changeTheme(''));
-		document.getElementById('user-profile').addEventListener('click', (e) => {
-			e.stopPropagation();
-			e.target.classList.toggle('active');
+			document
+				.querySelector('.user-profile-dropdown > .user-data-container > img')
+				.addEventListener('click', () => (location.href = '/profile'));
+			document.querySelector('#change-theme').addEventListener('click', () => changeTheme(''));
+			document.getElementById('user-profile').addEventListener('click', (e) => {
+				e.stopPropagation();
+				e.target.classList.toggle('active');
+				document
+					.querySelector('.user-profile-dropdown')
+					.classList.toggle('user-profile-dropdown-active');
+			});
+			document.body.addEventListener('click', (e) => {
+				document.querySelector('.user-profile-img').classList.remove('active');
+				e.stopPropagation();
+				document
+					.querySelector('.user-profile-dropdown')
+					.classList.remove('user-profile-dropdown-active');
+			});
 			document
 				.querySelector('.user-profile-dropdown')
-				.classList.toggle('user-profile-dropdown-active');
-		});
-		document.body.addEventListener('click', (e) => {
-			document.querySelector('.user-profile-img').classList.remove('active');
-			e.stopPropagation();
-			document
-				.querySelector('.user-profile-dropdown')
-				.classList.remove('user-profile-dropdown-active');
-		});
-		document
-			.querySelector('.user-profile-dropdown')
-			.addEventListener('click', (e) => e.stopPropagation());
+				.addEventListener('click', (e) => e.stopPropagation());
 
-		if (window.location.pathname.split('/').at(-1).includes('profile')) {
-			document.title = `ZEERUM \- ${data.firstName}\'s Profile`;
-			// ? User data goes here
-			document.querySelector('.user-img-container').innerHTML = `
+			if (window.location.pathname.split('/').at(-1).includes('profile')) {
+				document.title = `ZEERUM \- ${data.firstName}\'s Profile`;
+				// ? User data goes here
+				document.querySelector('.user-img-container').innerHTML = `
 				<img src="${data.profilePictureUrl || '/images/user.webp'}" alt="" />
 				<span class="edit-profile-picture"><i class="fas fa-pen"></i></span>`;
-			// ? statistics data goes here
-			document.querySelector('.statistics-container').innerHTML = `<div class="stats followers">
+				// ? statistics data goes here
+				document.querySelector(
+					'.statistics-container'
+				).innerHTML = `<div class="stats followers">
 					<i class="fas fa-users"></i>
 					<div class="content">
 						<span class="value"> ${valueRounder(data.followers.length)} </span>
@@ -139,53 +145,53 @@ fetchData('/data/profile', (res) => {
 				</div>
 			</div>`;
 
-			document
-				.querySelector('.edit-profile-picture')
-				.addEventListener('click', () => changeProfilePicture());
-			const searchParams = new URLSearchParams(window.location.search);
-			if (
-				searchParams.get('popup') === `edit-profile-picture` ||
-				searchParams.has('edit-profile-picture')
-			)
-				document.querySelector('.edit-profile-picture').click();
-			if (
-				searchParams.get('changeUserType') === `author` ||
-				searchParams.get('popup') === `become-an-author` ||
-				searchParams.get('changeUserType') === `reader` ||
-				searchParams.get('popup') === `become-a-reader`
-			) {
-				changeUserType(data);
-			}
-			//settings pane
-			if (searchParams.get('popup') === `settings`) {
-				changeSettings();
-			}
+				document
+					.querySelector('.edit-profile-picture')
+					.addEventListener('click', () => changeProfilePicture());
+				const searchParams = new URLSearchParams(window.location.search);
+				if (
+					searchParams.get('popup') === `edit-profile-picture` ||
+					searchParams.has('edit-profile-picture')
+				)
+					document.querySelector('.edit-profile-picture').click();
+				if (
+					searchParams.get('changeUserType') === `author` ||
+					searchParams.get('popup') === `become-an-author` ||
+					searchParams.get('changeUserType') === `reader` ||
+					searchParams.get('popup') === `become-a-reader`
+				) {
+					changeUserType(data);
+				}
+				//settings pane
+				if (searchParams.get('popup') === `settings`) {
+					changeSettings();
+				}
 
-			document.querySelector('.user-container > .user-data-container').innerHTML = `
+				document.querySelector('.user-container > .user-data-container').innerHTML = `
 				<span class="name">${data.firstName} ${data.lastName}</span>
 				<span class="user-type-and-id">${data.userType} <span class="id">#${data.userId}</span></span>
 				<span class="country">${data.country || 'Country unknown'}</span>
 				<span class="joined-date">Joined on ${new Date(data.registeredDate).toDateString()}.</span>
 				<span class="articles-number">${data.articlesPublished} articles published</span>`;
+			}
+		} else {
+			document.querySelector('body').classList.add('logged-out');
+			console.log(`Error occurred when requesting profile data.`, res.message);
+			sessionStorage.clear();
 		}
-	} else {
-		document.querySelector('body').classList.add('logged-out');
-		// document.getElementById('get-started').style.display = 'block';
-		console.log(`Error occurred when requesting profile data.`, res.message);
-		sessionStorage.clear();
-	}
-	// UNSTABLE CODE FOR SWITCHING THEME ACCORDING TO SYSTEM THEME
-	// if (
-	// 	sessionStorage.getItem('systemTheme') === null &&
-	// 	window.matchMedia('(prefers-color-scheme: dark)').matches
-	// ) {
-	// 	sessionStorage.setItem('systemTheme', 'dark');
-	// 	changeTheme('dark');
-	// }
-	document
-		.querySelector('.made-with-love .heart')
-		.addEventListener('click', () => changeTheme(''));
-});
+		// UNSTABLE CODE FOR SWITCHING THEME ACCORDING TO SYSTEM THEME
+		// if (
+		// 	sessionStorage.getItem('systemTheme') === null &&
+		// 	window.matchMedia('(prefers-color-scheme: dark)').matches
+		// ) {
+		// 	sessionStorage.setItem('systemTheme', 'dark');
+		// 	changeTheme('dark');
+		// }
+		document
+			.querySelector('.made-with-love .heart')
+			.addEventListener('click', () => changeTheme(''));
+	})
+	.catch((err) => console.log(err));
 
 //? User specific articles
 if (window.location.pathname.split('/').pop() === 'profile') {
@@ -322,14 +328,14 @@ const changeProfilePicture = () => {
 		e.preventDefault();
 		e.target.classList.add('on-drag-over');
 	});
-	// document.querySelector('.change-profile-picture').addEventListener('dragleave', (e) => {
-	// 	e.preventDefault();
-	// 	e.target.classList.remove('on-drag-over');
-	// });
+	document.body.addEventListener('drop', (e) => e.preventDefault());
+	document.querySelector('.popup-container').addEventListener('drop', (e) => e.preventDefault());
 	document.querySelector('.change-profile-picture').addEventListener('drop', (e) => {
+		document.querySelector('.popup').classList.add('on-drop');
 		document.querySelector('input[type="submit"]').disabled = true;
 		document.querySelector('input[type="submit"]').value = 'UPLOADING...';
 		e.preventDefault();
+		e.target.classList.remove('on-drag-over');
 		console.log(e.dataTransfer.files);
 		const formData = new FormData(document.uploadProfilePictureForm);
 		formData.append('profilePicture', e.dataTransfer.files[0]);
@@ -341,21 +347,22 @@ const changeProfilePicture = () => {
 			},
 			body: formData,
 		})
-			.then(
-				(res) => res.json(),
-				(err) => console.log(err)
-			)
+			.then((res) => res.json())
 			.then((res) => {
 				if (res.success) {
 					window.location.replace('/profile');
-				} else alert(res.message);
+				} else displayAlertPopup('error', res.message);
+			})
+			.catch((err) => {
+				document.querySelector('.popup').classList.remove('on-drop');
+				document.querySelector('.popup').classList.add('on-drop-fail');
+				console.log(err);
 			});
-		e.target.classList.remove('on-drag-over');
 	});
 	document.getElementById('upload-profile-picture-form').addEventListener('submit', (e) => {
 		e.preventDefault();
 		if (document.querySelector('input[type="file"]').files.length <= 0) {
-			alert("You didn't upload your profile picture.");
+			displayAlertPopup('info', "You didn't upload your profile picture.");
 		} else {
 			document.querySelector('input[type="submit"]').disabled = true;
 			document.querySelector('input[type="submit"]').value = 'UPLOADING...';
@@ -374,7 +381,7 @@ const changeProfilePicture = () => {
 				.then((res) => {
 					if (res.success) {
 						window.location.replace('/profile');
-					} else alert(res.message);
+					} else displayAlertPopup('error', res.message);
 				});
 		}
 	});
@@ -428,9 +435,9 @@ const changeUserType = (data) => {
 				.then((res) => res.json())
 				.then(({ success, message }) => {
 					if (success) {
-						alert(message);
+						displayAlertPopup('success', message);
 						window.location.replace('/profile');
-					} else alert(message);
+					} else displayAlertPopup('error', message);
 				});
 		});
 	} else {
@@ -442,9 +449,9 @@ const changeUserType = (data) => {
 				.then((res) => res.json())
 				.then(({ success, message }) => {
 					if (success) {
-						alert(message);
+						displayAlertPopup('success', message);
 						window.location.replace('/profile');
-					} else alert(message);
+					} else displayAlertPopup('error', message);
 				});
 		});
 	}

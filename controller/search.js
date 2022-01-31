@@ -12,21 +12,29 @@ const {
 const search = async (req, res, next) => {
 	const searchPhrase = req.params.searchPhrase;
 	// console.log(searchPhrase);
-	const articleData = await requestData('articles', {
-		title: { $regex: new RegExp(`${searchPhrase}`, 'i') },
-	})
+	const articleData = await requestData(
+		'articles',
+		{
+			title: { $regex: new RegExp(`${searchPhrase}`, 'i') },
+		},
+		{ title: 1, urlSafeTitle: 1 }
+	)
 		.then((res) => res)
 		.catch((err) => next(err));
-	const categoryData = await requestData('categories', {
-		name: { $regex: new RegExp(`${searchPhrase}`, 'i') },
-	})
+	const categoryData = await requestData(
+		'categories',
+		{
+			name: { $regex: new RegExp(`${searchPhrase}`, 'i') },
+		},
+		{ name: 1, categoryId: 1 }
+	)
 		.then((res) => res)
 		.catch((err) => next(err));
 	const userData = await checkUser(
 		{
 			username: { $regex: new RegExp(`${searchPhrase}`, 'i') },
 		},
-		{ _id: false, password: false }
+		{ firstName: 1, lastName: 1, username: 1, userId: 1, profilePictureUrl: 1 }
 	)
 		.then((res) => res)
 		.catch((err) => next(err));

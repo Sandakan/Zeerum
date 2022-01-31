@@ -1,5 +1,5 @@
 // jshint ignore:start
-import fetchData from './fetchData.js';
+import timeFromNow from './timeFromNow.js';
 
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -12,9 +12,9 @@ if (window.location.pathname.split('/').at(1) === 'search') {
 	document.title = `ZEERUM \| You searched for ${searchPhrase}`;
 	document.querySelector('.highlight-categories').innerHTML = `\"${searchPhrase}\"`;
 
-	fetchData(
-		`/data/search/${searchPhrase}`,
-		async ({ success, results }) => {
+	fetch(`/data/search/${searchPhrase}`)
+		.then((res) => res.json())
+		.then(async ({ success, results }) => {
 			if (success && results) {
 				const { articles, users, categories } = results;
 				let htmlData = ``;
@@ -84,6 +84,7 @@ if (window.location.pathname.split('/').at(1) === 'search') {
 				document.querySelector('.articles-container').innerHTML = htmlData;
 			} else {
 				document.querySelector('.articles-container').classList.remove('articles-loading');
+				document.querySelector('.no-articles-container').classList.add('visible');
 				document.querySelector('.no-articles-container > img').src =
 					'/images/categories/no-search.svg';
 				document.querySelector('.no-articles').style.display = 'none';
@@ -94,17 +95,17 @@ if (window.location.pathname.split('/').at(1) === 'search') {
 					.split('/')
 					.pop()} \". Recheck the spelling and try seaching with different words.`;
 			}
-		},
-		(err) => console.log(err)
-	);
+		})
+		.catch((err) => console.log(err));
 }
 
 if (window.location.pathname.split('/').at(1) === 'categories') {
 	const category = decodeURIComponent(window.location.pathname.split('/').at(-1));
 	document.title = `ZEERUM \| You searched for ${category}`;
 	document.querySelector('.highlight-categories').innerHTML = `\"${category}\"`;
-	fetchData(`/data/articles?categoryId=${category}`).then(
-		(res) => {
+	fetch(`/data/articles?categoryId=${category}`)
+		.then((res) => res.json())
+		.then((res) => {
 			if (res.success && res.data.length > 0) {
 				document.querySelector('.articles-container').innerHTML = res.data
 					.map((article) => {
@@ -126,29 +127,34 @@ if (window.location.pathname.split('/').at(1) === 'categories') {
 							.replace(/-$/gm, '')
 							.toLowerCase()}">${
 							article.author.name
-						}</a></div><div class="article-categories-container">${article.categories
+						}</a></div> <div class="article-stats-container"> <span class="stat"><i class="fas fa-eye"></i> ${
+							article.views.allTime
+						}</span><span class="stat"><i class="fas fa-heart"></i> ${
+							article.reactions.likes.length
+						}</span> <span class="stat"><i class="fas fa-bookmark"></i> ${
+							article.reactions.bookmarks.length
+						}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
+							article.reactions.shares
+						}</span><span class="stat" title="${new Date(
+							article.releasedDate
+						).toString()}"><i class="fas fa-clock"></i> ${timeFromNow(
+							article.releasedDate
+						)}</span></div> <div class="article-categories-container">${article.categories
 							.map((i) => {
-								return `<span class="categories"> <a href="${i}">${i}</a></span>`;
+								return `<span class="category"> <a href="${i}">${i}</a></span>`;
 							})
 							.join('')}
-                  </div></p></div></div>`;
+                  </div><div class="article-tags-container">${article.tags
+							.map((tag) => `<span class="tag"><a href="/tags/${tag}">#${tag}</a></span>`)
+							.join('')}</div></p></div></div>`;
 					})
 					.join('');
 			} else {
 				document.querySelector('.articles-container').classList.remove('articles-loading');
-				document.querySelector('.no-articles-container > img').src =
-					'/images/categories/no-search.svg';
-				document.querySelector('.no-articles').style.display = 'none';
-				document.querySelector('.no-search').style.display = 'block';
-				document.querySelector(
-					'.no-search'
-				).innerHTML = `We don\'t have anything with the name \" ${window.location.pathname
-					.split('/')
-					.pop()} \". Recheck the spelling and try seaching with different words.`;
+				document.querySelector('.no-articles-container').classList.add('visible');
 			}
-		},
-		(err) => console.log(err)
-	);
+		})
+		.catch((err) => console.log(err));
 }
 
 if (window.location.pathname.split('/').at(1) === 'tags') {
@@ -157,8 +163,9 @@ if (window.location.pathname.split('/').at(1) === 'tags') {
 	document.querySelector(
 		'.page-heading-1'
 	).innerHTML = `Articles related to <span class="highlight-categories">\"#${tag}\"</span>`;
-	fetchData(`/data/articles?tagId=${tag}`).then(
-		(res) => {
+	fetch(`/data/articles?tag=${tag}`)
+		.then((res) => res.json())
+		.then((res) => {
 			if (res.success && res.data.length > 0) {
 				document.querySelector('.articles-container').innerHTML = res.data
 					.map((article) => {
@@ -180,50 +187,63 @@ if (window.location.pathname.split('/').at(1) === 'tags') {
 							.replace(/-$/gm, '')
 							.toLowerCase()}">${
 							article.author.name
-						}</a></div><div class="article-categories-container">${article.categories
+						}</a></div> <div class="article-stats-container"> <span class="stat"><i class="fas fa-eye"></i> ${
+							article.views.allTime
+						}</span><span class="stat"><i class="fas fa-heart"></i> ${
+							article.reactions.likes.length
+						}</span> <span class="stat"><i class="fas fa-bookmark"></i> ${
+							article.reactions.bookmarks.length
+						}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
+							article.reactions.shares
+						}</span><span class="stat" title="${new Date(
+							article.releasedDate
+						).toString()}"><i class="fas fa-clock"></i> ${timeFromNow(
+							article.releasedDate
+						)}</span></div> <div class="article-categories-container">${article.categories
 							.map((i) => {
-								return `<span class="categories"> <a href="${i}">${i}</a></span>`;
+								return `<span class="category"> <a href="${i}">${i}</a></span>`;
 							})
 							.join('')}
-                  </div></p></div></div>`;
+                  </div><div class="article-tags-container">${article.tags
+							.map((tag) => `<span class="tag"><a href="/tags/${tag}">#${tag}</a></span>`)
+							.join('')}</div></p></div></div>`;
 					})
 					.join('');
 			} else {
 				document.querySelector('.articles-container').classList.remove('articles-loading');
-				document.querySelector('.no-articles-container > img').src =
-					'/images/categories/no-search.svg';
-				document.querySelector('.no-articles').style.display = 'none';
-				document.querySelector('.no-search').style.display = 'block';
-				document.querySelector(
-					'.no-search'
-				).innerHTML = `We don\'t have anything with the name \" ${window.location.pathname
-					.split('/')
-					.pop()} \". Recheck the spelling and try seaching with different words.`;
+				document.querySelector('.no-articles-container').classList.add('visible');
 			}
-		},
-		(err) => console.log(err)
-	);
+		})
+		.catch((err) => console.log(err));
 }
 
-fetchData(`/data/categories/`, ({ success, data }) => {
-	if (success) {
-		data.forEach((x) => {
-			document.querySelector(
-				'.search-through-categories'
-			).innerHTML += `<span class="categories"> <a href="../categories/${x.name.toLowerCase()}">${
-				x.name
-			}</a></span>`;
-		});
-	} else console.log('Error occurred when requesting categories data.');
-});
+fetch(`/data/categories/`)
+	.then((res) => res.json())
+	.then(({ success, data }) => {
+		if (success) {
+			data.forEach((x) => {
+				document.querySelector(
+					'.search-through-categories'
+				).innerHTML += `<span class="categories"> <a href="../categories/${x.name.toLowerCase()}">${
+					x.name
+				}</a></span>`;
+			});
+		} else console.log('Error occurred when requesting categories data.');
+	})
+	.catch((err) => console.log(err));
 
-fetchData('/data/articles?allArticles=true&limit=5', (res) => {
-	if (res.success) {
-		res.data.forEach((x) => {
-			document.querySelector(
-				'.navigate-through-links > ul'
-			).innerHTML += `<li><a href="../articles/${x.urlSafeTitle}">${x.title}</a></li>`;
-		});
-	} else
-		console.log(`Error occurred when requesting article data for navigate through links panel.`);
-});
+fetch('/data/articles?trendingArticles=true&limit=5')
+	.then((res) => res.json())
+	.then((res) => {
+		if (res.success && res.data.length > 0) {
+			res.data.forEach((x) => {
+				document.querySelector(
+					'.navigate-through-links > ul'
+				).innerHTML += `<li><a href="../articles/${x.urlSafeTitle}">${x.title}</a></li>`;
+			});
+		} else
+			console.log(
+				`Error occurred when requesting article data for navigate through links panel.`
+			);
+	})
+	.catch((err) => console.log(err));

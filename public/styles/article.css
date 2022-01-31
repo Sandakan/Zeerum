@@ -21,7 +21,7 @@
 
 .copy-container {
 	font-size: 1rem;
-	width: 80%;
+	width: 90%;
 	position: relative;
 	background-color: var(--background-color-200);
 	margin: 2em auto;
@@ -31,6 +31,7 @@
 	-moz-border-radius: 0.625em;
 	-ms-border-radius: 0.625em;
 	-o-border-radius: 0.625em;
+	word-break: break-all;
 }
 
 .copy-container .copy-btn {
@@ -768,6 +769,10 @@
 @media screen and (max-width: 600px) {
 	.article-data :is(p, span, ul, ol) {
 		padding: 1em 1em 0.625em 1em;
+	}
+
+	.article-data img {
+		padding: 2em;
 	}
 
 	.article-data :is(h3, h2, h1) {

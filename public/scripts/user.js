@@ -1,3 +1,4 @@
+import displayAlertPopup from './displayAlertPopup';
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -87,38 +88,40 @@ fetch(`/data/users/${userId}`)
 							: '<button class="follow-btn"> <i class="fas fa-add"></i> Follow</button>'
 						: ''
 				}`;
-			document.querySelector('.follow-btn').addEventListener('click', async () => {
-				if (document.querySelector('.follow-btn').classList.contains('followed')) {
-					fetch(`/data/profile?followUser=false&followingUserId=${data.userId}`)
-						.then((x) => x.json())
-						.then((x) => {
-							console.log(x);
-							if (x.success) {
-								document.querySelector('.follow-btn').classList.remove('followed');
-								document.querySelector(
-									'.follow-btn'
-								).innerHTML = ` <i class="fas fa-add"></i> Follow`;
-								document.querySelector('.followers-and-followings').innerHTML = `${
-									data.followers.length - 1
-								} followers / ${data.followings.length} followings`;
-							} else alert(x.message);
-						});
-				} else {
-					fetch(`/data/profile?followUser=true&followingUserId=${data.userId}`)
-						.then((x) => x.json())
-						.then((x) => {
-							console.log(x);
-							if (x.success) {
-								document.querySelector('.follow-btn').classList.add('followed');
-								document.querySelector(
-									'.follow-btn'
-								).innerHTML = `<i class="fas fa-check"></i> followed`;
-								document.querySelector('.followers-and-followings').innerHTML = `${
-									data.followers.length + 1
-								} followers / ${data.followings.length} followings`;
-							} else alert(x.message);
-						});
-				}
-			});
+			if (document.body.contains(document.querySelector('.follow-btn'))) {
+				document.querySelector('.follow-btn').addEventListener('click', async () => {
+					if (document.querySelector('.follow-btn').classList.contains('followed')) {
+						fetch(`/data/profile?followUser=false&followingUserId=${data.userId}`)
+							.then((x) => x.json())
+							.then((x) => {
+								console.log(x);
+								if (x.success) {
+									document.querySelector('.follow-btn').classList.remove('followed');
+									document.querySelector(
+										'.follow-btn'
+									).innerHTML = ` <i class="fas fa-add"></i> Follow`;
+									document.querySelector('.followers-and-followings').innerHTML = `${
+										data.followers.length - 1
+									} followers / ${data.followings.length} followings`;
+								} else displayAlertPopup('info', x.message);
+							});
+					} else {
+						fetch(`/data/profile?followUser=true&followingUserId=${data.userId}`)
+							.then((x) => x.json())
+							.then((x) => {
+								console.log(x);
+								if (x.success) {
+									document.querySelector('.follow-btn').classList.add('followed');
+									document.querySelector(
+										'.follow-btn'
+									).innerHTML = `<i class="fas fa-check"></i> followed`;
+									document.querySelector('.followers-and-followings').innerHTML = `${
+										data.followers.length + 1
+									} followers / ${data.followings.length} followings`;
+								} else displayAlertPopup('info', x.message);
+							});
+					}
+				});
+			}
 		} else console.log(`Error occurred when requesting user data.`, res);
 	});

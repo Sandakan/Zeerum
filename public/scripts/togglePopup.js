@@ -1,9 +1,8 @@
 const closePopup = () => {
-	let classList = document.getElementById('popup').classList.value.split(' ');
-
+	// let classList = document.getElementById('popup').classList.value.split(' ');
 	document.querySelector('.popup-container').classList.remove('popup-container-active');
-	classList.splice(classList.indexOf('popup'), 1);
-	document.getElementById('popup').classList.remove(...classList);
+	// classList.splice(classList.indexOf('popup'), 1);
+	// document.getElementById('popup').classList.remove(...classList);
 	document.querySelector('body').style.overflowY = 'visible';
 };
 

@@ -1,5 +1,4 @@
-import fetchData from './fetchData.js';
-
+import displayAlertPopup from './displayAlertPopup.js';
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -22,10 +21,12 @@ document.querySelector('body').addEventListener('click', () => {
 
 document.querySelector('#search').addEventListener('input', () => {
 	document.querySelector('.search-results-container').classList.add('results-loading');
-	setTimeout(() => {
-		let searchPhrase = document.querySelector('#search').value;
-		if (searchPhrase !== '') {
-			fetchData(`/data/search/${encodeURIComponent(searchPhrase.toLowerCase())}`, (res) => {
+	// setTimeout(() => {
+	let searchPhrase = document.querySelector('#search').value;
+	if (searchPhrase !== '') {
+		fetch(`/data/search/${encodeURIComponent(searchPhrase.toLowerCase())}`)
+			.then((res) => res.json())
+			.then((res) => {
 				console.log(res);
 				if (res.success) {
 					const { articles, users, categories, tags } = res.results;
@@ -91,16 +92,23 @@ document.querySelector('#search').addEventListener('input', () => {
 						.classList.remove('results-loading');
 					document.querySelector(
 						'.search-results-container'
-					).innerHTML = `<div class="no-search-results-container"><img src="/images/error.webp">We don't have anything with the name \" ${searchPhrase} \". Try seaching with different words.</div>`;
+					).innerHTML = `<div class="no-search-results-container"><img src="/images/search-error.webp">We don't have anything with the name \" ${searchPhrase} \". Try seaching with different words.</div>`;
 				}
+			})
+			.catch((err) => {
+				console.log(err);
+				document.querySelector('.search-results-container').classList.remove('results-loading');
+				document.querySelector(
+					'.search-results-container'
+				).innerHTML = `<div class="no-search-results-container"><img src="/images/error.webp">An error occurred when searching. Please try again later.</div>`;
 			});
-		} else {
-			document.querySelector('.search-results-container').classList.remove('results-loading');
-			document.querySelector(
-				'.search-results-container'
-			).innerHTML = `<div class="search-description"><img src="/images/search.webp" alt="A magnifying glass">Search for anything from here including articles, categories, authors, hot topics etc.</div>`;
-		}
-	}, 500);
+	} else {
+		document.querySelector('.search-results-container').classList.remove('results-loading');
+		document.querySelector(
+			'.search-results-container'
+		).innerHTML = `<div class="search-description"><img src="/images/search.webp" alt="A magnifying glass">Search for anything from here including articles, categories, authors, hot topics etc.</div>`;
+	}
+	// }, 500);
 });
 
 document.querySelector('#search').addEventListener('keypress', (e) => {
@@ -116,7 +124,7 @@ document.querySelector('.search-btn').addEventListener('click', (e) => {
 	let searchPhrase = document.querySelector('#search').value;
 	if (searchPhrase !== '') {
 		window.location = `/search/${searchPhrase}`;
-	} else alert('Type something in the search bar !!!');
+	} else displayAlertPopup('info', 'Type something in the search bar !!!');
 });
 
 document
