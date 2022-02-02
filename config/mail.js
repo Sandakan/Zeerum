@@ -10,16 +10,19 @@ const sendMail = (fullPathToEjsView, ejsParams = {}, emailData = {}) => {
 				else {
 					const transporter = nodemailer.createTransport({
 						host: process.env.MAIL_HOST,
+						secureConnection: false,
 						port: 587,
-						secure: false, // true for 465, false for other ports
+						tls: {
+							ciphers: 'SSLv3',
+						},
 						auth: {
-							user: process.env.MAIL_ACCOUNT, // generated ethereal user
-							pass: process.env.MAIL_PASSWORD, // generated ethereal password
+							user: process.env.MAIL_ACCOUNT,
+							pass: process.env.MAIL_PASSWORD,
 						},
 					});
 					await transporter.sendMail(
 						{
-							from: 'Zeerum Team <zeerumtest@outlook.com>',
+							from: `Zeerum Team <${process.env.MAIL_ACCOUNT}>`,
 							to: emailData.to,
 							subject: emailData.subject,
 							html: emailBody,
@@ -31,7 +34,6 @@ const sendMail = (fullPathToEjsView, ejsParams = {}, emailData = {}) => {
 					);
 				}
 			});
-			// ? //////
 		} else reject('Missing required parameters to send an email.');
 	});
 };

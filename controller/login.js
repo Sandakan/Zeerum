@@ -19,12 +19,10 @@ const login = async (req, res, next) => {
 	const validationErrors = validationResult(req);
 	const { email, password } = req.body;
 	let user = { isAvailable: false, userId: null, username: null, data: null };
-	// console.log(req.body);
 	if (validationErrors.isEmpty()) {
 		const data = await checkUser({ email })
 			.then((res) => res)
 			.catch((err) => next(err));
-		// console.log(data);
 		if (data.isThereAUser) {
 			bcrypt.compare(password, data.userData[0].password, async (err, result) => {
 				if (err) throw err;
@@ -44,19 +42,15 @@ const login = async (req, res, next) => {
 								'Unknown Platform',
 						},
 						{ to: email, subject: 'New Login Detected' }
-					).then(
-						(result) => {
-							req.session.userId = data.userData[0].userId;
-							req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
-							req.session.user = data.userData[0];
-							res.json({
-								success: true,
-								status: 200,
-								message: 'Successfully logged in.',
-							});
-						},
-						(err) => next(err)
-					);
+					).catch((err) => next(err));
+					req.session.userId = data.userData[0].userId;
+					req.session.username = `${data.userData[0].firstName.toLowerCase()}-${data.userData[0].lastName.toLowerCase()}`;
+					req.session.user = data.userData[0];
+					res.json({
+						success: true,
+						status: 200,
+						message: 'Successfully logged in.',
+					});
 				} else
 					res.json({
 						success: false,
