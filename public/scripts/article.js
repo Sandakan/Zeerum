@@ -384,7 +384,7 @@ const reactionsHandler = async (reaction) => {
 		}
 	} else if (reaction === 'share') {
 		togglePopup(
-			`<img src="/images/next.webp" alt="Share icon" title="Share this article"/> <h1>Share</h1><p>Share this article with your friends to share the knowledge you gained from this article. This encourages authors to write more as they know they will always have your support for them.</p> <div class="copy-container">${document.location.href}<span class="copy-btn"><i class="far fa-clipboard"></i></span></div> `,
+			`<img src="/images/next.webp" alt="Share icon" title="Share this article"/> <h1>Share</h1><p>Share this article with your friends to share the knowledge you gained from this article. This encourages authors to write more as they know they will always have your support for them.</p> <div class="copy-container"><span class="link-container">${document.location.href}</span><span class="copy-btn"><i class="far fa-clipboard"></i></span></div> `,
 			'share-popup'
 		);
 
@@ -407,12 +407,13 @@ const reactionsHandler = async (reaction) => {
 								document
 									.querySelector('.reaction-buttons-container > .share')
 									.classList.add('shared');
+								displayAlertPopup('success', 'Link copied to clipboard successfully.');
 								document.querySelector('#shared-number').innerHTML++;
 								console.log(res.message);
 							}
 						});
 				},
-				() => displayAlertPopup('success', 'Copying link to clipboard failed.')
+				() => displayAlertPopup('error', 'Copying link to clipboard failed.')
 			);
 			// const type = 'text/plain';
 			// const blob = new Blob([href], { type });

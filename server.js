@@ -34,7 +34,8 @@ const {
 } = require('./config/database');
 testDatabaseConnection();
 const csrfProtection = csrf({ cookie: true });
-const validateFileExtensions = require('./middleware/validateFileExtensions');
+const { sendMail } = require('./config/mail.js');
+// const validateFileExtensions = require('./middleware/validateFileExtensions');
 // ? ROUTES /////////////////////////////////////////////////////////////////////////////////////////////////////
 const articleRouter = require('./routes/articlesRouter.js');
 const searchRouter = require('./routes/searchRouter.js');

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>New Login Detected</title>
+	</head>
+	<body>
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap');
+			body {
+				background-color: hsl(207, 20%, 11%);
+				font-family: 'Rubik', sans-serif;
+				color: #fff;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			.container {
+				max-width: 700px;
+			}
+			.logo-container {
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.logo-container img {
+				width: 100px;
+				padding: 1em;
+			}
+			.heading {
+				width: 100%;
+				text-align: center;
+				color: #fff;
+				margin: 1em 0;
+				font-size: 2rem;
+				font-weight: 400;
+			}
+			.description {
+				text-align: center;
+				font-weight: 300;
+			}
+			a {
+				color: #ccc;
+			}
+			ul {
+				width: 80%;
+				margin: 1em auto;
+			}
+			.footer {
+				text-align: center;
+				font-weight: 300;
+				font-size: 0.9rem;
+				color: #ccc;
+			}
+
+			.footer span {
+				font-size: 0.75rem;
+				color: rgb(167, 167, 167);
+			}
+		</style>
+
+		<div class="container">
+			<div class="logo-container">
+				<img
+					src="https://raw.githubusercontent.com/Sandakan/Zeerum/master/public/images/icon.webp"
+					alt="Zeerum Logo"
+				/>
+			</div>
+			<div class="heading">New Login Detected.</div>
+			<div class="description">
+				We have noticed a new login to your account "<%= userEmail %>" using your credentails.
+			</div>
+			<ul>
+				<li>Platform : <%= platform %></li>
+				<li>IP Address : <%= ipAddress %></li>
+				<li>Country : <%= country %></li>
+				<li>City : <%= city %></li>
+				<li>Time : <%= time %></li>
+				<li>Time-zone : <%= timeZone %></li>
+			</ul>
+			<div class="description">
+				If this was you, then there's nothing for you to do right now. But if you don't
+				recognize this login attempt, we recommend you
+				<a href="https://zeerum.herokuapp.com/profile?popup=settings&settingType=changePassword"
+					>changing your password</a
+				>
+				immediately.
+			</div>
+			<br /><br />
+			Sincerely, <br />
+			Zeerum Team.
+		</div>
+		<br /><br />
+		<div class="footer">
+			<span
+				>If you don't want to receive these emails from Zeerum, you can edit relevant settings
+				in your <a href="#">profile</a> or <a href="#">unsubscribe.</a></span
+			>
+			<br /><br />
+			Copyright 2022 &copy; Zeerum. All rights reserved.
+		</div>
+	</body>
+</html>

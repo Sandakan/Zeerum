@@ -5,27 +5,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "pwa-msedge",
-			"request": "launch",
-			"name": "Launch Edge against localhost",
-			"url": "http://localhost:5600",
-			"webRoot": "${workspaceFolder}"
-		},
-		{
-			"name": "Launch Microsoft Edge and open the Edge DevTools",
-			"request": "launch",
-			"type": "vscode-edge-devtools.debug",
-			"url": "" // Provide your project's url to finish configuring
-		},
-		{
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",
-			"name": "nodemon npm test",
+			"name": "nodemon start",
 			"program": "${workspaceFolder}/server.js",
 			"request": "launch",
 			"restart": true,
 			"runtimeExecutable": "nodemon",
-			"skipFiles": ["<node_internals>/**"],
+			"skipFiles": ["<node_internals>/**", "<node_modules>/**"],
 			"type": "pwa-node"
 		}
 	]

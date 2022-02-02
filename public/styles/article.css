@@ -25,35 +25,44 @@
 	position: relative;
 	background-color: var(--background-color-200);
 	margin: 2em auto;
-	padding: 0.625rem 3.125rem 0.625rem 0.625rem;
-	border-radius: 0.625em;
+	/* border-radius: 0.625em;
 	-webkit-border-radius: 0.625em;
 	-moz-border-radius: 0.625em;
 	-ms-border-radius: 0.625em;
-	-o-border-radius: 0.625em;
-	word-break: break-all;
+	-o-border-radius: 0.625em; */
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.copy-container .link-container {
+	padding: 0.25em 0 0.25em 0.5em;
+	text-overflow: ellipsis;
+	width: 90%;
+	margin: 0.25em;
+	overflow: hidden;
 }
 
 .copy-container .copy-btn {
 	width: 10%;
 	height: 100%;
+	margin-left: 0.25em;
 	font-size: 1.8em;
-	position: absolute;
-	top: 0;
-	right: 0;
-	background-color: var(--background-color-400);
-	border-radius: 0.5em;
+	background-color: transparent;
 	text-align: center;
-	padding: 0.5em;
-	overflow: hidden;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	-webkit-border-radius: 0.5em;
-	-moz-border-radius: 0.5em;
-	-ms-border-radius: 0.5em;
-	-o-border-radius: 0.5em;
+	padding: 0.5em;
+	transition: background-color 0.2s ease-in-out;
+	-webkit-transition: background-color 0.2s ease-in-out;
+	-moz-transition: background-color 0.2s ease-in-out;
+	-ms-transition: background-color 0.2s ease-in-out;
+	-o-transition: background-color 0.2s ease-in-out;
+}
+
+.copy-container .copy-btn:hover {
+	background-color: var(--background-color-400);
 }
 
 .copy-container.copied {

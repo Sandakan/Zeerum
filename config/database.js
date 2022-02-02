@@ -189,7 +189,7 @@ const deleteData = async (collection, query = {}) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
-		database.collection(collection).deleteMany(query, (err, result) => {
+		database.collection(collection).deleteOne(query, (err, result) => {
 			if (err) {
 				return reject(err);
 			} else resolve({ success: true, message: `${result.deletedCount} documents deleted.` });
