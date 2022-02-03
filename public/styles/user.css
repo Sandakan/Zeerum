@@ -164,6 +164,7 @@
 .user-container > .statistics-container > .stats > .content > .description {
 	display: block;
 	font-size: 0.9em;
+	overflow: hidden;
 }
 
 .other-content {
@@ -216,7 +217,7 @@
 	}
 }
 
-/* @media screen and (min-width: 1920px) {
+@media screen and (min-width: 1920px) {
 	.user-container > .statistics-container > .stats {
 		width: 250px;
 		height: 100px;
@@ -227,6 +228,17 @@
 	.user-container > .statistics-container > .stats {
 		width: 150px;
 		height: 80px;
+	}
+	.page-heading-1 {
+		text-align: center;
+	}
+	.page-heading-1::before {
+		left: 50%;
+		transform: translateX(-50%);
+		-webkit-transform: translateX(-50%);
+		-moz-transform: translateX(-50%);
+		-ms-transform: translateX(-50%);
+		-o-transform: translateX(-50%);
 	}
 	.other-content {
 		flex-direction: column;
@@ -239,7 +251,8 @@
 		flex-direction: column;
 		height: fit-content;
 		align-items: center;
-		justify-content: space-between;
+		/* justify-content: space-between; */
+		padding: 2em 1em;
 	}
 	.user-container > .user-data-container {
 		flex-basis: unset;
@@ -251,10 +264,18 @@
 	.user-container > .user-data-container > :is(.joined-date, .articles-number, .country) {
 		font-size: 1.2rem;
 	}
+	.user-container > .user-data-container > .name {
+		text-align: center;
+	}
 	.user-container > .user-data-container > .user-type-and-id {
 		text-align: center;
 	}
 	.user-container > .statistics-container {
 		flex-direction: row;
+		width: 100%;
+		justify-content: center;
 	}
-} */
+	.user-container > .statistics-container > .stats {
+		min-width: 42.5%;
+	}
+}

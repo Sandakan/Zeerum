@@ -1,4 +1,4 @@
-import displayAlertPopup from './displayAlertPopup';
+import displayAlertPopup from './displayAlertPopup.js';
 // Read the CSRF token from the <meta> tag
 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -7,7 +7,6 @@ let articlesPublished = 0;
 
 fetch(`/data/articles?authorUserId=${userId}`)
 	.then((obj) => obj.json())
-	.catch((err) => console.log(err))
 	.then((res) => {
 		const { success, data } = res;
 		// console.log(data);
@@ -43,7 +42,7 @@ fetch(`/data/articles?authorUserId=${userId}`)
 				}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
 					x.reactions.shares
 				}</span></div> <div class="article-categories-container">${x.categories
-					.map((y) => `<span class="categories"><a href="categories/${y}">#${y}</a></span>`)
+					.map((y) => `<span class="category"><a href="categories/${y}">#${y}</a></span>`)
 					.join('')}</div></div></div>`;
 			});
 		} else {
@@ -58,6 +57,19 @@ fetch(`/data/articles?authorUserId=${userId}`)
 				</div>`;
 			console.log(`Error occurred when requesting user article data. ${res.message}`, res);
 		}
+	})
+	.catch((err) => {
+		console.log(err);
+		document.querySelector(
+			'.articles-container'
+		).innerHTML = `<div class="no-articles-container" style="display:flex;">
+					<img src="/images/categories/no-articles.svg" alt="" />
+					<span class="no-articles">
+						Oops, seems like there's nothing to show at this moment.
+					</span>
+					<span class="no-search"></span>
+				</div>`;
+		console.log(`Error occurred when requesting user article data. ${res.message}`, res);
 	});
 
 fetch(`/data/users/${userId}`)
@@ -74,7 +86,9 @@ fetch(`/data/users/${userId}`)
 			document.querySelector('.user-data-container').innerHTML = `<span class="name">${
 				data.firstName
 			} ${data.lastName}</span>
-				<span class="user-type-and-id">${data.userType} <span class="id">#${data.userId}</span></span>
+				<span class="user-type-and-id"><span class="user-type">${data.userType}</span> <span class="id">#${
+				data.userId
+			}</span></span>
 				<span class="country">${data.country || 'Country unknown'}</span>
 				<span class="joined-date">Joined on ${new Date(data.registeredDate).toDateString()}</span>
 				<span class="followers-and-followings">${data.followers.length} followers / ${

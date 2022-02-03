@@ -187,6 +187,7 @@ const renderData = (res) => {
 						x.addEventListener('click', async (e) => {
 							if (userId !== null) {
 								if (e.target.classList.contains('liked')) {
+									e.target.innerHTML = '...';
 									await fetch(
 										`${requestingArticleName}?likeComment=false&userId=${sessionStorage.getItem(
 											'userId'
@@ -205,6 +206,7 @@ const renderData = (res) => {
 												e.target.classList.remove('liked');
 												e.target.innerHTML = 'like';
 											} else {
+												e.target.innerHTML = 'liked';
 												displayAlertPopup(
 													'error',
 													`Error occurred when liking comment . ${res.message}`
@@ -224,6 +226,7 @@ const renderData = (res) => {
 											console.log('Error occurred when liking comment .', res.message);
 										});
 								} else {
+									e.target.innerHTML = '...';
 									fetch(
 										`${requestingArticleName}?likeComment=true&userId=${sessionStorage.getItem(
 											'userId'
@@ -235,17 +238,19 @@ const renderData = (res) => {
 											},
 										}
 									)
-										.then(res.json())
+										.then((res) => res.json())
 										.then((res) => {
 											console.log(res);
 											if (res.success) {
 												e.target.classList.add('liked');
 												e.target.innerHTML = 'liked';
-											} else
+											} else {
+												e.target.innerHTML = 'like';
 												console.log(
 													'Error occurred when liking comment .',
 													res.message
 												);
+											}
 										})
 										.catch((err) => console.log(err));
 								}

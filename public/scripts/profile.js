@@ -227,7 +227,7 @@ if (window.location.pathname.split('/').pop() === 'profile') {
 						}</span><span class="stat"><i class="fas fa-share-alt"></i> ${
 							x.reactions.shares
 						}</span></div><div class="article-categories-container">${x.categories.map(
-							(y) => `<span class="categories"><a href="categories/${y}">${y}</a></span>`
+							(y) => `<span class="category"><a href="categories/${y}">${y}</a></span>`
 						)}</div></div></div>`;
 					});
 				} else {
@@ -282,7 +282,7 @@ if (window.location.pathname.split('/').pop() === 'profile') {
 							x.reactions.shares
 						}</span></div> <div class="article-categories-container">${x.categories
 							.map(
-								(y) => `<span class="categories"><a href="categories/${y}">#${y}</a></span>`
+								(y) => `<span class="category"><a href="categories/${y}">#${y}</a></span>`
 							)
 							.join('')}</div></div></div>`;
 					});
