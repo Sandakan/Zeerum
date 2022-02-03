@@ -4,107 +4,160 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="x-apple-disable-message-reformatting" />
 		<title>New Login Detected</title>
 	</head>
-	<body>
-		<style>
-			@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap');
-			body {
-				background-color: hsl(207, 20%, 11%);
-				font-family: 'Rubik', sans-serif;
-				color: #fff;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-			}
-			.container {
-				max-width: 700px;
-			}
-			.logo-container {
+	<body style="margin: 0; padding: 0">
+		<table
+			role="presentation"
+			style="
 				width: 100%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			.logo-container img {
-				width: 100px;
-				padding: 1em;
-			}
-			.heading {
-				width: 100%;
-				text-align: center;
-				color: #fff;
-				margin: 1em 0;
-				font-size: 2rem;
-				font-weight: 400;
-			}
-			.description {
-				text-align: center;
-				font-weight: 300;
-			}
-			a {
-				color: #ccc;
-			}
-			ul {
-				width: 80%;
-				margin: 1em auto;
-			}
-			.footer {
-				text-align: center;
-				font-weight: 300;
-				font-size: 0.9rem;
-				color: #ccc;
-			}
-
-			.footer span {
-				font-size: 0.75rem;
-				color: rgb(167, 167, 167);
-			}
-		</style>
-
-		<div class="container">
-			<div class="logo-container">
-				<img
-					src="https://raw.githubusercontent.com/Sandakan/Zeerum/master/public/images/icon.webp"
-					alt="Zeerum Logo"
-					width="100px"
-					height="100px"
-				/>
-			</div>
-			<div class="heading">New Login Detected.</div>
-			<div class="description">
-				We have noticed a new login to your account "<%= userEmail %>" using your credentails.
-			</div>
-			<ul>
-				<li>Platform : <%= platform %></li>
-				<li>IP Address : <%= ipAddress %></li>
-				<li>Country : <%= country %></li>
-				<li>City : <%= city %></li>
-				<li>Time : <%= time %></li>
-				<li>Time-zone : <%= timeZone %></li>
-			</ul>
-			<div class="description">
-				If this was you, then there's nothing for you to do right now. But if you don't
-				recognize this login attempt, we recommend you
-				<a href="https://zeerum.herokuapp.com/profile?popup=settings&settingType=changePassword"
-					>changing your password</a
-				>
-				immediately.
-			</div>
-			<br /><br />
-			Sincerely, <br />
-			Zeerum Team.
-		</div>
-		<br /><br />
-		<div class="footer">
-			<span
-				>If you don't want to receive these emails from Zeerum, you can edit relevant settings
-				in your <a href="https://zeerum.herokuapp.com/profile">profile</a> or
-				<a href="#">unsubscribe.</a></span
-			>
-			<br /><br />
-			Copyright 2022 &copy; Zeerum. All rights reserved.
-		</div>
+				border-collapse: collapse;
+				border: 0;
+				border-spacing: 0;
+				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			"
+		>
+			<tr>
+				<td align="center">
+					<table
+						style="width: 80%; max-width: 700px; border-collapse: collapse; border-spacing: 0"
+					>
+						<tr>
+							<td align="center">
+								<a href="https://zeerum.herokuapp.com/" title="Click to visit Zeerum.">
+									<img
+										src="https://raw.githubusercontent.com/Sandakan/Zeerum/master/public/images/icon.webp"
+										alt="Zeerum Logo"
+										width="100px"
+										height="100px"
+										style="padding: 1em 0"
+									/>
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td
+								align="center"
+								style="
+									color: #000;
+									font-size: 1.75rem;
+									padding: 0.5em 0;
+									font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+									font-weight: 500;
+								"
+							>
+								New Login Detected
+							</td>
+						</tr>
+						<tr align="center">
+							<td
+								style="
+									color: #000;
+									padding: 1em 0;
+									font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+								"
+							>
+								We have noticed a new login to your account "<%= userEmail %>" using your
+								credentails.
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<ul
+									style="
+										color: #000;
+										padding: 0 2.5em;
+										font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+									"
+								>
+									<li>Platform : <%= platform %></li>
+									<li>IP Address : <%= ipAddress %></li>
+									<li>Country : <%= country %></li>
+									<li>City : <%= city %></li>
+									<li>Time : <%= time %></li>
+									<li>Time-zone : <%= timeZone %></li>
+								</ul>
+							</td>
+						</tr>
+						<tr align="center">
+							<td
+								style="
+									color: #000;
+									padding: 0.5em 0;
+									font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+								"
+							>
+								If this was you, then there's nothing for you to do right now. But if you
+								don't recognize this login attempt, we recommend you
+								<a
+									href="https://zeerum.herokuapp.com/profile?popup=settings&settingType=changePassword"
+									style="
+										color: #0984e3;
+										font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+									"
+									>changing your password</a
+								>
+								immediately.
+							</td>
+						</tr>
+						<tr>
+							<td
+								style="
+									color: #000;
+									padding: 0.5em;
+									font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+								"
+							>
+								Sincerely, <br />
+								Zeerum Team.
+							</td>
+						</tr>
+						<tr align="center">
+							<td
+								style="
+									color: #a7a7a7;
+									font-size: 0.75rem;
+									padding: 0.5em;
+									font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+								"
+							>
+								If you don't want to receive these emails from Zeerum, you can edit relevant
+								settings in your
+								<a
+									href="https://zeerum.herokuapp.com/profile"
+									style="
+										color: #0984e3;
+										font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+									"
+									>profile</a
+								>
+								or
+								<a
+									href="#"
+									style="
+										color: #0984e3;
+										font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+									"
+									>unsubscribe.</a
+								>
+							</td>
+						</tr>
+						<tr align="center">
+							<td
+								style="
+									color: #ccc;
+									font-size: 0.8rem;
+									padding: 0.5em 0;
+									font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+								"
+							>
+								Copyright 2022 &copy; Zeerum. All rights reserved.
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
 	</body>
 </html>

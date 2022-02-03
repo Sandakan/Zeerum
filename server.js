@@ -239,5 +239,5 @@ app.all('*', csrfProtection, notFound(false));
 app.use(errorHandler(true));
 
 app.listen(process.env.PORT || 5000, () =>
-	console.log(`user hit the server on ${process.env.PORT}`)
+	console.log(`Server started on port ${process.env.PORT}`)
 );
