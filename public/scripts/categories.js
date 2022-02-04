@@ -219,27 +219,38 @@ if (window.location.pathname.split('/').at(1) === 'tags') {
 
 fetch(`/data/categories/`)
 	.then((res) => res.json())
-	.then(({ success, data }) => {
+	.then((res) => {
+		const { success, data } = res;
+		// console.log(res);
 		if (success) {
-			data.forEach((x) => {
-				document.querySelector(
-					'.search-through-categories'
-				).innerHTML += `<span class="categories"> <a href="../categories/${x.name.toLowerCase()}">${
-					x.name
-				}</a></span>`;
-			});
-		} else console.log('Error occurred when requesting categories data.');
+			document
+				.querySelector('.search-through-categories')
+				.classList.remove('categories-loading');
+			document.querySelector('.search-through-categories').innerHTML = data
+				.map((x) => {
+					return `<span class="category"> <a href="/categories/${x.name.toLowerCase()}">${
+						x.name
+					}</a></span>`;
+				})
+				.join('');
+		} else {
+			document
+				.querySelector('.search-through-categories')
+				.classList.remove('categories-loading');
+			console.log(`Error occurred when requesting category data.${res.message}`);
+		}
 	})
 	.catch((err) => console.log(err));
 
 fetch('/data/articles?trendingArticles=true&limit=5')
 	.then((res) => res.json())
 	.then((res) => {
+		document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
 		if (res.success && res.data.length > 0) {
 			res.data.forEach((x) => {
 				document.querySelector(
 					'.navigate-through-links > ul'
-				).innerHTML += `<li><a href="../articles/${x.urlSafeTitle}">${x.title}</a></li>`;
+				).innerHTML += `<li><a href="/articles/${x.urlSafeTitle}">${x.title}</a></li>`;
 			});
 		} else
 			console.log(
@@ -247,3 +258,24 @@ fetch('/data/articles?trendingArticles=true&limit=5')
 			);
 	})
 	.catch((err) => console.log(err));
+
+fetch('/data/users?followedAuthors=true&limit=10')
+	.then((res) => res.json())
+	.then(
+		(res) => {
+			console.log(res);
+			if (res.success && res.data.length > 0) {
+				res.data.map((author) => {
+					document.querySelector(
+						'.followed-authors-container .followed-authors'
+					).innerHTML += `<a class="author" href="/user/${author.username}">
+							<div class="author-img"><img src="${author.profilePictureUrl || '/images/user.webp'}" 
+								alt="${author.firstName} ${author.lastName}'s Profile Picture"/>
+							</div>
+							<span class="author-name">${author.firstName} ${author.lastName}</span>
+						</a>`;
+				});
+			}
+		},
+		(err) => displayAlertPopup('error', err.message)
+	);

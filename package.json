@@ -5,7 +5,7 @@
 	"main": "server.js",
 	"scripts": {
 		"start": "node server.js",
-		"test": "nodemon server"
+		"test": "nodemon --ignore public/scripts/ server.js"
 	},
 	"author": "",
 	"license": "ISC",

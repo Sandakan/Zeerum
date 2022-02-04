@@ -12,8 +12,13 @@
 			"request": "launch",
 			"restart": true,
 			"runtimeExecutable": "nodemon",
-			"skipFiles": ["<node_internals>/**", "<node_modules>/**"],
-			"type": "pwa-node"
+			"skipFiles": [
+				"<node_internals>/**",
+				"<node_modules>/**",
+				"${workspaceFolder}/public/scripts/*"
+			],
+			"type": "pwa-node",
+			"args": ["--ignore", "/public/scripts/"]
 		}
 	]
 }

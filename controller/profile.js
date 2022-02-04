@@ -13,32 +13,30 @@ const {
 const followUser = async (req, res, next) => {
 	if (req.query.followUser !== undefined && req.query.followingUserId) {
 		// console.log(req.query.followUser, req.query.followingUserId);
-		let userData = await checkUser({ userId: req.session.userId })
-			.then((res) => res)
-			.catch((err) => next(err));
+		let userData = req.session.user;
 		const followingUserId = Number(req.query.followingUserId);
 		let followingUserData = await checkUser({ userId: followingUserId })
 			.then((res) => res)
 			.catch((err) => next(err));
 		if (req.query.followUser === 'true') {
 			// ? If use wants to follow
-			if (followingUserData.success && followingUserData.isThereAUser && userData.success) {
-				if (!userData.userData[0].followings.includes(followingUserId)) {
-					userData.userData[0].followings.push(Number(followingUserId));
+			if (followingUserData.success && followingUserData.isThereAUser && userData) {
+				if (!userData.followings.includes(followingUserId)) {
+					userData.followings.push(Number(followingUserId));
 					followingUserData.userData[0].followers.push(Number(req.session.userId));
 					// console.log(
-					// 	userData.userData[0].followings,
+					// 	userDatafollowings,
 					// 	followingUserData.userData[0].followers
 					// );
 					await updateUserData(
 						{ userId: req.session.userId },
-						{ $set: { followings: userData.userData[0].followings } }
+						{ $set: { followings: userData.followings } }
 					);
 					await updateUserData(
 						{ userId: followingUserId },
 						{ $set: { followers: followingUserData.userData[0].followers } }
 					);
-					req.session.user = userData.userData[0];
+					req.session.user = userData;
 					//? if you haven't followed the same user before
 					// console.log(req.query.followUser, req.query.followingUserId);
 					res.json({
@@ -59,26 +57,26 @@ const followUser = async (req, res, next) => {
 			}
 		} else {
 			//? If user wants to unfollow
-			if (followingUserData.success && followingUserData.isThereAUser && userData.success) {
+			if (followingUserData.success && followingUserData.isThereAUser && userData) {
 				// ? if you haven't unfollowed the same user before
-				if (userData.userData[0].followings.includes(followingUserId)) {
-					const positionUser = userData.userData[0].followings.indexOf(followingUserId);
+				if (userData.followings.includes(followingUserId)) {
+					const positionUser = userData.followings.indexOf(followingUserId);
 					const positionFollowing = followingUserData.userData[0].followers.indexOf(
 						Number(req.session.userId)
 					);
 					// console.log(userData.userData[0]);
-					userData.userData[0].followings.splice(positionUser, 1);
+					userData.followings.splice(positionUser, 1);
 					followingUserData.userData[0].followers.splice(positionFollowing, 1);
 
 					await updateUserData(
 						{ userId: req.session.userId },
-						{ $set: { followings: userData.userData[0].followings } }
+						{ $set: { followings: userData.followings } }
 					);
 					await updateUserData(
 						{ userId: followingUserId },
 						{ $set: { followers: followingUserData.userData[0].followers } }
 					);
-					req.session.user = userData.userData[0];
+					req.session.user = userData;
 					res.json({
 						success: true,
 						status: 200,

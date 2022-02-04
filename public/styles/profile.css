@@ -263,6 +263,7 @@
 .settings .settings-container .setting-types {
 	width: 20%;
 	padding-left: 1em;
+	margin-right: 0.5em;
 	border-right: 0.2em solid var(--background-color-200);
 }
 
@@ -315,7 +316,6 @@
 .settings .settings-container .settings-content {
 	width: 80%;
 	padding: 1.5em 2.25em;
-	overflow-y: auto;
 }
 
 .settings .settings-container .settings-content h2 {
@@ -331,4 +331,43 @@
 .settings .settings-container .settings-content ul li {
 	font-size: 1.25em;
 	margin-bottom: 1em;
+}
+
+@media screen and (max-width: 1050px) {
+	.settings .settings-container {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.settings .settings-container .setting-types {
+		width: 100%;
+		overflow-x: auto;
+	}
+	.settings .settings-container .setting-types ul {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+	}
+	.settings .settings-container .setting-types ul li::after {
+		height: 0.2em;
+		width: 75%;
+		top: 0;
+		left: 50%;
+		transform: translate(-50%, 0.25em);
+		-webkit-transform: translate(-50%, 0.25em);
+		-moz-transform: translate(-50%, 0.25em);
+		-ms-transform: translate(-50%, 0.25em);
+		-o-transform: translate(-50%, 0.25em);
+	}
+	.settings .settings-container .setting-types ul li.focused::after {
+		transform: translate(-50%, 0);
+		-webkit-transform: translate(-50%, 0);
+		-moz-transform: translate(-50%, 0);
+		-ms-transform: translate(-50%, 0);
+		-o-transform: translate(-50%, 0);
+	}
+	.settings .settings-container .settings-content {
+		width: 100%;
+		padding: 1.5em;
+	}
 }

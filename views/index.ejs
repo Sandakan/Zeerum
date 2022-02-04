@@ -78,7 +78,7 @@
 
 		<div class="page-heading-1">Recently Added</div>
 		<div class="other-content">
-			<div class="other-content-child-container">
+			<div class="other-content-secondary-container">
 				<nav class="nav-box">
 					<div class="navigate-through-links">
 						<div class="trending-articles-heading">Trending Articles</div>
@@ -88,7 +88,8 @@
 							<li class="loading"></li>
 						</ul>
 					</div>
-					<hr />
+				</nav>
+				<nav class="nav-box">
 					<div class="search-through-categories-heading">Search Through Tags</div>
 					<div class="search-through-categories categories-loading">
 						<span class="categories loading"></span>
@@ -98,9 +99,13 @@
 						<span class="categories loading"></span>
 					</div>
 				</nav>
+				<div class="followed-authors-container">
+					<div class="heading">Authors You Follow</div>
+					<div class="followed-authors"></div>
+				</div>
 			</div>
 
-			<div class="articles-container articles-loading">
+			<div class="other-content-main-container articles-container articles-loading">
 				<div class="article loading"></div>
 				<div class="article loading"></div>
 				<div class="article loading"></div>
@@ -109,16 +114,22 @@
 		</div>
 
 		<div class="get-started-container">
-			<a href="/login" class="log-in-btn">Log In</a>
-			<span class="or">OR</span>
-			<a href="/signup" class="signup-btn">Sign up</a>
-			<span class="heading"> Join with us to share your knowledge with others. </span>
-			<span class="zeerum-user">
-				zeerum <br />
-				user <br />
-				<i class="fas fa-medal"></i>
-			</span>
-			<span class="description">
+			<div class="get-started-buttons-container">
+				<div class="heading">Join with us to share your knowledge with others.</div>
+				<div class="buttons-container">
+					<a href="/login" class="log-in-btn">Log In</a>
+					<span class="or">OR</span>
+					<a href="/signup" class="signup-btn">Sign up</a>
+				</div>
+			</div>
+			<div class="zeerum-user-logo-container">
+				<span class="zeerum-user">
+					zeerum <br />
+					user <br />
+					<i class="fas fa-medal"></i>
+				</span>
+			</div>
+			<div class="get-started-description-container">
 				<ul>
 					<li>Our daily uploaded articles are now at your fingertips.</li>
 					<li>They are personalized to your reading too.</li>
@@ -127,13 +138,7 @@
 						the authors right to your inbox.
 					</li>
 				</ul>
-			</span>
-			<span class="exit">
-				<i
-					class="far fa-times-circle"
-					onclick="document.querySelector('.get-started-container').classList.add('invisible');"
-				></i>
-			</span>
+			</div>
 		</div>
 
 		<div class="alert-container">

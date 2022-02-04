@@ -39,4 +39,36 @@ const sendUserData = async (req, res, next) => {
 		});
 };
 
-module.exports = { sendUserData };
+const sendFollowedAuthorsData = async (req, res, next) => {
+	if (req.query.followedAuthors === 'true') {
+		const followings = await requestData(
+			'users',
+			{ userId: Number(req.session.userId) },
+			{ followings: 1 }
+		).then(
+			(result) => result.data[0].followings,
+			(err) => next(err)
+		);
+		const authorsData = await requestData(
+			'users',
+			{
+				userId: { $in: followings },
+				userType: 'author',
+				followers: Number(req.session.userId),
+			},
+			{ firstName: 1, lastName: 1, username: 1, profilePictureUrl: 1 },
+			{},
+			Number(req.query.limit) || 0
+		);
+		if (authorsData.success && authorsData.data.length > 0) {
+			res.json({ success: true, status: 200, data: authorsData.data });
+		} else
+			res.json({
+				success: false,
+				status: 404,
+				message: `We couldn't find any author that you've followed.`,
+			});
+	} else next();
+};
+
+module.exports = { sendUserData, sendFollowedAuthorsData };

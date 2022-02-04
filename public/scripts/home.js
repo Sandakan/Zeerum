@@ -58,11 +58,9 @@ await fetch('/data/articles?allArticles=true', {
 					.join('')}</div> <div class="article-tags-container">${x.tags
 					.map((tag) => `<span class="tag"><a href="/tags/${tag}">#${tag}</a></span>`)
 					.join('')}</div></div></div>`;
-				document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
 			});
 		} else {
 			document.querySelector('.articles-container').classList.remove('articles-loading');
-			document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
 			document.querySelector('.navigate-through-links').style.display = 'none';
 			document.querySelector('.articles-container').innerHTML = `
 			<div class="no-articles-container">
@@ -81,6 +79,7 @@ await fetch('/data/articles?allArticles=true', {
 fetch('/data/articles?trendingArticles=true&limit=5')
 	.then((res) => res.json())
 	.then((res) => {
+		document.querySelector('.navigate-through-links ul').classList.remove('links-loading');
 		if (res.success && res.data.length > 0) {
 			res.data.forEach((x) => {
 				document.querySelector(
@@ -115,3 +114,24 @@ fetch(`/data/categories/`)
 		}
 	})
 	.catch((err) => console.log(err));
+
+fetch('/data/users?followedAuthors=true&limit=10')
+	.then((res) => res.json())
+	.then(
+		(res) => {
+			console.log(res);
+			if (res.success && res.data.length > 0) {
+				res.data.map((author) => {
+					document.querySelector(
+						'.followed-authors-container .followed-authors'
+					).innerHTML += `<a class="author" href="/user/${author.username}">
+							<div class="author-img"><img src="${author.profilePictureUrl || '/images/user.webp'}" 
+								alt="${author.firstName} ${author.lastName}'s Profile Picture"/>
+							</div>
+							<span class="author-name">${author.firstName} ${author.lastName}</span>
+						</a>`;
+				});
+			}
+		},
+		(err) => displayAlertPopup('error', err.message)
+	);

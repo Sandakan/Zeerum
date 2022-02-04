@@ -27,7 +27,7 @@ const login = async (req, res, next) => {
 			bcrypt.compare(password, data.userData[0].password, async (err, result) => {
 				if (err) throw err;
 				if (result) {
-					await sendMail(
+					sendMail(
 						path.join(__dirname, '../views/emails/new-login.ejs'),
 						{
 							userEmail: email,
