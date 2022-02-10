@@ -1,3 +1,6 @@
+const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+
 const {
 	testDatabaseConnection,
 	countDocuments,
@@ -7,6 +10,7 @@ const {
 	updateUserData,
 	updateData,
 	createArticle,
+	deleteData,
 } = require('../config/database');
 
 // ? FOLLOW AND UNFOLLOW USERS
@@ -159,6 +163,8 @@ const sendProfileData = async (req, res) => {
 		userType,
 		country,
 		bookmarks,
+		birthday,
+		username,
 	} = req.session.user;
 	if (userType === 'author') {
 		let allTimeViews = 0;
@@ -187,6 +193,8 @@ const sendProfileData = async (req, res) => {
 				bookmarks: bookmarks,
 				allTimeViews: allTimeViews,
 				allTimeLikes: allTimeLikes,
+				birthday,
+				username,
 			},
 		});
 	} else {
@@ -206,9 +214,279 @@ const sendProfileData = async (req, res) => {
 				country: country,
 				articlesPublished: 0,
 				bookmarks: bookmarks,
+				birthday,
+				username,
 			},
 		});
 	}
 };
 
-module.exports = { changeUserType, followUser, sendProfileData };
+const updateName = async (req, res, next) => {
+	const validationErrors = validationResult(req);
+	if (validationErrors.isEmpty()) {
+		if (
+			req.body.firstName !== req.session.user.firstName &&
+			req.body.lastName !== req.session.user.lastName
+		) {
+			await countDocuments('users', {
+				firstName: { $regex: req.body.firstName.trim(), $options: 'i' },
+				lastName: { $regex: req.body.lastName.trim(), $options: 'i' },
+			})
+				.then(async (noOfUsers) => {
+					if (noOfUsers === 0) {
+						await updateData(
+							'users',
+							{ userId: req.session.userId },
+							{ $set: { firstName: req.body.firstName, lastName: req.body.lastName } }
+						).then(
+							() => {
+								req.session.user.firstName = req.body.firstName;
+								req.session.user.lastName = req.body.lastName;
+								res.status(200).json({
+									success: true,
+									status: 200,
+									message: 'Name updated successfully.',
+								});
+							},
+							(err) => next(err)
+						);
+					} else
+						res.status(400).json({
+							success: false,
+							status: 400,
+							message: `User with name "${req.body.firstName} ${req.body.lastName}" already exists.`,
+							userExists: true,
+						});
+				})
+				.catch((err) => next(err));
+		} else
+			res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'You cannot use your new name as the currently existing name.',
+			});
+	} else
+		res.status(400).json({
+			success: false,
+			status: 400,
+			message: 'Validation errors found.',
+			errors: validationErrors.errors,
+		});
+};
+
+const updateUsername = async (req, res, next) => {
+	const validationErrors = validationResult(req);
+	if (validationErrors.isEmpty()) {
+		if (req.body.username.toLowerCase() !== req.session.user.username.toLowerCase()) {
+			await countDocuments('users', {
+				username: { $regex: req.body.username, $options: 'i' },
+			}).then(
+				async (noOfUsers) => {
+					if (noOfUsers === 0) {
+						await updateData(
+							'users',
+							{ userId: req.session.userId },
+							{ $set: { username: req.body.username } }
+						).then(
+							() => {
+								req.session.user.username = req.body.username;
+								res.status(200).json({
+									success: true,
+									status: 200,
+									message: 'Username updated successfully.',
+								});
+							},
+							(err) => next(err)
+						);
+					} else
+						res.status(400).json({
+							success: false,
+							status: 400,
+							message: `Another user with a username "${req.body.username}" already exists.`,
+						});
+				},
+				(err) => next(err)
+			);
+		} else
+			res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'Your new username cannot be your previous username.',
+			});
+	} else
+		res.status(400).json({
+			success: false,
+			status: 400,
+			message: 'Validation errors found.',
+			errors: validationErrors.errors,
+		});
+};
+
+const updateEmail = async (req, res, next) => {
+	const validationErrors = validationResult(req);
+	if (validationErrors.isEmpty()) {
+		if (req.session.user.email !== req.body.email) {
+			await countDocuments('users', { email: req.body.email }).then(async (noOfUsers) => {
+				if (noOfUsers === 0) {
+					await updateData(
+						'users',
+						{ userId: req.session.userId },
+						{ $set: { email: req.body.email } },
+						{},
+						true
+					).then(
+						(result) => {
+							req.session.user = result.updatedData[0];
+							res.status(200).json({
+								success: result.success,
+								status: 200,
+								message: 'Email updated successfully.',
+							});
+						},
+						(err) => next(err)
+					);
+				} else
+					res.status(400).json({
+						success: false,
+						status: 400,
+						message: `Another user with the email \'${req.body.email}\' already exists.`,
+					});
+			});
+		} else
+			res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'Updating email cannot be your previous email.',
+			});
+	} else
+		res.status(400).json({
+			success: false,
+			status: 400,
+			message: 'Validation errors found.',
+			errors: validationErrors.errors,
+		});
+};
+
+const updatePassword = async (req, res, next) => {
+	const validationErrors = validationResult(req);
+	if (validationErrors.isEmpty()) {
+		const userPassword = await checkUser({ userId: req.session.userId }, { password: 1 }).then(
+			(result) => result.userData[0].password,
+			(err) => next(err)
+		);
+		bcrypt.compare(req.body.oldPassword, userPassword, async (err, result) => {
+			if (err) return next(err);
+			if (result) {
+				bcrypt.genSalt(10, (err, salt) => {
+					if (err) return next(err);
+					bcrypt.hash(req.body.newPassword, salt, async (err, hashedPassword) => {
+						if (err) return next(err);
+						await updateData(
+							'users',
+							{ userId: req.session.userId },
+							{ $set: { password: hashedPassword } },
+							{},
+							true
+						).then((result) => {
+							req.session.user = result.updatedData[0];
+							res.status(200).json({
+								success: true,
+								status: 200,
+								message: 'Password updated successfully.',
+							});
+						});
+					});
+				});
+			} else
+				res.status(400).json({
+					success: false,
+					status: 400,
+					message: 'Your old password is incorrect.',
+				});
+		});
+	} else
+		res.status(400).json({
+			success: false,
+			status: 400,
+			message: 'Validation errors found.',
+			errors: validationErrors.errors,
+		});
+};
+
+const updateBirthday = async (req, res, next) => {
+	const validationErrors = validationResult(req);
+	if (validationErrors.isEmpty()) {
+		if (Date.parse(req.body.birthday) !== Date.parse(req.session.user.birthday)) {
+			await updateData(
+				'users',
+				{ userId: req.session.userId },
+				{
+					$set: { birthday: new Date(req.body.birthday).toISOString() },
+				}
+			).then(
+				() => {
+					req.session.user.birthday = new Date(req.body.birthday).toISOString();
+					res.status(200).json({
+						success: true,
+						status: 200,
+						message: 'Birthday updated successfully.',
+					});
+				},
+				(err) => next(err)
+			);
+		} else
+			res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'Your new birthday cannot be your previous birthday.',
+			});
+	} else
+		res.status(400).json({
+			success: false,
+			status: 400,
+			message: 'Validation errors found.',
+			errors: validationErrors.errors,
+		});
+};
+
+const deleteUserAccount = async (req, res, next) => {
+	const validationErrors = validationResult(req);
+	if (validationErrors.isEmpty()) {
+		if (req.body.username === req.session.username) {
+			await deleteData('users', {
+				userId: req.session.userId,
+				username: req.body.username,
+			}).then(
+				() => {
+					res.status(200).json({
+						success: true,
+						status: 200,
+						message: `Account with username ${req.body.username} and userId ${req.session.userId} deleted successfully.`,
+					});
+					console.log(
+						`Account with username ${req.body.username} and userId ${req.session.userId} deleted successfully.`
+					);
+					req.session.destroy();
+				},
+				(err) => next(err)
+			);
+		} else
+			res.status(400).json({
+				success: false,
+				status: 400,
+				message: "Your username doesn't match with the existing username.",
+			});
+	} else return next(new Error(validationErrors.errors));
+};
+
+module.exports = {
+	changeUserType,
+	followUser,
+	sendProfileData,
+	updateName,
+	updateEmail,
+	updatePassword,
+	updateUsername,
+	updateBirthday,
+	deleteUserAccount,
+};

@@ -166,24 +166,37 @@
 }
 
 .change-profile-picture form input[type='submit'] {
-	width: 200px;
-	height: 40px;
-	font-size: 1.2rem;
-	border-radius: 10px;
-	border: 2px solid transparent;
-	background-color: var(--background-color-300);
-	margin-top: 30px;
+	width: fit-content;
+	padding: 0.6em 2em;
+	background-color: transparent;
+	border: 0.2em solid var(--background-color-200);
+	border-radius: 1em;
+	margin-top: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-ms-border-radius: 1em;
+	-o-border-radius: 1em;
+	color: var(--background-color-500);
 	cursor: pointer;
-	position: relative;
-	bottom: 0;
-	color: var(--text-color);
+	font-size: 1.25em;
+	font-weight: 500;
+	outline: none;
 }
 
 .change-profile-picture form input[type='submit']:disabled {
-	background-color: var(--background-color-100) !important;
-	border: 2px solid var(--background-color-300) !important;
+	font-weight: 400;
+	background-color: var(--background-color-100);
+	border-color: var(--background-color-200);
 	color: var(--background-color-300);
 	cursor: not-allowed;
+}
+
+.change-profile-picture form input[type='submit']:hover {
+	border-color: var(--background-color-300);
+}
+
+.change-profile-picture form input[type='submit']:disabled:hover {
+	border-color: var(--background-color-200);
 }
 
 .change-profile-picture form p {
@@ -247,15 +260,16 @@
 
 .settings h1 {
 	text-align: left;
-	padding: 0 1em 0.5em 1em;
-	margin-bottom: 0;
+	padding: 0 1em;
+	/* margin-bottom: 0; */
+	/* height: 15%; */
 }
 
 .settings .settings-container {
 	display: flex;
 	flex-direction: row;
 	width: 100%;
-	height: 100%;
+	height: 80%;
 	margin: 0.5em auto;
 	border-top: 0.2em solid var(--background-color-200);
 }
@@ -264,7 +278,6 @@
 	width: 20%;
 	padding-left: 1em;
 	margin-right: 0.5em;
-	border-right: 0.2em solid var(--background-color-200);
 }
 
 .settings .settings-container .setting-types ul {
@@ -316,11 +329,21 @@
 .settings .settings-container .settings-content {
 	width: 80%;
 	padding: 1.5em 2.25em;
+	border-left: 0.2em solid var(--background-color-200);
+	overflow-y: auto;
+}
+
+.settings .settings-container .settings-content > div {
+	display: none;
+}
+.settings .settings-container .settings-content > div.focused {
+	display: block;
 }
 
 .settings .settings-container .settings-content h2 {
 	font-size: 2.25em;
 	font-weight: 400;
+	color: var(--background-color-500);
 }
 
 .settings .settings-container .settings-content ul {
@@ -331,7 +354,251 @@
 .settings .settings-container .settings-content ul li {
 	font-size: 1.25em;
 	margin-bottom: 1em;
+	list-style-type: none;
 }
+
+.settings-content ul li h3 {
+	font-weight: 400;
+}
+.settings-content ul li .container {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	justify-content: flex-start;
+	padding: 1em;
+}
+.settings-content ul li .container input::placeholder {
+	color: var(--text-color-1);
+	font-weight: 400;
+}
+.settings-content
+	ul
+	li
+	.container
+	:is(input[type='text'], input[type='date'], input[type='email'], input[type='password']) {
+	width: 50%;
+	height: 3em;
+	outline: none;
+	border: 0.2em solid transparent;
+	border-radius: 1.5em;
+	-webkit-border-radius: 1.5em;
+	-moz-border-radius: 1.5em;
+	-ms-border-radius: 1.5em;
+	-o-border-radius: 1.5em;
+	padding: 0.1em 0.5em;
+	margin-bottom: 1em;
+	background-color: var(--background-color-200);
+	color: var(--text-color);
+	transition: border-color 0.2s ease-in-out;
+	-webkit-transition: border-color 0.2s ease-in-out;
+	-moz-transition: border-color 0.2s ease-in-out;
+	-ms-transition: border-color 0.2s ease-in-out;
+	-o-transition: border-color 0.2s ease-in-out;
+}
+
+.settings-content
+	ul
+	li
+	.container
+	:is(input[type='text'], input[type='date'], input[type='email'], input[type='password']):focus {
+		border-color: var(--background-color-500);
+	}
+
+.settings-content
+	ul
+	li
+	.container
+	:is(input[type='text'], input[type='date'], input[type='email'], input[type='password']).error {
+	border-color: var(--alert-error-color);
+}
+
+.settings-content ul li .container input[type='checkbox'] {
+	display: none;
+}
+.settings-content ul li .container :is(input[type='submit'],input[type='button']) {
+	width: fit-content;
+	padding: 0.6em 1em;
+	background-color: transparent;
+	border: 0.2em solid var(--background-color-200);
+	border-radius: 1em;
+	margin-top: 1em;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-ms-border-radius: 1em;
+	-o-border-radius: 1em;
+	color: var(--background-color-500);
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 500;
+	outline: none;
+}
+.settings-content
+	ul
+	li
+	.container
+	:is(input[type='submit'].disabled, input[type='submit']:disabled) {
+	font-weight: 400;
+	background-color: var(--background-color-100);
+	border-color: var(--background-color-200);
+	color: var(--background-color-300);
+	cursor: not-allowed;
+}
+.settings-content ul li .container input[type='submit']:is(:focus, :hover) {
+	border-color: var(--background-color-300);
+}
+.settings-content
+	ul
+	li
+	.container
+	:is(input[type='submit'].disabled, input[type='submit']:disabled):is(:focus, :hover) {
+	border-color: var(--background-color-200);
+}
+
+.container .img-and-link-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	margin: 0.5em 0;
+}
+
+.container .img-and-link-container img {
+	width: 5em;
+	border-radius: 5em;
+	-webkit-border-radius: 5em;
+	-moz-border-radius: 5em;
+	-ms-border-radius: 5em;
+	-o-border-radius: 5em;
+	transition: filter 0.2s ease;
+	-webkit-transition: filter 0.2s ease;
+	-moz-transition: filter 0.2s ease;
+	-ms-transition: filter 0.2s ease;
+	-o-transition: filter 0.2s ease;
+	cursor: pointer;
+}
+.container .img-and-link-container img:hover {
+	filter: brightness(0.5);
+	-webkit-filter: brightness(0.5);
+}
+.container .img-and-link-container a[href='/profile?popup=edit-profile-picture'] {
+	margin-right: 1.5em;
+}
+
+.container .btn-link {
+	width: fit-content;
+	padding: 0.75em;
+	background: var(--background-color-100);
+	color: var(--background-color-500);
+	border-radius: 1em;
+	text-align: center;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-ms-border-radius: 1em;
+	-o-border-radius: 1em;
+	font-size: 0.9em;
+	border: 0.2em solid var(--background-color-200);
+	font-weight: 500;
+}
+.container .btn-link:is(:focus, :hover) {
+	border-color: var(--background-color-300);
+	outline: none;
+}
+
+.container .btn-link i {
+	margin-left: 0.5em;
+}
+
+.settings-content ul li .description {
+	font-weight: 300;
+	font-size: 0.9em;
+	margin-bottom: 1em;
+}
+.settings-content ul li .description.danger {
+	color: var(--alert-error-color);
+	font-weight: 500;
+}
+.settings-content ul li .description.success {
+	color: var(--alert-success-color);
+	font-weight: 500;
+}
+
+.settings-content ul li .highlight {
+	color: var(--background-color-500);
+	font-weight: 500;
+}
+.settings-content ul li .highlight.danger {
+	color:var(--alert-error-color);
+}
+
+.settings-content ul li .container label {
+	position: relative;
+	width: fit-content;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 0 0.5em 1em;
+	font-size: 0.9em;
+	font-weight: 300;
+}
+.settings-content ul li .container label .custom-checkbox {
+	position: relative;
+	width: 1.75em;
+	height: 1.75em;
+	margin-right: 1em;
+	border: 0.2em solid var(--background-color-300);
+	border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	-ms-border-radius: 0.5em;
+	-o-border-radius: 0.5em;
+	cursor: pointer;
+}
+.settings-content ul li .container label .custom-checkbox::after {
+	position: absolute;
+	content: '';
+	width: 65%;
+	height: 65%;
+	top: 50%;
+	left: 50%;
+	background-color: transparent;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	border-radius: 0.2em;
+	-webkit-border-radius: 0.2em;
+	-moz-border-radius: 0.2em;
+	-ms-border-radius: 0.2em;
+	-o-border-radius: 0.2em;
+}
+.settings-content ul li .container label input:checked ~ .custom-checkbox::after {
+	background-color: var(--background-color-300);
+}
+
+.settings-content ul li.danger-zone {
+	border: 0.2em solid var(--alert-error-color);
+	padding: 1em;
+	border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	-ms-border-radius: 0.5em;
+	-o-border-radius: 0.5em;
+}
+.settings-content ul li.danger-zone h3 {
+	color: var(--alert-error-color);
+}
+.settings-content ul li.danger-zone .container input.danger {
+	border-color: var(--alert-error-color-100);
+	color: var(--alert-error-color);
+}
+	.settings-content ul li.danger-zone .container input.danger:disabled {
+		border-color: var(--background-color-200);
+		color: var(--background-color-300);
+		cursor: not-allowed;
+		font-weight: 400;
+	}
 
 @media screen and (max-width: 1050px) {
 	.settings .settings-container {
@@ -341,12 +608,14 @@
 
 	.settings .settings-container .setting-types {
 		width: 100%;
+		height: 20%;
 		overflow-x: auto;
+		border-bottom: 0.2em solid var(--background-color-200);
 	}
 	.settings .settings-container .setting-types ul {
 		display: flex;
 		flex-direction: row;
-		justify-content: flex-start;
+		justify-content: center;
 	}
 	.settings .settings-container .setting-types ul li::after {
 		height: 0.2em;
@@ -368,6 +637,35 @@
 	}
 	.settings .settings-container .settings-content {
 		width: 100%;
+		height: 75%;
 		padding: 1.5em;
+	}
+}
+@media screen and (max-width: 600px) {
+	.settings .settings-container .setting-types {
+		padding-left: 0;
+	}
+	.settings .settings-container .setting-types ul {
+		justify-content: flex-start;
+	}
+	.settings .settings-container .settings-content ul {
+		padding-left: 0.5em;
+	}
+	.settings .settings-container .settings-content ul li .container {
+		/* align-items: center; */
+		justify-content: center;
+	}
+	.settings-content
+		ul
+		li
+		.container
+		:is(input[type='text'], input[type='date'], input[type='email'], input[type='password']) {
+		width: unset;
+	}
+	.container .img-and-link-container {
+		flex-direction: column;
+	}
+	.container .img-and-link-container a[href='/profile?popup=edit-profile-picture'] {
+		margin: 0 0 1.5em 0;
 	}
 }

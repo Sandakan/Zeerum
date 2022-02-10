@@ -25,6 +25,10 @@
 
 .banner:hover .banner-img {
 	transform: scale(1.1);
+	-webkit-transform: scale(1.1);
+	-moz-transform: scale(1.1);
+	-ms-transform: scale(1.1);
+	-o-transform: scale(1.1);
 }
 
 .nav-box .navigate-through-links ul li:hover {
@@ -57,8 +61,8 @@ input:not([type='submit']):focus {
 	border-color: var(--background-color-500);
 }
 
-.container > .form > input[id='submit']:hover,
-.form > input[id='submit']:hover {
+.container > .form > input[id='submit']:is(:focus,:hover),
+.form > input[id='submit']:is(:focus,:hover) {
 	background-color: var(--background-color-400);
 	border-color: var(--background-color-400);
 }
@@ -73,13 +77,21 @@ input:not([type='submit']):focus {
 
 .article-img-and-heading-container:hover .article-img-container img {
 	transform: scale(1.1);
+	-webkit-transform: scale(1.1);
+	-moz-transform: scale(1.1);
+	-ms-transform: scale(1.1);
+	-o-transform: scale(1.1);
 }
 
 /*? //////////////////////////////////////////////// MEDIA RULES /////////////////////////////////////////////////*/
 @media screen and (max-width: 700px) {
 	.banner:hover .banner-img {
 		transform: scale(1);
-	}
+		-webkit-transform: scale(1);
+		-moz-transform: scale(1);
+		-ms-transform: scale(1);
+		-o-transform: scale(1);
+}
 }
 
 /* Animations */
@@ -92,8 +104,16 @@ input:not([type='submit']):focus {
 @keyframes line {
 	from {
 		transform: translateX(-50%) scaleX(0);
-	}
+		-webkit-transform: translateX(-50%) scaleX(0);
+		-moz-transform: translateX(-50%) scaleX(0);
+		-ms-transform: translateX(-50%) scaleX(0);
+		-o-transform: translateX(-50%) scaleX(0);
+}
 	to {
 		transform: translateX(-50%) scaleX(0.3);
-	}
+		-webkit-transform: translateX(-50%) scaleX(0.3);
+		-moz-transform: translateX(-50%) scaleX(0.3);
+		-ms-transform: translateX(-50%) scaleX(0.3);
+		-o-transform: translateX(-50%) scaleX(0.3);
+}
 }

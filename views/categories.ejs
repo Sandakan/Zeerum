@@ -40,8 +40,20 @@
 		<div class="page-heading-1">
 			You searched of for <span class="highlight-categories"></span>
 		</div>
-		<div class="other-content">
-			<div class="other-content-secondary-container">
+		<div class="main-container">
+			<main class="other-content-main-container articles-container articles-loading">
+				<!-- <div class="article loading"></div>
+				<div class="article loading"></div>
+				<div class="article loading"></div> -->
+				<div class="no-articles-container">
+					<img src="/images/categories/no-articles.svg" alt="" />
+					<span class="no-articles">
+						Oops, seems like there's nothing to show at this moment.
+					</span>
+					<span class="no-search"></span>
+				</div>
+			</main>
+			<aside class="other-content-secondary-container">
 				<nav class="nav-box">
 					<div class="navigate-through-links">
 						<div class="trending-articles-heading">Trending Articles</div>
@@ -66,19 +78,7 @@
 					<div class="heading">Authors You Follow</div>
 					<div class="followed-authors"></div>
 				</div>
-			</div>
-			<div class="other-content-main-container articles-container articles-loading">
-				<!-- <div class="article loading"></div>
-				<div class="article loading"></div>
-				<div class="article loading"></div> -->
-				<div class="no-articles-container">
-					<img src="/images/categories/no-articles.svg" alt="" />
-					<span class="no-articles">
-						Oops, seems like there's nothing to show at this moment.
-					</span>
-					<span class="no-search"></span>
-				</div>
-			</div>
+			</aside>
 		</div>
 
 		<div class="alert-container">
@@ -101,11 +101,13 @@
 			<div class="footer-content">
 				<div class="description">
 					We are a community that shares ideas of beautiful minds. First started as a
-					tech-article website, now it grows as one of the most visited websites for ideas and
-					information to keep up with the world and to widen the horizon of creativity.
+					tech-article website, now it grows as one of the most visited websites for ideas
+					and information to keep up with the world and to widen the horizon of
+					creativity.
 					<br /><br />
 					<span class="made-with-love"
-						>Made with <span class="heart">❤</span> by Sandakan as a simple ICT project.</span
+						>Made with <span class="heart">❤</span> by Sandakan as a simple ICT
+						project.</span
 					>
 				</div>
 				<div class="newsletter-description">
@@ -113,8 +115,8 @@
 						<li>Our daily uploaded articles are now at your fingertips.</li>
 						<li>They are personalized to your reading too.</li>
 						<li>
-							We'll send an email containing popular, trending, and personalized articles
-							from the authors right to your inbox.
+							We'll send an email containing popular, trending, and personalized
+							articles from the authors right to your inbox.
 						</li>
 					</ul>
 				</div>
@@ -133,6 +135,6 @@
 		</div>
 
 		<script type="module" src="/scripts/categories.js"></script>
-		<script type="module" src="/scripts/profile.js"></script>
+		<script type="module" src="/scripts/account.js"></script>
 	</body>
 </html>

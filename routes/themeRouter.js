@@ -1,11 +1,11 @@
 const router = require('express').Router();
 
-const { sendUserData, sendFollowedAuthorsData } = require('../controller/user.js');
 const authenticate = require('../middleware/authenticate.js');
 const notFound = require('../middleware/notFound.js');
 
-router.route('/').get(authenticate(true)).get(sendFollowedAuthorsData);
-router.route('/:user').get(sendUserData);
+const changeTheme = require('../controller/theme.js');
+
+router.route('/').get(authenticate(false)).get(changeTheme);
 
 router.route('*').all(notFound(true));
 

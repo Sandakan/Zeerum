@@ -11,6 +11,8 @@ const {
 
 const search = async (req, res, next) => {
 	const searchPhrase = req.params.searchPhrase;
+	const currentPage = Number(req.query.page) || 1;
+	const limit = Number(req.query.limit) || 3;
 	// console.log(searchPhrase);
 	const articleData = await requestData(
 		'articles',

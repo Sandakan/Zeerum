@@ -6,12 +6,13 @@ const path = require('path');
 const validateFileExtensions = require('../middleware/validateFileExtensions');
 const authenticate = require('../middleware/authenticate.js');
 const isAuthor = require('../middleware/isAuthor.js');
+const notFound = require('../middleware/notFound.js');
 
 const { uploadNewArticle, changeProfilePicture } = require('../controller/upload.js');
 
 router
 	.route('/write/add-new-article')
-	.post(authenticate)
+	.post(authenticate(true))
 	.post(isAuthor)
 	.post(
 		fileUpload({
@@ -28,7 +29,7 @@ router
 
 router
 	.route('/profile/user-profile-picture')
-	.post(authenticate)
+	.post(authenticate(true))
 	.post(
 		fileUpload({
 			useTempFiles: true,
@@ -41,5 +42,7 @@ router
 	)
 	.post(validateFileExtensions(['image/jpeg', 'image/png', 'image/webp']))
 	.post(changeProfilePicture);
+
+router.route('*').all(notFound(true));
 
 module.exports = router;

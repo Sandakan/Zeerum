@@ -1,40 +1,44 @@
 const {
-	testDatabaseConnection,
 	countDocuments,
 	createUser,
 	checkUser,
 	requestData,
 	updateUserData,
 	updateData,
-	createArticle,
 } = require('../config/database');
 const notFound = require('../middleware/notFound');
 
 // ? FOR ACCESSING ALL THE ARTICLES. ** CAN BE REMOVED IN THE FUTURE **
-const sendAllArticles = async (req, res, next) => {
-	if (req.query.allArticles && req.query.allArticles === 'true') {
-		const limit = Number(req.query.limit) || 0;
+const sendArticles = async (req, res, next) => {
+	if (req.query.page && Number(req.query.page) > 0) {
+		const limit = Number(req.query.limit) || 10;
+		const currentPage = Number(req.query.page) || 1;
 		const articleData = await requestData(
 			'articles',
 			{},
 			{ article: 0, comments: 0, footnotes: 0 },
-			{},
-			limit
+			{ releasedDate: -1 },
+			limit,
+			(currentPage - 1) * limit
 		).then(
 			(res) => res,
 			(err) => next(err)
 		);
-		// Sorts the data from latest to oldest
-		articleData.data.sort(
-			(a, b) => new Date(b.releasedDate).getTime() - new Date(a.releasedDate).getTime()
+		const articlesCount = await countDocuments('articles').then(
+			(result) => result,
+			(err) => next(err)
 		);
+
 		if (articleData.success && articleData.data.length > 0)
 			res.status(200).json({
 				success: true,
 				status: 200,
 				message: `Request successful.`,
 				data: articleData.data,
-				ipInfo: req.ipInfo,
+				pages: Math.ceil(articlesCount / limit),
+				currentPage,
+				hasNextPage: Math.ceil(articlesCount / limit) !== currentPage,
+				// ipInfo: req.ipInfo,
 			});
 		else
 			res.status(404).json({
@@ -342,7 +346,11 @@ const likeArticle = async (req, res, next) => {
 					(res) => res,
 					(err) => next(err)
 				);
-				res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
+				res.json({
+					success: true,
+					status: 200,
+					message: `You liked ${req.params.article}`,
+				});
 			} else {
 				// ? if you have liked the same article before
 				res.json({
@@ -405,7 +413,11 @@ const bookmarkArticle = async (req, res, next) => {
 					{ $push: { bookmarks: req.session.userId } }
 				);
 				req.session.user.bookmarks = user.bookmarks;
-				res.json({ success: true, status: 200, message: `You liked ${req.params.article}` });
+				res.json({
+					success: true,
+					status: 200,
+					message: `You liked ${req.params.article}`,
+				});
 			} else {
 				// ? if you have bookmarked the same article before
 				res.json({
@@ -607,7 +619,7 @@ const sendTrendingArticles = async (req, res, next) => {
 };
 
 module.exports = {
-	sendAllArticles,
+	sendArticles,
 	sendArticlesByAuthorId,
 	sendArticlesByCategory,
 	sendArticlesByUserBookmarked,

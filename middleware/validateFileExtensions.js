@@ -21,7 +21,7 @@ module.exports = (acceptedMIMETypes = []) => {
 				}
 			}
 			if (!isAccepted)
-				res.json({
+				res.status(415).json({
 					success: false,
 					status: 415, // Unsupported media type
 					message: `Unsupported media type. Please check whether your uploaded file/s have accepted MIME types. Accepted MIME types are ${acceptedMIMETypes}`,

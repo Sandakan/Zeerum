@@ -54,9 +54,9 @@ const signup = (req, res, next) => {
 	const { firstName, lastName, birthday, password, email } = req.body;
 	//hash the Passwords
 	bcrypt.genSalt(10, (err, salt) => {
-		if (err) throw err;
+		if (err) return next(err);
 		bcrypt.hash(password, salt, async (err, hashedPassword) => {
-			if (err) throw err;
+			if (err) return next(err);
 			req.body.password = hashedPassword;
 			await createUser({ ...req.body, country: req.ipInfo.country })
 				.then((data) => {

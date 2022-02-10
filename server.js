@@ -47,6 +47,7 @@ const loginRouter = require('./routes/loginRouter.js');
 const signupRouter = require('./routes/signupRouter.js');
 const tagRouter = require('./routes/tagRouter.js');
 const writeRouter = require('./routes/writeRouter.js');
+const themeRouter = require('./routes/themeRouter.js');
 // ? /////////////////////////////////////////////////////////////////////////////////////////////////////
 const app = express();
 
@@ -109,11 +110,12 @@ app.get('/discover', csrfProtection, (req, res) => {
 app.get('/write', csrfProtection, (req, res) => {
 	res.render('write', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
+
 app.get('/about', csrfProtection, (req, res) => {
 	res.render('about', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 
-app.get('/profile', csrfProtection, authenticate, (req, res) => {
+app.get('/profile', csrfProtection, authenticate(false), (req, res) => {
 	res.render('profile', { csrfToken: req.csrfToken(), theme: req.session.theme });
 });
 
@@ -128,27 +130,7 @@ app.get('/logout', (req, res) => {
 	});
 });
 
-app.get('/change-theme', (req, res) => {
-	const theme = req.query.theme;
-	if (theme === 'dark') req.session.theme = 'dark-mode';
-	else if (theme === 'light') req.session.theme = 'light-mode';
-	else {
-		if (!req.session.theme || req.session.theme === 'light-mode') req.session.theme = 'dark-mode';
-		else req.session.theme = 'light-mode';
-	}
-	if (req.session.theme === 'dark-mode')
-		res.json({
-			success: true,
-			status: 200,
-			message: 'Theme changed from light to dark successfully.',
-		});
-	else
-		res.json({
-			success: true,
-			status: 200,
-			message: 'Theme changed from dark to light successfully.',
-		});
-});
+app.use('/change-theme', themeRouter);
 
 app.use('/login', loginRouter);
 

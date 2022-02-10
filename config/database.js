@@ -14,14 +14,14 @@ const testDatabaseConnection = async () => {
 		.finally(async () => await client.close());
 };
 
-const countDocuments = async (collection) => {
+const countDocuments = async (collection, query = {}) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
 		try {
 			const noOfDocuments = await database
 				.collection(collection)
-				.countDocuments()
+				.countDocuments(query)
 				.then((res) => res);
 			resolve(noOfDocuments);
 		} catch (err) {
@@ -85,14 +85,14 @@ const createUser = async (userDataObj) => {
 	return promise;
 };
 
-const checkUser = async (userDataObj, customProjection = {}) => {
+const checkUser = async (query, customProjection = {}) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
 		try {
 			await database
 				.collection('users')
-				.find(userDataObj, {
+				.find(query, {
 					projection: customProjection,
 				})
 				.toArray((error, result) => {
@@ -108,7 +108,14 @@ const checkUser = async (userDataObj, customProjection = {}) => {
 	return promise;
 };
 
-const requestData = async (collection, query = {}, customProjection = {}, sort = {}, limit = 0) => {
+const requestData = async (
+	collection,
+	query = {},
+	customProjection = {},
+	sort = {},
+	limit = 0,
+	skip = 0
+) => {
 	await client.connect();
 	const database = client.db(process.env.DATABASE_NAME);
 	const promise = new Promise(async (resolve, reject) => {
@@ -118,6 +125,7 @@ const requestData = async (collection, query = {}, customProjection = {}, sort =
 				projection: customProjection,
 			})
 			.sort(sort)
+			.skip(skip)
 			.limit(limit)
 			.toArray((error, result) => {
 				if (error) {

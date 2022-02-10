@@ -2,5 +2,19 @@
 	"spellright.language": ["en"],
 	"spellright.documentTypes": ["markdown", "latex", "plaintext", "html"],
 	"cSpell.words": ["bgcolor", "intelli", "sense", "signup"],
-	"cSpell.enableFiletypes": ["javascript"]
+	"cSpell.enableFiletypes": ["javascript"],
+	"prettier.tabWidth": 4,
+	"editor.bracketPairColorization.enabled": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.guides.bracketPairs": true,
+	"editor.hover.delay": 400,
+	"editor.scrollbar.vertical": "hidden",
+	"editor.showFoldingControls": "always",
+	"editor.smoothScrolling": true,
+	"editor.stablePeek": true,
+	"editor.tabCompletion": "onlySnippets",
+	"editor.cursorSmoothCaretAnimation": true,
+	"editor.cursorWidth": 2,
+	"editor.formatOnSave": true,
+	"editor.formatOnPaste": true
 }

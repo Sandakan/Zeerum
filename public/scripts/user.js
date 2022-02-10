@@ -6,11 +6,11 @@ let userId = window.location.pathname.split('/').at(-1) || sessionStorage.getIte
 let articlesPublished = 0;
 
 fetch(`/data/articles?authorUserId=${userId}`)
-	.then((obj) => obj.json())
+	.then((res) => res.json())
 	.then((res) => {
-		const { success, data } = res;
 		// console.log(data);
-		if (success && data.length > 0) {
+		if (res.success && res.data.length > 0) {
+			const { data } = res;
 			articlesPublished = data.length || 0;
 			data.map((x) => {
 				document.querySelector(
@@ -74,18 +74,17 @@ fetch(`/data/articles?authorUserId=${userId}`)
 
 fetch(`/data/users/${userId}`)
 	.then((obj) => obj.json())
-	.catch((err) => console.log(err))
 	.then((res) => {
-		const { success, data } = res;
 		console.log(res);
-		if (success) {
+		if (res.success) {
+			const { data } = res;
 			document.title = `ZEERUM \- ${data.firstName}\'s Profile`;
 			document.querySelector('.user-img-container').innerHTML = `<img src="${
 				data.profilePictureUrl || '/images/user.webp'
 			}" alt="" />`;
-			document.querySelector('.user-data-container').innerHTML = `<span class="name">${
-				data.firstName
-			} ${data.lastName}</span>
+			document.querySelector(
+				'.user-container .user-data-container'
+			).innerHTML = `<span class="name">${data.firstName} ${data.lastName}</span>
 				<span class="user-type-and-id"><span class="user-type">${data.userType}</span> <span class="id">#${
 				data.userId
 			}</span></span>
@@ -110,13 +109,17 @@ fetch(`/data/users/${userId}`)
 							.then((x) => {
 								console.log(x);
 								if (x.success) {
-									document.querySelector('.follow-btn').classList.remove('followed');
+									document
+										.querySelector('.follow-btn')
+										.classList.remove('followed');
 									document.querySelector(
 										'.follow-btn'
 									).innerHTML = ` <i class="fas fa-add"></i> Follow`;
-									document.querySelector('.followers-and-followings').innerHTML = `${
-										data.followers.length - 1
-									} followers / ${data.followings.length} followings`;
+									document.querySelector(
+										'.followers-and-followings'
+									).innerHTML = `${data.followers.length - 1} followers / ${
+										data.followings.length
+									} followings`;
 								} else displayAlertPopup('info', x.message);
 							});
 					} else {
@@ -129,13 +132,16 @@ fetch(`/data/users/${userId}`)
 									document.querySelector(
 										'.follow-btn'
 									).innerHTML = `<i class="fas fa-check"></i> followed`;
-									document.querySelector('.followers-and-followings').innerHTML = `${
-										data.followers.length + 1
-									} followers / ${data.followings.length} followings`;
+									document.querySelector(
+										'.followers-and-followings'
+									).innerHTML = `${data.followers.length + 1} followers / ${
+										data.followings.length
+									} followings`;
 								} else displayAlertPopup('info', x.message);
 							});
 					}
 				});
 			}
 		} else console.log(`Error occurred when requesting user data.`, res);
-	});
+	})
+	.catch((err) => console.log(err));
